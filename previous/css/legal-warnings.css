@@ -1,0 +1,381 @@
+/* Sensus - Advertencias Legales y Éticas */
+
+/* ===== ADVERTENCIA LEGAL ===== */
+.legal-warning-section {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 40px 0;
+    border-bottom: 3px solid #f59e0b;
+}
+
+.warning-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.2);
+    border: 2px solid #f59e0b;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.warning-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+}
+
+.warning-content h2 {
+    color: #92400e;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.warning-content p {
+    color: #451a03;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.warning-content p strong {
+    color: #92400e;
+    font-weight: 700;
+}
+
+.crisis-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.crisis-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    color: #92400e;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.crisis-link:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+}
+
+/* ===== FOOTER ÉTICO ===== */
+.ethical-footer {
+    background: linear-gradient(135deg, #1f2937, #374151);
+    color: white;
+    padding: 40px 0;
+    margin-top: 60px;
+    border-top: 3px solid #3b82f6;
+}
+
+.ethical-footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.ethical-footer h3 {
+    color: #3b82f6;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.ethical-footer p {
+    color: #d1d5db;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ethical-footer p strong {
+    color: #60a5fa;
+    font-weight: 600;
+}
+
+/* ===== CORRECCIONES CIENTÍFICAS ===== */
+.scientific-disclaimer {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 2px solid #0ea5e9;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.scientific-disclaimer h4 {
+    color: #0c4a6e;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.scientific-disclaimer h4 i {
+    color: #0ea5e9;
+}
+
+.scientific-disclaimer p {
+    color: #0c4a6e;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.scientific-disclaimer p:last-child {
+    margin-bottom: 0;
+}
+
+/* ===== TOOLTIPS EXPLICATIVOS ===== */
+.tooltip-trigger {
+    position: relative;
+    cursor: help;
+    color: #3b82f6;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    white-space: normal;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1f2937;
+}
+
+.tooltip-trigger:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== BOTONES ÉTICOS ===== */
+.btn-ethical {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    cursor: pointer;
+}
+
+.btn-ethical:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-ethical:active {
+    transform: translateY(0);
+}
+
+/* ===== TARJETAS DE TEST MEJORADAS ===== */
+.test-card-ethical {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.test-card-ethical::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+}
+
+.test-card-ethical:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+}
+
+.test-header-ethical {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.test-icon-ethical {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 24px;
+    color: white;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.test-title-ethical {
+    color: #1f2937;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.test-description-ethical {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.test-validation-ethical {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.test-validation-ethical strong {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .warning-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .warning-icon {
+        align-self: center;
+    }
+    
+    .crisis-links {
+        grid-template-columns: 1fr;
+    }
+    
+    .crisis-link {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .tooltip {
+        position: fixed;
+        bottom: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 90vw;
+    }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes pulse-warning {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+.warning-icon {
+    animation: pulse-warning 2s infinite;
+}
+
+/* ===== ACCESIBILIDAD ===== */
+.warning-card:focus-within {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.crisis-link:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* ===== IMPRESIÓN ===== */
+@media print {
+    .legal-warning-section {
+        background: white;
+        border: 2px solid #000;
+    }
+    
+    .warning-card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .crisis-links {
+        display: block;
+    }
+    
+    .crisis-link {
+        background: white;
+        border: 1px solid #000;
+        color: #000;
+        margin-bottom: 10px;
+    }
+}

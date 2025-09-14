@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout 
+    title="Síntomas de Ansiedad | Sensus"
+    description="Aprende a identificar y comprender los síntomas de la ansiedad. Información basada en evidencia científica."
+    keywords="síntomas ansiedad, trastorno ansiedad generalizada, ataques pánico, ansiedad social"
+    activeNav="ansiedad"
+>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title fade-in-up">Síntomas de Ansiedad</h1>
+            <p class="hero-subtitle fade-in-up">Aprende a identificar y comprender los síntomas de la ansiedad con información basada en evidencia científica.</p>
+        </div>
+    </section>
+
+    <!-- Symptoms Section -->
+    <section class="symptoms-section">
+        <div class="container">
+            <div class="symptoms-grid">
+                <div class="symptom-card">
+                    <div class="symptom-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Síntomas Físicos</h3>
+                    <ul>
+                        <li>Palpitaciones</li>
+                        <li>Sudoración</li>
+                        <li>Temblores</li>
+                        <li>Dificultad para respirar</li>
+                        <li>Tensión muscular</li>
+                    </ul>
+                </div>
+                
+                <div class="symptom-card">
+                    <div class="symptom-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Síntomas Mentales</h3>
+                    <ul>
+                        <li>Preocupación excesiva</li>
+                        <li>Pensamientos intrusivos</li>
+                        <li>Dificultad concentración</li>
+                        <li>Miedo irracional</li>
+                        <li>Sensación de peligro</li>
+                    </ul>
+                </div>
+                
+                <div class="symptom-card">
+                    <div class="symptom-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Síntomas Sociales</h3>
+                    <ul>
+                        <li>Evitar situaciones sociales</li>
+                        <li>Miedo al juicio</li>
+                        <li>Aislamiento</li>
+                        <li>Dificultad para hablar</li>
+                        <li>Rubor o temblor en público</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>¿Experimentas estos síntomas?</h2>
+                <p>Realiza nuestro test GAD-7 gratuito para evaluar tu nivel de ansiedad</p>
+                <a href="/evaluacion" class="btn-cta">
+                    <i class="fas fa-clipboard-check"></i>
+                    Evaluar mi Ansiedad
+                </a>
+            </div>
+        </div>
+    </section>
+</BaseLayout>

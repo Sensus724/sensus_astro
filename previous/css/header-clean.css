@@ -1,0 +1,344 @@
+/* Sensus - Header Limpio y Profesional */
+/* Diseño mejorado para todas las páginas */
+
+/* ===== HEADER MEJORADO ===== */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid #E5E7EB;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+/* ===== LOGO MEJORADO ===== */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.logo-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1F2937;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.logo-placeholder:hover {
+    transform: scale(1.02);
+}
+
+.logo-placeholder i {
+    color: #2563EB;
+    font-size: 32px;
+    transition: all 0.3s ease;
+}
+
+.logo-placeholder:hover i {
+    color: #1D4ED8;
+    transform: rotate(5deg);
+}
+
+/* ===== MENÚ HAMBURGUESA MEJORADO ===== */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.menu-toggle:hover {
+    background: #F3F4F6;
+}
+
+.menu-toggle .bar {
+    width: 100%;
+    height: 3px;
+    background: #1F2937;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.menu-toggle.active .bar:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+    transform: rotate(-45deg) translate(8px, -8px);
+}
+
+/* ===== NAVEGACIÓN MEJORADA ===== */
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    position: relative;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #1F2937;
+    font-weight: 500;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    padding: 12px 20px;
+    border-radius: 10px;
+    position: relative;
+    display: block;
+}
+
+.nav-links li a:hover {
+    color: #2563EB;
+    background: #F0F7FF;
+    transform: translateY(-1px);
+}
+
+.nav-links li a.active {
+    color: #2563EB;
+    background: #F0F7FF;
+    font-weight: 600;
+}
+
+.nav-links li a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: #2563EB;
+    border-radius: 1px;
+}
+
+/* ===== BOTONES DE AUTENTICACIÓN OCULTOS ===== */
+.auth-buttons {
+    display: none;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Mobile (≤767px) */
+@media (max-width: 767px) {
+    .menu-toggle {
+        display: flex;
+    }
+    
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 80px 20px 20px;
+        transform: translateY(-100%);
+        transition: all 0.3s ease;
+        z-index: 999;
+        gap: 0;
+    }
+    
+    .nav-links.active {
+        transform: translateY(0);
+    }
+    
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+        margin: 8px 0;
+    }
+    
+    .nav-links li a {
+        display: block;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+    }
+    
+    .nav-links li a:hover,
+    .nav-links li a.active {
+        background: #F0F7FF;
+        transform: none;
+    }
+    
+    .nav-links li a.active::after {
+        display: none;
+    }
+    
+    .header-container {
+        padding: 12px 20px;
+    }
+    
+    .logo-placeholder {
+        font-size: 24px;
+    }
+    
+    .logo-placeholder i {
+        font-size: 28px;
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .nav-links {
+        gap: 4px;
+    }
+    
+    .nav-links li a {
+        padding: 10px 16px;
+        font-size: 15px;
+    }
+    
+    .header-container {
+        padding: 14px 20px;
+    }
+}
+
+/* Desktop (≥1024px) */
+@media (min-width: 1024px) {
+    .nav-links {
+        gap: 8px;
+    }
+    
+    .nav-links li a {
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+}
+
+/* ===== EFECTOS ESPECIALES ===== */
+
+/* Efecto de scroll en header */
+.header.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación de entrada para el logo */
+@keyframes logoEntrance {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.logo-placeholder {
+    animation: logoEntrance 0.6s ease-out;
+}
+
+/* Efecto hover en elementos del menú */
+.nav-links li a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #F0F7FF, #E0F2FE);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.nav-links li a:hover::before {
+    opacity: 1;
+}
+
+/* ===== ACCESIBILIDAD ===== */
+.menu-toggle:focus,
+.nav-links a:focus {
+    outline: 2px solid #2563EB;
+    outline-offset: 2px;
+}
+
+/* ===== OVERLAY PARA MÓVIL ===== */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    animation: fadeInDown 0.6s ease-out;
+}
+
+/* ===== IMPRESIÓN ===== */
+@media print {
+    .header {
+        display: none;
+    }
+}

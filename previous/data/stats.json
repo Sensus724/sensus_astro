@@ -1,0 +1,25 @@
+{
+    "visitors": {
+        "total": 12500,
+        "today": 45,
+        "thisWeek": 320,
+        "thisMonth": 1250
+    },
+    "tests": {
+        "total": 45000,
+        "today": 120,
+        "thisWeek": 850,
+        "thisMonth": 3200
+    },
+    "diary": {
+        "total": 85000,
+        "today": 280,
+        "thisWeek": 1950,
+        "thisMonth": 7800
+    },
+    "satisfaction": {
+        "percentage": 96,
+        "totalResponses": 12500
+    },
+    "lastUpdated": "2025-01-27T10:30:00Z"
+}

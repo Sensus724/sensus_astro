@@ -1,0 +1,78 @@
+{
+  "users": [
+    {
+      "uid": "test-user-1",
+      "email": "test@sensus.com",
+      "displayName": "Usuario de Prueba",
+      "firstName": "Usuario",
+      "lastName": "Prueba",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "lastLoginAt": "2024-01-01T00:00:00Z",
+      "preferences": {
+        "theme": "light",
+        "notifications": true,
+        "language": "es",
+        "timezone": "Europe/Madrid",
+        "reminderTime": "20:00",
+        "weeklyReport": true,
+        "motivationalMessages": true,
+        "newsletter": false
+      },
+      "stats": {
+        "totalDiaryEntries": 5,
+        "totalTests": 2,
+        "currentStreak": 3,
+        "longestStreak": 7,
+        "averageMood": 3.2,
+        "lastDiaryEntry": "2024-01-01T00:00:00Z",
+        "lastTestDate": "2024-01-01T00:00:00Z",
+        "totalTimeSpent": 1200,
+        "favoriteActivities": ["meditación", "ejercicio", "lectura"],
+        "goals": ["reducir ansiedad", "mejorar sueño"],
+        "achievements": ["primera_entrada", "semana_completa"]
+      },
+      "privacy": {
+        "shareData": false,
+        "anonymousMode": false,
+        "dataRetention": "1year"
+      }
+    }
+  ],
+  "gad7_results": [
+    {
+      "userId": "test-user-1",
+      "score": 8,
+      "level": "leve",
+      "date": "2024-01-01T00:00:00Z",
+      "answers": [1, 2, 1, 2, 1, 1, 0],
+      "interpretation": "Tu puntuación es 8. Esto indica ansiedad leve. Muchas personas con este nivel mejoran con técnicas de relajación y diario emocional."
+    }
+  ],
+  "journal_entries": [
+    {
+      "userId": "test-user-1",
+      "text": "Hoy me siento un poco ansioso por el trabajo, pero he logrado mantener la calma usando las técnicas de respiración.",
+      "emotion": "😐",
+      "timestamp": "2024-01-01T00:00:00Z",
+      "encrypted": false
+    },
+    {
+      "userId": "test-user-1",
+      "text": "Me siento mucho mejor hoy. Hice ejercicio y eso me ayudó a relajarme.",
+      "emotion": "😊",
+      "timestamp": "2024-01-02T00:00:00Z",
+      "encrypted": false
+    }
+  ],
+  "insights": [
+    {
+      "userId": "test-user-1",
+      "type": "pattern",
+      "title": "Patrón de ansiedad detectado",
+      "description": "Has mostrado niveles más altos de ansiedad los lunes por la tarde. Te recomendamos practicar técnicas de relajación en ese momento.",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "actionable": true,
+      "action": "Activar recordatorio de relajación para los lunes a las 3 PM"
+    }
+  ]
+}

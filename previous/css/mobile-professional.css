@@ -1,0 +1,553 @@
+/* Sensus - Estilos Móviles Profesionales */
+/* Diseño más robusto y profesional para dispositivos móviles */
+
+/* Variables específicas para móvil */
+:root {
+    --mobile-padding: 16px;
+    --mobile-margin: 12px;
+    --mobile-font-size: 16px;
+    --mobile-line-height: 1.5;
+    --mobile-button-height: 48px;
+    --mobile-border-radius: 8px;
+    --mobile-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --mobile-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Estilos base para móviles */
+@media (max-width: 768px) {
+    /* Tipografía más robusta */
+    body {
+        font-size: var(--mobile-font-size);
+        line-height: var(--mobile-line-height);
+        font-weight: 500;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: var(--mobile-margin);
+    }
+    
+    h1 {
+        font-size: 2rem;
+        font-weight: 800;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+    
+    h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    /* Header más profesional */
+    .header {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-bottom: 2px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-container {
+        padding: 12px var(--mobile-padding);
+    }
+    
+    .logo-placeholder {
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: #1f2937;
+    }
+    
+    .logo-placeholder i {
+        color: #3b82f6;
+        margin-right: 8px;
+    }
+    
+    /* Navegación móvil mejorada */
+    .nav-links {
+        background: white;
+        border-radius: var(--mobile-border-radius);
+        box-shadow: var(--mobile-shadow);
+        padding: 16px;
+        margin-top: 8px;
+    }
+    
+    .nav-links li a {
+        padding: 12px 16px;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-links li a:hover,
+    .nav-links li a.active {
+        background: #3b82f6;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    /* Botones más profesionales */
+    .btn {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-radius: var(--mobile-border-radius);
+        box-shadow: var(--mobile-shadow);
+        transition: all 0.3s ease;
+        min-height: var(--mobile-button-height);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--mobile-shadow-hover);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border: none;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    }
+    
+    .btn-outline {
+        background: white;
+        border: 2px solid #3b82f6;
+        color: #3b82f6;
+        font-weight: 700;
+    }
+    
+    .btn-outline:hover {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    /* Hero section más impactante */
+    .hero-content {
+        text-align: center;
+        padding: 32px var(--mobile-padding);
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #1f2937;
+        margin-bottom: 16px;
+        line-height: 1.1;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+    
+    .hero-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 24px;
+    }
+    
+    .hero-actions .btn {
+        width: 100%;
+        padding: 16px 24px;
+        font-size: 1rem;
+    }
+    
+    /* Cards más profesionales */
+    .card, .feature-card, .test-card, .professional-card {
+        background: white;
+        border-radius: var(--mobile-border-radius);
+        box-shadow: var(--mobile-shadow);
+        border: 1px solid #e5e7eb;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover, .feature-card:hover, .test-card:hover, .professional-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--mobile-shadow-hover);
+    }
+    
+    .card h3, .feature-card h3, .test-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 12px;
+    }
+    
+    .card p, .feature-card p, .test-card p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #6b7280;
+    }
+    
+    /* Secciones más estructuradas */
+    .section-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 16px;
+    }
+    
+    .section-description {
+        font-size: 1rem;
+        color: #6b7280;
+        text-align: center;
+        margin-bottom: 32px;
+        line-height: 1.6;
+    }
+    
+    /* Grids responsivos */
+    .feature-cards, .test-cards, .steps-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin: 24px 0;
+    }
+    
+    /* Stats más impactantes */
+    .hero-stats, .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin: 24px 0;
+    }
+    
+    .stat-item, .stat-card {
+        background: white;
+        border-radius: var(--mobile-border-radius);
+        padding: 20px;
+        text-align: center;
+        box-shadow: var(--mobile-shadow);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .stat-number, .stat-number {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #3b82f6;
+        margin-bottom: 4px;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Footer más profesional */
+    .footer {
+        background: #1f2937;
+        color: white;
+        padding: 32px var(--mobile-padding);
+        margin-top: 48px;
+    }
+    
+    .footer-content {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .footer-logo h3 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    
+    .footer-links h3 {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+    
+    .footer-links ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .footer-links li {
+        margin-bottom: 8px;
+    }
+    
+    .footer-links a {
+        color: #d1d5db;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    
+    .footer-links a:hover {
+        color: #3b82f6;
+    }
+    
+    /* Mejoras específicas para credibilidad */
+    .scientific-credentials-section {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        border-radius: var(--mobile-border-radius);
+        padding: 24px;
+        margin: 24px 0;
+        border: 1px solid #cbd5e1;
+    }
+    
+    .scientific-badges {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+    }
+    
+    .badge-item {
+        background: white;
+        border-radius: 6px;
+        padding: 12px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .badge-item i {
+        font-size: 1.5rem;
+        color: #3b82f6;
+        margin-bottom: 4px;
+    }
+    
+    .badge-item span {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7280;
+    }
+    
+    /* Comité científico */
+    .scientific-committee-section {
+        background: white;
+        border-radius: var(--mobile-border-radius);
+        padding: 24px;
+        margin: 24px 0;
+        box-shadow: var(--mobile-shadow);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .expert-card {
+        background: #f8fafc;
+        border-radius: var(--mobile-border-radius);
+        padding: 20px;
+        margin: 16px 0;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .expert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+    
+    .expert-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #3b82f6;
+        margin-bottom: 8px;
+    }
+    
+    .expert-bio {
+        font-size: 0.9rem;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+    
+    /* Diferenciación */
+    .differentiation-section {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        border-radius: var(--mobile-border-radius);
+        padding: 24px;
+        margin: 24px 0;
+        border: 1px solid #bae6fd;
+    }
+    
+    .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin: 20px 0;
+    }
+    
+    .comparison-item {
+        background: white;
+        border-radius: 6px;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .comparison-item.sensus {
+        border-color: #3b82f6;
+        background: #f0f9ff;
+    }
+    
+    .comparison-item.others {
+        border-color: #d1d5db;
+        background: #f9fafb;
+    }
+    
+    /* Accordion de privacidad */
+    .privacy-accordion {
+        background: white;
+        border-radius: var(--mobile-border-radius);
+        margin: 16px 0;
+        box-shadow: var(--mobile-shadow);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .privacy-toggle {
+        width: 100%;
+        padding: 16px 20px;
+        background: #f8fafc;
+        border: none;
+        border-radius: var(--mobile-border-radius);
+        font-weight: 700;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .privacy-toggle:hover {
+        background: #e2e8f0;
+    }
+    
+    .privacy-content {
+        padding: 20px;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    /* Mejoras de contraste y legibilidad */
+    .text-muted {
+        color: #6b7280 !important;
+    }
+    
+    .text-primary {
+        color: #3b82f6 !important;
+    }
+    
+    .text-success {
+        color: #10b981 !important;
+    }
+    
+    .text-warning {
+        color: #f59e0b !important;
+    }
+    
+    .text-danger {
+        color: #ef4444 !important;
+    }
+    
+    /* Espaciado consistente */
+    .container {
+        padding: 0 var(--mobile-padding);
+    }
+    
+    .section {
+        padding: 32px 0;
+    }
+    
+    .section-header {
+        margin-bottom: 32px;
+    }
+    
+    /* Mejoras de accesibilidad */
+    .btn:focus,
+    .nav-links a:focus,
+    .privacy-toggle:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+    
+    /* Animaciones suaves pero profesionales */
+    * {
+        transition: all 0.2s ease;
+    }
+    
+    .card:hover,
+    .btn:hover,
+    .stat-item:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* Estilos para pantallas muy pequeñas (320px - 480px) */
+@media (max-width: 480px) {
+    :root {
+        --mobile-padding: 12px;
+        --mobile-margin: 8px;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .hero-stats, .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .scientific-badges {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .btn {
+        font-size: 0.9rem;
+        padding: 14px 20px;
+    }
+}
+
+/* Estilos para modo oscuro en móvil */
+@media (max-width: 768px) and (prefers-color-scheme: dark) {
+    .header {
+        background: rgba(17, 24, 39, 0.98);
+        border-bottom-color: #374151;
+    }
+    
+    .card, .feature-card, .test-card, .professional-card {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f9fafb;
+    }
+    
+    .hero-title, .section-title {
+        color: #f9fafb;
+    }
+    
+    .hero-subtitle, .section-description {
+        color: #d1d5db;
+    }
+    
+    .stat-item, .stat-card {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f9fafb;
+    }
+}

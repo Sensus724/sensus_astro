@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Sensus</title>
+    
+    <!-- CSS del Santuario Digital -->
+    <link rel="stylesheet" href="css/sanctuary-design.css">
+    <link rel="stylesheet" href="css/warm-design.css">
+    <link rel="stylesheet" href="css/universal-warm.css">
+    <link rel="stylesheet" href="css/header-clean.css">
+    <link rel="stylesheet" href="css/mobile-menu-enhanced.css">
+    <link rel="stylesheet" href="css/static-icons.css">
+    <link rel="stylesheet" href="css/styles.css?v=3">
+
+    <link rel="stylesheet" href="css/header-clean.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="assets/images/Logo.jpeg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="assets/images/Logo.jpeg">
+    <meta name="theme-color" content="#d7cdf2">
+</head>
+<body class="profile-page">
+    <div class="page-loader">
+        <div class="loader"></div>
+    </div>
+    
+    <header class="header">
+        <div class="header-container">
+        <div class="container header-container">
+            <div class="logo-container">
+                <div class="logo-placeholder">
+                    <i class="fas fa-brain" aria-hidden="true"></i>
+                    <span>SENSUS</span>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <button class="menu-toggle" aria-label="Abrir menú">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html">
+                                <i class="fas fa-home" aria-hidden="true"></i>
+                                Inicio
+                            </a></li>
+                    <li><a href="evaluacion.html">
+                                <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                                Evaluación
+                            </a></li>
+                    <li><a href="diario.html">
+                                <i class="fas fa-book-open" aria-hidden="true"></i>
+                                Diario
+                            </a></li>
+                    <li><a href="ansiedad.html">
+                                <i class="fas fa-heart" aria-hidden="true"></i>
+                                Síntomas
+                            </a></li>
+                    <li><a href="planes.html">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                Planes
+                            </a></li>
+                    <li><a href="equipo.html">
+                                <i class="fas fa-users" aria-hidden="true"></i>
+                                Equipo
+                            </a></li>
+                    <li><a href="contacto.html">
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                Contacto
+                            </a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons" style="display: none;">
+                <button class="btn btn-outline" id="login-btn">Iniciar sesión</button>
+                <button class="btn btn-primary btn-cta-prominent" id="register-btn">¡REGÍSTRATE GRATIS!</button>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
+                    <i class="fas fa-moon" aria-hidden="true"></i>
+                    <i class="fas fa-sun" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Menu Overlay -->
+    <div class="menu-overlay"></div>
+
+    <main class="profile-main">
+        <div class="container">
+            <!-- Header del perfil -->
+            <section class="profile-header">
+                <div class="profile-cover">
+                    <div class="profile-avatar-container">
+                        <div class="profile-avatar" id="profile-avatar">
+                            <img src="" alt="Foto de perfil" class="user-photo" id="user-photo" style="display: none;">
+                            <div class="avatar-placeholder" id="avatar-placeholder">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                            </div>
+                            <button class="avatar-upload-btn" id="avatar-upload-btn" title="Cambiar foto">
+                                <i class="fas fa-camera" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="profile-name" id="profile-name">Usuario</h1>
+                        <p class="profile-email" id="profile-email">usuario@email.com</p>
+                        <p class="profile-joined">Miembro desde <span class="user-created-at" id="user-created-at">2024</span></p>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-outline" id="edit-profile-btn">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                            Editar Perfil
+                        </button>
+                        <button class="btn btn-primary" id="settings-btn">
+                            <i class="fas fa-cog" aria-hidden="true"></i>
+                            Configuración
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estadísticas del usuario -->
+            <section class="profile-stats">
+                <h2>Mis Estadísticas</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number user-streak" id="user-streak">0</div>
+                            <div class="stat-label">Racha Actual</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number user-total-entries" id="user-total-entries">0</div>
+                            <div class="stat-label">Entradas del Diario</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number user-total-tests" id="user-total-tests">0</div>
+                            <div class="stat-label">Tests Realizados</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-smile" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number user-average-mood" id="user-average-mood">3.0</div>
+                            <div class="stat-label">Estado de Ánimo Promedio</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number user-total-time" id="user-total-time">0h 0m</div>
+                            <div class="stat-label">Tiempo Total</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number longest-streak" id="longest-streak">0</div>
+                            <div class="stat-label">Mejor Racha</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestañas del perfil -->
+            <section class="profile-tabs">
+                <div class="tab-navigation">
+                    <button class="tab-btn active" data-tab="overview">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        Resumen
+                    </button>
+                    <button class="tab-btn" data-tab="diary">
+                        <i class="fas fa-book" aria-hidden="true"></i>
+                        Diario
+                    </button>
+                    <button class="tab-btn" data-tab="tests">
+                        <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                        Tests
+                    </button>
+                    <button class="tab-btn" data-tab="settings">
+                        <i class="fas fa-cog" aria-hidden="true"></i>
+                        Configuración
+                    </button>
+                    <button class="tab-btn" data-tab="privacy">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        Privacidad
+                    </button>
+                </div>
+
+                <!-- Contenido de pestañas -->
+                <div class="tab-content">
+                    <!-- Pestaña Resumen -->
+                    <div class="tab-panel active" id="overview-tab">
+                        <div class="overview-grid">
+                            <div class="overview-card">
+                                <h3>Progreso Reciente</h3>
+                                <div class="progress-chart" id="progress-chart">
+                                    <!-- Gráfico de progreso -->
+                                </div>
+                            </div>
+                            
+                            <div class="overview-card">
+                                <h3>Última Actividad</h3>
+                                <div class="recent-activity" id="recent-activity">
+                                    <div class="activity-item">
+                                        <i class="fas fa-book" aria-hidden="true"></i>
+                                        <div class="activity-content">
+                                            <p>Última entrada del diario</p>
+                                            <span class="activity-date user-last-entry" id="user-last-entry">Nunca</span>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                                        <div class="activity-content">
+                                            <p>Último test realizado</p>
+                                            <span class="activity-date user-last-test" id="user-last-test">Nunca</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="overview-card">
+                                <h3>Logros</h3>
+                                <div class="achievements" id="achievements">
+                                    <div class="achievement-item">
+                                        <i class="fas fa-star" aria-hidden="true"></i>
+                                        <span>Primera entrada</span>
+                                    </div>
+                                    <div class="achievement-item">
+                                        <i class="fas fa-fire" aria-hidden="true"></i>
+                                        <span>Racha de 7 días</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Diario -->
+                    <div class="tab-panel" id="diary-tab">
+                        <div class="diary-stats">
+                            <h3>Estadísticas del Diario</h3>
+                            <div class="diary-chart" id="diary-chart">
+                                <!-- Gráfico del diario -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Tests -->
+                    <div class="tab-panel" id="tests-tab">
+                        <div class="tests-stats">
+                            <h3>Historial de Tests</h3>
+                            <div class="tests-chart" id="tests-chart">
+                                <!-- Gráfico de tests -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Configuración -->
+                    <div class="tab-panel" id="settings-tab">
+                        <form class="settings-form" id="settings-form">
+                            <div class="form-section">
+                                <h3>Preferencias Generales</h3>
+                                
+                                <div class="form-group">
+                                    <label for="theme-preference">Tema</label>
+                                    <select id="theme-preference" class="form-control">
+                                        <option value="light">Claro</option>
+                                        <option value="dark">Oscuro</option>
+                                        <option value="auto">Automático</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="language-preference">Idioma</label>
+                                    <select id="language-preference" class="form-control">
+                                        <option value="es">Español</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="reminder-time">Hora de recordatorio</label>
+                                    <input type="time" id="reminder-time" class="form-control" value="20:00">
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Notificaciones</h3>
+                                
+                                <div class="form-group checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="notification-preference" class="notification-preference">
+                                        <span class="checkmark"></span>
+                                        Recibir notificaciones
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="weekly-report-preference" class="weekly-report-preference">
+                                        <span class="checkmark"></span>
+                                        Reporte semanal
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="motivational-messages-preference" class="motivational-messages-preference">
+                                        <span class="checkmark"></span>
+                                        Mensajes motivacionales
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save" aria-hidden="true"></i>
+                                    Guardar Configuración
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Pestaña Privacidad -->
+                    <div class="tab-panel" id="privacy-tab">
+                        <form class="privacy-form" id="privacy-form">
+                            <div class="form-section">
+                                <h3>Configuración de Privacidad</h3>
+                                
+                                <div class="form-group checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="share-data-preference" class="share-data-preference">
+                                        <span class="checkmark"></span>
+                                        Compartir datos anónimos para mejorar la app
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="anonymous-mode-preference" class="anonymous-mode-preference">
+                                        <span class="checkmark"></span>
+                                        Modo anónimo
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="data-retention-preference">Retención de datos</label>
+                                    <select id="data-retention-preference" class="form-control">
+                                        <option value="1year">1 año</option>
+                                        <option value="2years">2 años</option>
+                                        <option value="5years">5 años</option>
+                                        <option value="forever">Para siempre</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Exportar/Eliminar Datos</h3>
+                                
+                                <div class="privacy-actions">
+                                    <button type="button" class="btn btn-outline" id="export-data-btn">
+                                        <i class="fas fa-download" aria-hidden="true"></i>
+                                        Exportar Mis Datos
+                                    </button>
+                                    
+                                    <button type="button" class="btn btn-danger" id="delete-account-btn">
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
+                                        Eliminar Cuenta
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save" aria-hidden="true"></i>
+                                    Guardar Configuración
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-small-placeholder">
+                        <i class="fas fa-brain" aria-hidden="true"></i>
+                        <span>SENSUS</span>
+                    </div>
+                    <p>© 2025 Sensus. App de salud mental respaldada por la ciencia.</p>
+                    <p class="footer-legal">
+                        <a href="politica-privacidad.html">Política de Privacidad</a> • 
+                        <a href="terminos-uso.html">Términos de Uso</a> • 
+                        <a href="contacto.html">Contacto</a> • 
+                        <a href="equipo.html">Comité Científico</a>
+                    </p>
+                    <p class="footer-compliance">Cumplimos con GDPR, LOPD y normativas de protección de datos. Servidores en UE.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de edición de perfil -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-content">
+                <button class="close-modal" aria-label="Cerrar modal">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+                
+                <h2>Editar Perfil</h2>
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="edit-first-name">Nombre</label>
+                        <input type="text" id="edit-first-name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-last-name">Apellidos</label>
+                        <input type="text" id="edit-last-name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-email">Correo electrónico</label>
+                        <input type="email" id="edit-email" class="form-control" readonly>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cancel-edit-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input oculto para subir foto -->
+    <input type="file" id="photo-upload-input" accept="image/*" style="display: none;">    <!-- CSS Responsive -->
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-functions-compat.js"></script>
+    
+    <script src="js/modules/firebase-config.js?v=3"></script>
+    <script src="js/modules/auth.js?v=3"></script>
+    <script src="js/modules/user-profile.js?v=3"></script>
+    <script src="js/script.js?v=3"></script>
+    <script src="js/mobile-menu-enhanced.js"></script>
+    <script src="js/header-interactions.js"></script>
+    
+    <script>
+        // Script específico para la página de perfil
+        document.addEventListener('DOMContentLoaded', function() {
+            initProfilePage();
+        });
+        
+        function initProfilePage() {
+            // Ocultar loader
+            const pageLoader = document.querySelector('.page-loader');
+            if (pageLoader) {
+                setTimeout(() => {
+                    pageLoader.classList.add('hidden');
+                }, 500);
+            }
+            
+            // Configurar pestañas
+            setupTabs();
+            
+            // Configurar formularios
+            setupForms();
+            
+            // Configurar subida de foto
+            setupPhotoUpload();
+        }
+        
+        function setupTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.dataset.tab;
+                    
+                    // Remover clase activa de todos los botones y paneles
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabPanels.forEach(p => p.classList.remove('active'));
+                    
+                    // Activar botón y panel seleccionados
+                    btn.classList.add('active');
+                    document.getElementById(`${targetTab}-tab`).classList.add('active');
+                });
+            });
+        }
+        
+        function setupForms() {
+            // Formulario de configuración
+            const settingsForm = document.getElementById('settings-form');
+            if (settingsForm) {
+                settingsForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    saveSettings();
+                });
+            }
+            
+            // Formulario de privacidad
+            const privacyForm = document.getElementById('privacy-form');
+            if (privacyForm) {
+                privacyForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    savePrivacySettings();
+                });
+            }
+            
+            // Formulario de edición de perfil
+            const editProfileForm = document.getElementById('edit-profile-form');
+            if (editProfileForm) {
+                editProfileForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    saveProfileChanges();
+                });
+            }
+        }
+        
+        function setupPhotoUpload() {
+            const uploadBtn = document.getElementById('avatar-upload-btn');
+            const fileInput = document.getElementById('photo-upload-input');
+            
+            if (uploadBtn && fileInput) {
+                uploadBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        uploadProfilePhoto(file);
+                    }
+                });
+            }
+        }
+        
+        function saveSettings() {
+            const preferences = {
+                theme: document.getElementById('theme-preference').value,
+                language: document.getElementById('language-preference').value,
+                reminderTime: document.getElementById('reminder-time').value,
+                notifications: document.getElementById('notification-preference').checked,
+                weeklyReport: document.getElementById('weekly-report-preference').checked,
+                motivationalMessages: document.getElementById('motivational-messages-preference').checked
+            };
+            
+            if (window.UserProfile) {
+                window.UserProfile.updatePreferences(preferences);
+            }
+        }
+        
+        function savePrivacySettings() {
+            const privacy = {
+                shareData: document.getElementById('share-data-preference').checked,
+                anonymousMode: document.getElementById('anonymous-mode-preference').checked,
+                dataRetention: document.getElementById('data-retention-preference').value
+            };
+            
+            if (window.UserProfile) {
+                window.UserProfile.updatePrivacy(privacy);
+            }
+        }
+        
+        function saveProfileChanges() {
+            const basicInfo = {
+                firstName: document.getElementById('edit-first-name').value,
+                lastName: document.getElementById('edit-last-name').value,
+                displayName: `${document.getElementById('edit-first-name').value} ${document.getElementById('edit-last-name').value}`
+            };
+            
+            if (window.UserProfile) {
+                window.UserProfile.updateBasicInfo(basicInfo);
+                closeEditModal();
+            }
+        }
+        
+        function uploadProfilePhoto(file) {
+            if (window.UserProfile) {
+                window.UserProfile.uploadPhoto(file);
+            }
+        }
+        
+        function closeEditModal() {
+            const modal = document.getElementById('edit-profile-modal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        // Event listeners para botones
+        document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
+            const modal = document.getElementById('edit-profile-modal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        });
+        
+        document.getElementById('export-data-btn')?.addEventListener('click', () => {
+            if (window.UserProfile) {
+                window.UserProfile.exportData();
+            }
+        });
+        
+        document.getElementById('delete-account-btn')?.addEventListener('click', () => {
+            if (window.UserProfile) {
+                window.UserProfile.deleteAccount();
+            }
+        });
+        
+        document.getElementById('cancel-edit-btn')?.addEventListener('click', closeEditModal);
+        
+        // Cerrar modal al hacer clic fuera
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.classList.contains('modal-backdrop')) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout 
+    title="Diario Emocional | Sensus"
+    description="Registra tu estado diario con emojis + texto. Nuestro sistema basado en TCC identifica patrones emocionales y te ayuda a comprender tu bienestar mental."
+    keywords="ansiedad, salud mental, test GAD-7, diario emocional, bienestar, mindfulness, terapia online"
+    pageStylesheets={["universal-warm.css"]}
+    themeColor="#d7cdf2"
+    activeNav="diario"
+>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title fade-in-up">Diario Emocional</h1>
+            <p class="hero-subtitle fade-in-up">Registra tu estado diario con emojis + texto. Nuestro sistema basado en TCC identifica patrones emocionales y te ayuda a comprender tu bienestar mental.</p>
+        </div>
+    </section>
+
+    <!-- Journal Entry Section -->
+    <section class="journal-section">
+        <div class="container">
+            <div class="journal-card">
+                <h2>¿Cómo te sientes hoy?</h2>
+                <div class="mood-selector">
+                    <button class="mood-btn" data-mood="very-happy">😄</button>
+                    <button class="mood-btn" data-mood="happy">😊</button>
+                    <button class="mood-btn" data-mood="neutral">😐</button>
+                    <button class="mood-btn" data-mood="sad">😔</button>
+                    <button class="mood-btn" data-mood="very-sad">😢</button>
+                </div>
+                
+                <div class="journal-form">
+                    <textarea 
+                        id="journal-entry" 
+                        placeholder="Describe cómo te sientes hoy, qué te preocupa o qué te hace feliz..."
+                        rows="5"
+                    ></textarea>
+                    
+                    <button class="save-btn">
+                        <i class="fas fa-save"></i>
+                        Guardar Entrada
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Previous Entries -->
+    <section class="entries-section">
+        <div class="container">
+            <h2>Tus Entradas Anteriores</h2>
+            <div id="entries-list" class="entries-list">
+                <!-- Las entradas del diario se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts específicos de la página -->
+    <script is:inline src="/js/modules/diario.js"></script>
+    <script is:inline src="/js/modules/journal.js"></script>
+</BaseLayout>

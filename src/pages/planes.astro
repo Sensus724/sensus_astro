@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout 
+    title="Planes y Precios | Sensus"
+    description="Descubre nuestros planes gratuitos y premium para el cuidado de tu salud mental."
+    keywords="planes sensus, precios, premium, gratuito, salud mental"
+    activeNav="planes"
+>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title fade-in-up">Planes y Precios</h1>
+            <p class="hero-subtitle fade-in-up">Elige el plan que mejor se adapte a tus necesidades de bienestar mental.</p>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <div class="container">
+            <div class="pricing-grid">
+                <!-- Plan Gratuito -->
+                <div class="pricing-card">
+                    <div class="plan-header">
+                        <h3>Plan Básico</h3>
+                        <div class="price">
+                            <span class="currency">€</span>
+                            <span class="amount">0</span>
+                            <span class="period">/mes</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> Test GAD-7 ilimitados</li>
+                        <li><i class="fas fa-check"></i> Diario emocional básico</li>
+                        <li><i class="fas fa-check"></i> Recursos educativos</li>
+                        <li><i class="fas fa-check"></i> Soporte comunitario</li>
+                    </ul>
+                    
+                    <button class="plan-btn btn-outline">Plan Actual</button>
+                </div>
+                
+                <!-- Plan Premium -->
+                <div class="pricing-card featured">
+                    <div class="plan-header">
+                        <h3>Plan Premium</h3>
+                        <div class="price">
+                            <span class="currency">€</span>
+                            <span class="amount">9.99</span>
+                            <span class="period">/mes</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> Todo del plan básico</li>
+                        <li><i class="fas fa-check"></i> Análisis avanzado de patrones</li>
+                        <li><i class="fas fa-check"></i> Seguimiento personalizado</li>
+                        <li><i class="fas fa-check"></i> Consultas con profesionales</li>
+                        <li><i class="fas fa-check"></i> Sin anuncios</li>
+                    </ul>
+                    
+                    <button class="plan-btn">Comenzar Premium</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</BaseLayout>

@@ -1,0 +1,420 @@
+/* Mejoras de credibilidad y diseño para Sensus */
+
+/* Comité Científico */
+.scientific-committee-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 80px 0;
+    margin: 60px 0;
+}
+
+.committee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.expert-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #2563eb;
+}
+
+.expert-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.expert-photo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: white;
+    font-size: 32px;
+}
+
+.expert-info h3 {
+    color: #1e293b;
+    font-size: 24px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.expert-title {
+    color: #2563eb;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.expert-role {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.expert-bio {
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.expert-credentials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.credential {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.committee-endorsement {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    margin-top: 40px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.committee-endorsement blockquote {
+    font-size: 20px;
+    line-height: 1.6;
+    color: #1e293b;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.committee-endorsement cite {
+    color: #64748b;
+    font-size: 16px;
+}
+
+/* Diferenciación */
+.differentiation-section {
+    background: #f8fafc;
+    padding: 80px 0;
+    margin: 60px 0;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 40px;
+    align-items: start;
+    margin: 40px 0;
+}
+
+.comparison-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.sensus-card {
+    border: 2px solid #10b981;
+    position: relative;
+}
+
+.sensus-card::before {
+    content: "RECOMENDADO";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #64748b;
+    background: #e2e8f0;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.feature-item i {
+    font-size: 18px;
+    width: 20px;
+}
+
+.feature-item:not(.missing) i {
+    color: #10b981;
+}
+
+.feature-item.missing i {
+    color: #ef4444;
+}
+
+.feature-item span {
+    font-size: 16px;
+    color: #374151;
+}
+
+.unique-value {
+    margin-top: 60px;
+}
+
+.value-points {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.value-point {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.value-icon {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.value-content h4 {
+    color: #1e293b;
+    font-size: 20px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.value-content p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+/* Badges científicos */
+.scientific-badges {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.scientific-badges h3 {
+    color: #1e293b;
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.badge-item {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+.badge-item:hover {
+    transform: translateY(-3px);
+}
+
+.badge-logo {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 20px;
+}
+
+.badge-item span {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Mejoras en botones CTAs */
+.btn-cta {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    min-width: 200px;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Accordion de privacidad */
+.privacy-accordion {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin: 40px 0;
+    overflow: hidden;
+}
+
+.privacy-toggle {
+    width: 100%;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 20px 30px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+}
+
+.privacy-toggle:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+.privacy-toggle i:first-child {
+    margin-right: 15px;
+    font-size: 20px;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.privacy-content {
+    padding: 30px;
+    display: none;
+    background: #f8fafc;
+}
+
+/* Disclaimer de testimonio */
+.testimonial-disclaimer {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.testimonial-disclaimer p {
+    color: #92400e;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .vs-divider {
+        display: none;
+    }
+    
+    .committee-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .value-points {
+        grid-template-columns: 1fr;
+    }
+    
+    .value-point {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .badges-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .btn-cta {
+        min-width: auto;
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .expert-card {
+        padding: 20px;
+    }
+    
+    .comparison-card {
+        padding: 20px;
+    }
+    
+    .badges-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluaciones Psicológicas | Sensus</title>
+    
+    <!-- CSS del Santuario Digital -->
+    <link rel="stylesheet" href="css/sanctuary-design.css">
+    <link rel="stylesheet" href="css/warm-design.css">
+    <link rel="stylesheet" href="css/evaluation-warm.css">
+    <link rel="stylesheet" href="css/legal-warnings.css">
+    <link rel="stylesheet" href="css/header-clean.css">
+    <link rel="stylesheet" href="css/mobile-menu-enhanced.css">
+    <link rel="stylesheet" href="css/static-icons.css">
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="Herramientas profesionales para evaluar tu estado mental y emocional con tests clínicos validados.">
+    <meta name="keywords" content="evaluación psicológica, test ansiedad, test depresión, test estrés, GAD-7, PHQ-9, PSS">
+    <meta name="author" content="Sensus Team">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/Logo.jpeg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="assets/images/Logo.jpeg">
+    <meta name="theme-color" content="#1D4ED8">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-container">
+                <div class="logo-placeholder">
+                    <i class="fas fa-brain"></i>
+                    <span>SENSUS</span>
+                </div>
+            </div>
+            
+            <nav class="main-nav">
+                <button class="menu-toggle" aria-label="Abrir menú">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html">
+                                <i class="fas fa-home" aria-hidden="true"></i>
+                                Inicio
+                            </a></li>
+                    <li><a href="evaluacion.html">
+                                <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                                Evaluación
+                            </a></li>
+                    <li><a href="diario.html">
+                                <i class="fas fa-book-open" aria-hidden="true"></i>
+                                Diario
+                            </a></li>
+                    <li><a href="ansiedad.html">
+                                <i class="fas fa-heart" aria-hidden="true"></i>
+                                Síntomas
+                            </a></li>
+                    <li><a href="planes.html">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                Planes
+                            </a></li>
+                    <li><a href="equipo.html">
+                                <i class="fas fa-users" aria-hidden="true"></i>
+                                Equipo
+                            </a></li>
+                    <li><a href="contacto.html">
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                Contacto
+                            </a></li>
+                </ul>
+            </nav>
+            
+            <div class="auth-buttons">
+                <button class="btn-cta btn-outline" id="login-btn">Iniciar sesión</button>
+                <button class="btn-cta" id="register-btn">Registrarse</button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Menu Overlay -->
+    <div class="menu-overlay"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section" aria-labelledby="main-title">
+            <div class="container">
+                <h1 id="main-title" class="hero-title fade-in-up">Evalúa tu Bienestar Mental</h1>
+                <p class="hero-subtitle fade-in-up">Herramientas validadas científicamente para comprender tu estado emocional y mental.</p>
+                
+                <!-- Advertencia Ética -->
+                <div class="ethical-warning fade-in-up">
+                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                    <span>Estas herramientas son de screening, no diagnóstico. Si experimentas síntomas severos, busca ayuda profesional.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tests Section -->
+        <section class="tests-section" aria-labelledby="tests-title">
+            <div class="container">
+                <h2 id="tests-title" class="hero-title fade-in-up">Herramientas Validadas Científicamente</h2>
+                <p class="hero-subtitle fade-in-up">Elige el test que mejor se adapte a tus necesidades. Todos son gratuitos, confidenciales y te darán resultados inmediatos.</p>
+                
+                <div class="tests-grid" role="list">
+                    <!-- Test GAD-7 -->
+                    <article class="test-card fade-in-up" role="listitem">
+                        <div class="test-icon">
+                            <i class="fas fa-brain" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="test-title">Test de Ansiedad (GAD-7)</h3>
+                        <p class="test-description">Evaluación rápida del nivel de ansiedad generalizada basada en criterios clínicos validados internacionalmente.</p>
+                        <div class="test-validation tooltip">
+                            Validado científicamente ✓
+                            <span class="tooltiptext">Este test tiene una sensibilidad del 89% y especificidad del 82% para detectar ansiedad generalizada, según estudios clínicos.</span>
+                        </div>
+                        
+                        <div class="test-details">
+                            <div class="detail-item">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                                <span>5-10 minutos</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-question-circle" aria-hidden="true"></i>
+                                <span>7 preguntas</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-certificate" aria-hidden="true"></i>
+                                <span>Validado científicamente</span>
+                            </div>
+                        </div>
+                        
+                        <button class="test-button" data-test="gad7" aria-label="Comenzar Test de Ansiedad GAD-7">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            Comenzar Test GAD-7
+                        </button>
+                    </article>
+
+                    <!-- Test PHQ-9 -->
+                    <article class="test-card fade-in-up" role="listitem">
+                        <div class="test-icon">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="test-title">Test de Depresión (PHQ-9)</h3>
+                        <p class="test-description">Herramienta de screening para evaluar síntomas de depresión basada en criterios del DSM-5.</p>
+                        <div class="test-validation tooltip">
+                            Estándar clínico ✓
+                            <span class="tooltiptext">Este test tiene una sensibilidad del 88% y especificidad del 88% para detectar depresión, según estudios clínicos.</span>
+                        </div>
+                        
+                        <div class="test-details">
+                            <div class="detail-item">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                                <span>5-10 minutos</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-question-circle" aria-hidden="true"></i>
+                                <span>9 preguntas</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-certificate" aria-hidden="true"></i>
+                                <span>Estándar clínico</span>
+                            </div>
+                        </div>
+                        
+                        <button class="test-button" data-test="phq9" aria-label="Comenzar Test de Depresión PHQ-9">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            Comenzar Test PHQ-9
+                        </button>
+                    </article>
+
+                    <!-- Test PSS -->
+                    <article class="test-card fade-in-up" role="listitem">
+                        <div class="test-icon">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="test-title">Test de Estrés (PSS)</h3>
+                        <p class="test-description">Evaluación del nivel de estrés percibido y su impacto en la vida diaria.</p>
+                        <div class="test-validation tooltip">
+                            Validado internacionalmente ✓
+                            <span class="tooltiptext">Este test tiene una sensibilidad del 82% y especificidad del 75% para detectar estrés percibido, según estudios clínicos.</span>
+                        </div>
+                        
+                        <div class="test-details">
+                            <div class="detail-item">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                                <span>3-5 minutos</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-question-circle" aria-hidden="true"></i>
+                                <span>10 preguntas</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-certificate" aria-hidden="true"></i>
+                                <span>Validado internacionalmente</span>
+                            </div>
+                        </div>
+                        
+                        <button class="test-button" data-test="pss" aria-label="Comenzar Test de Estrés PSS">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            Comenzar Test PSS
+                        </button>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Información Importante -->
+        <section class="info-section" aria-labelledby="info-title">
+            <div class="container">
+                <h2 id="info-title" class="hero-title fade-in-up">Información Importante</h2>
+                <p class="hero-subtitle fade-in-up">Conoce más sobre nuestras herramientas de evaluación y tu privacidad.</p>
+                
+                <div class="info-grid">
+                    <div class="info-card fade-in-up">
+                        <div class="info-icon">
+                            <i class="fas fa-lock" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="info-title">Privacidad Garantizada</h3>
+                        <p class="info-description">Protección de datos de grado médico con encriptación AES-256 y servidores en Europa.</p>
+                    </div>
+                    
+                    <div class="info-card fade-in-up">
+                        <div class="info-icon">
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="info-title">No es un Diagnóstico</h3>
+                        <p class="info-description">Herramientas de screening que no reemplazan consulta profesional. Busca ayuda si es necesario.</p>
+                    </div>
+                    
+                    <div class="info-card fade-in-up">
+                        <div class="info-icon">
+                            <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="info-title">Resultados Inmediatos</h3>
+                        <p class="info-description">Recibe tus resultados al instante con interpretación clara y recomendaciones personalizadas.</p>
+                    </div>
+                    
+                    <div class="info-card fade-in-up">
+                        <div class="info-icon">
+                            <i class="fas fa-trending-up" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="info-title">Seguimiento del Progreso</h3>
+                        <p class="info-description">Guarda tus resultados para hacer seguimiento de tu evolución a lo largo del tiempo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Final -->
+        <section class="cta-section" aria-labelledby="cta-title">
+            <div class="container">
+                <div class="cta-content fade-in-up">
+                    <h2 id="cta-title" class="cta-title">¿Listo para comenzar tu evaluación?</h2>
+                    <p class="cta-description">Elige el test que mejor se adapte a tus necesidades. Todos son gratuitos, confidenciales y te darán resultados inmediatos.</p>
+                    
+                    <button class="cta-button" aria-label="Iniciar evaluación de bienestar mental">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
+                        Iniciar Evaluación
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">SENSUS</div>
+            <p class="footer-description">
+                App de apoyo emocional respaldada por la ciencia. Tu salud mental merece respeto — y nosotros también lo tenemos.
+            </p>
+            
+            <div class="footer-links">
+                <a href="politica-privacidad.html">Privacidad</a>
+                <a href="terminos-uso.html">Términos</a>
+                <a href="contacto.html">Contacto</a>
+                <a href="equipo.html">Equipo</a>
+            </div>
+            
+            <div class="footer-legal">
+                SENSUS © 2025. App de apoyo emocional respaldada por la ciencia.
+            </div>
+            
+            <div class="footer-certifications">
+                <div class="certification-badge" title="GDPR Compliant">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="certification-badge" title="HIPAA Compliant">
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CSS Responsive -->
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Scripts -->
+    <script src="js/evaluation-interactions.js"></script>
+    <script src="js/header-interactions.js"></script>
+    
+    <!-- Firebase (mantener para funcionalidad existente) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="js/modules/firebase-config.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/mobile-menu-enhanced.js"></script>
+</body>
+</html>

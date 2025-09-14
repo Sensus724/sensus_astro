@@ -1,0 +1,600 @@
+/* Sensus - Diseño Cálido y Emocional */
+/* Paleta de colores más cálida y humana para salud mental */
+
+:root {
+    /* Colores cálidos principales */
+    --warm-primary: #F59E0B; /* Naranja cálido - confianza */
+    --warm-primary-dark: #D97706; /* Naranja más oscuro */
+    --warm-secondary: #10B981; /* Verde esperanza */
+    --warm-secondary-light: #34D399; /* Verde claro */
+    --warm-accent: #FEF3C7; /* Amarillo suave */
+    --warm-accent-light: #FDE68A; /* Amarillo más claro */
+    
+    /* Colores neutros cálidos */
+    --warm-text: #374151; /* Gris cálido */
+    --warm-text-light: #6B7280; /* Gris medio */
+    --warm-text-muted: #9CA3AF; /* Gris claro */
+    --warm-background: #FEFEFE; /* Blanco cálido */
+    --warm-background-pattern: #F9FAFB; /* Patrón suave */
+    --warm-border: #E5E7EB; /* Borde suave */
+    --warm-border-accent: #FEF3C7; /* Borde acento */
+    
+    /* Tipografía más humana */
+    --font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Tamaños responsivos */
+    --font-size-h1: clamp(36px, 5vw, 48px);
+    --font-size-h2: clamp(28px, 4vw, 32px);
+    --font-size-h3: clamp(22px, 3vw, 24px);
+    --font-size-body: clamp(16px, 2vw, 18px);
+    --line-height: 1.6;
+    
+    /* Espaciado optimizado */
+    --section-spacing: clamp(60px, 8vw, 100px);
+    --card-padding: clamp(24px, 4vw, 40px);
+    --border-radius: 16px;
+    --border-radius-large: 24px;
+    
+    /* Sombras cálidas */
+    --shadow-subtle: 0 4px 20px rgba(245, 158, 11, 0.08);
+    --shadow-button: 0 6px 20px rgba(245, 158, 11, 0.15);
+    --shadow-hover: 0 12px 32px rgba(245, 158, 11, 0.2);
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.06);
+    
+    /* Transiciones suaves */
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.2s ease;
+}
+
+/* Aplicar paleta cálida */
+body {
+    font-family: var(--font-family);
+    color: var(--warm-text);
+    background: var(--warm-background);
+    background-image: 
+        radial-gradient(circle at 20% 80%, var(--warm-accent) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, var(--warm-secondary-light) 0%, transparent 50%);
+}
+
+/* Hero Section Cálida */
+.hero-section {
+    background: linear-gradient(135deg, var(--warm-background) 0%, var(--warm-accent) 100%);
+    padding: clamp(80px, 12vw, 120px) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23F59E0B" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-title {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-bold);
+    color: var(--warm-text);
+    line-height: 1.2;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hero-subtitle {
+    font-size: var(--font-size-body);
+    color: var(--warm-text-light);
+    line-height: var(--line-height);
+    margin-bottom: 40px;
+    max-width: 600px;
+}
+
+/* Botones Cálidos */
+.btn-cta {
+    background: linear-gradient(135deg, var(--warm-primary) 0%, var(--warm-primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: var(--border-radius);
+    font-size: 18px;
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    box-shadow: var(--shadow-button);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    background: linear-gradient(135deg, var(--warm-primary-dark) 0%, #B45309 100%);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--warm-primary);
+    border: 2px solid var(--warm-primary);
+}
+
+.btn-outline:hover {
+    background: var(--warm-primary);
+    color: white;
+}
+
+/* Cards Cálidas */
+.section-card {
+    background: var(--warm-background);
+    border-radius: var(--border-radius-large);
+    padding: var(--card-padding);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--warm-border);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.section-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--warm-primary), var(--warm-secondary));
+}
+
+.section-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(245, 158, 11, 0.12);
+}
+
+/* Trust Badges */
+.trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.trust-badge {
+    background: linear-gradient(135deg, var(--warm-accent) 0%, var(--warm-accent-light) 100%);
+    color: var(--warm-text);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-subtle);
+    border: 1px solid var(--warm-border-accent);
+}
+
+.trust-badge i {
+    color: var(--warm-primary);
+    font-size: 16px;
+}
+
+/* Testimonio Cálido */
+.testimonial-card {
+    background: linear-gradient(135deg, var(--warm-background) 0%, var(--warm-accent) 100%);
+    border-radius: var(--border-radius-large);
+    padding: var(--card-padding);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--warm-border-accent);
+    position: relative;
+}
+
+.testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 30px;
+    font-size: 80px;
+    color: var(--warm-primary);
+    opacity: 0.3;
+    font-family: serif;
+}
+
+/* Microinteracciones Emocionales */
+@keyframes bloom {
+    0% { 
+        transform: scale(0) rotate(0deg); 
+        opacity: 0; 
+    }
+    50% { 
+        transform: scale(1.2) rotate(180deg); 
+        opacity: 0.8; 
+    }
+    100% { 
+        transform: scale(1) rotate(360deg); 
+        opacity: 1; 
+    }
+}
+
+.blooming-flower {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, var(--warm-secondary) 0%, var(--warm-secondary-light) 50%, #6EE7B7 100%);
+    border-radius: 50%;
+    position: relative;
+    animation: bloom 3s ease-out;
+    margin: 20px auto;
+}
+
+.blooming-flower::after {
+    content: "🌸";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    animation: grow 2s ease-out 1s forwards;
+}
+
+@keyframes grow {
+    0% { transform: translateX(-50%) scale(0); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+
+/* Progress Visual */
+.progress-visual {
+    margin: 32px 0;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--warm-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--warm-primary), var(--warm-secondary));
+    border-radius: 4px;
+    transition: width 2s ease;
+}
+
+/* Responsive Design Mejorado */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 0;
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+        margin-bottom: 32px;
+    }
+    
+    .btn-cta {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 16px;
+    }
+    
+    .trust-badges {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .trust-badge {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+    
+    .section-card {
+        margin: 0 16px;
+        padding: 24px;
+    }
+}
+
+/* Animaciones de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Efecto de pulso suave */
+@keyframes gentlePulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 0.8;
+    }
+    50% { 
+        transform: scale(1.05); 
+        opacity: 1;
+    }
+}
+
+.gentle-pulse {
+    animation: gentlePulse 3s ease-in-out infinite;
+}
+
+/* Hero Visual */
+.hero-image {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.hero-visual {
+    position: relative;
+    display: inline-block;
+}
+
+.hero-illustration {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--warm-primary), var(--warm-secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    box-shadow: var(--shadow-button);
+    margin: 0 auto;
+}
+
+.cta-disclaimer {
+    font-size: 14px;
+    color: var(--warm-text-light);
+    margin-top: 16px;
+    text-align: center;
+}
+
+/* Steps Grid */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 32px;
+    margin: 40px 0;
+}
+
+.step-card {
+    text-align: center;
+    padding: 32px 24px;
+    background: var(--warm-background);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--warm-border);
+    position: relative;
+    transition: var(--transition);
+}
+
+.step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+}
+
+.step-number {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    background: var(--warm-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: 14px;
+}
+
+.step-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--warm-accent), var(--warm-accent-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 24px;
+    color: var(--warm-primary);
+}
+
+.step-card h3 {
+    font-size: 20px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--warm-text);
+    margin-bottom: 12px;
+}
+
+.step-card p {
+    color: var(--warm-text-light);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Testimonial Mejorado */
+.testimonial-content {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.testimonial-avatar {
+    flex-shrink: 0;
+}
+
+.testimonial-avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--warm-primary);
+}
+
+.avatar-fallback {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--warm-primary), var(--warm-secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+}
+
+.testimonial-quote {
+    font-size: 24px;
+    font-style: italic;
+    color: var(--warm-text);
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.testimonial-author {
+    font-weight: var(--font-weight-semibold);
+    color: var(--warm-text);
+    margin-bottom: 4px;
+}
+
+.testimonial-role {
+    color: var(--warm-text-light);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.testimonial-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.stat-chip {
+    background: var(--warm-accent);
+    color: var(--warm-text);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-chip i {
+    color: var(--warm-primary);
+}
+
+/* Final CTA */
+.final-cta-section {
+    background: linear-gradient(135deg, var(--warm-background) 0%, var(--warm-accent) 100%);
+    text-align: center;
+}
+
+.final-cta {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 60px 40px;
+}
+
+.final-cta h2 {
+    font-size: var(--font-size-h1);
+    color: var(--warm-text);
+    margin-bottom: 16px;
+}
+
+.final-cta p {
+    font-size: var(--font-size-body);
+    color: var(--warm-text-light);
+    margin-bottom: 32px;
+}
+
+.btn-cta-primary {
+    background: linear-gradient(135deg, var(--warm-primary) 0%, var(--warm-primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 20px 40px;
+    border-radius: var(--border-radius);
+    font-size: 20px;
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    box-shadow: var(--shadow-button);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.btn-cta-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    background: linear-gradient(135deg, var(--warm-primary-dark) 0%, #B45309 100%);
+}
+
+/* Responsive Mejorado */
+@media (max-width: 768px) {
+    .testimonial-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 24px;
+    }
+    
+    .testimonial-quote {
+        font-size: 20px;
+    }
+    
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .step-card {
+        padding: 24px 20px;
+    }
+    
+    .final-cta {
+        padding: 40px 20px;
+    }
+    
+    .final-cta h2 {
+        font-size: 28px;
+    }
+    
+    .btn-cta-primary {
+        width: 100%;
+        justify-content: center;
+        padding: 16px 32px;
+        font-size: 18px;
+    }
+}

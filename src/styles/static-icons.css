@@ -1,0 +1,105 @@
+/* CSS para iconos completamente estáticos - Sin animaciones */
+/* VERSIÓN 2.0 - APLICADO CORRECTAMENTE */
+
+/* Eliminar TODAS las animaciones y transformaciones */
+* {
+    animation: none !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    animation-fill-mode: none !important;
+    animation-play-state: paused !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+/* Eliminar todas las animaciones de iconos e ilustraciones */
+.illustration,
+.illustration:hover,
+.illustration:focus,
+.illustration:active {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Eliminar animaciones de hover en cards */
+.section-card:hover,
+.science-card:hover,
+.privacy-card:hover {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Eliminar animaciones de botones */
+.btn-cta:hover,
+.btn-cta:focus,
+.btn-cta:active {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Eliminar animaciones de iconos específicos */
+.fas,
+.far,
+.fab,
+.fa {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+
+/* Eliminar animaciones de pulse */
+.pulse-animation,
+.pulse-ring,
+.pulse-ring.delay-1,
+.pulse-ring.delay-2 {
+    animation: none !important;
+    transform: none !important;
+}
+
+/* Eliminar animaciones de fade */
+.fade-in-up {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+/* Eliminar animaciones de heartbeat */
+.loading-heart {
+    animation: none !important;
+    transform: none !important;
+}
+
+/* Asegurar que todos los elementos estén estáticos */
+* {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    animation-fill-mode: none !important;
+    animation-play-state: paused !important;
+}
+
+/* Mantener solo transiciones suaves para hover de color */
+.btn-cta:hover {
+    background-color: var(--primary-blue-dark);
+    color: white;
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+/* Mantener hover de navegación */
+.nav-links a:hover {
+    color: var(--primary-blue);
+}
+
+/* Mantener hover de menú toggle */
+.menu-toggle:hover {
+    background-color: var(--accent-pastel);
+}
