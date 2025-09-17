@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://sensus-version-pro.web.app/sitemap.xml
+
+# Disallow admin areas (if any)
+Disallow: /admin/
+Disallow: /private/
+
+# Allow all other content
+Allow: /ansiedad/
+Allow: /diario/
+Allow: /evaluacion/
+Allow: /planes/
+Allow: /equipo/
+Allow: /contacto/

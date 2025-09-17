@@ -1,0 +1,43 @@
+# Archivos de desarrollo
+node_modules/
+src/
+scripts/
+tests/
+docs/
+cypress/
+cypress.config.js
+tsconfig.json
+
+# Archivos de configuración
+.git/
+.gitignore
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Archivos de logs
+*.log
+firebase-debug.log
+
+# Archivos temporales
+.tmp/
+.temp/
+*.tmp
+*.temp
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de build de desarrollo
+dist/assets/
+dist/js/
+dist/css/

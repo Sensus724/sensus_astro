@@ -1,0 +1,53 @@
+/* Sensus - CSS Principal Completo */
+/* Sistema de diseño completo sin conflictos */
+
+/* === FUENTES === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* === UTILIDADES BASE === */
+@import './utilities/variables.css';
+@import './utilities/base.css';
+@import './utilities/animations.css';
+@import './utilities/responsive.css';
+@import './utilities/spacing-system.css';
+@import './utilities/visual-hierarchy.css';
+@import './utilities/micro-interactions.css';
+@import './utilities/performance-optimizations.css';
+@import './utilities/best-practices.css';
+@import './utilities/advanced-animations.css';
+@import './utilities/advanced-interactions.css';
+@import './utilities/responsive-advanced.css';
+@import './utilities/visual-effects.css';
+@import './utilities/peace-palette.css';
+
+/* === LAYOUT === */
+@import './layout/layout.css';
+@import './layout/advanced-layout.css';
+
+/* === COMPONENTES === */
+@import './components/buttons.css';
+@import './components/cards.css';
+@import './components/forms.css';
+@import './components/auth-forms.css';
+@import './components/header-fix.css';
+@import './components/theme-toggle-optimized.css';
+@import './components/evaluation-components.css';
+@import './components/page-components.css';
+
+/* === PÁGINAS ESPECÍFICAS === */
+@import './pages/homepage-enhanced.css';
+@import './pages/evaluation-enhancements.css';
+@import './pages/evaluation-enhanced.css';
+@import './pages/evaluation-fix.css';
+@import './pages/diary-wellness.css';
+@import './pages/diary-enhanced.css';
+@import './pages/pages-enhanced.css'; /* Estilos para páginas mejoradas */
+@import './pages/symptoms-enhancements.css';
+@import './pages/plans-enhancements.css';
+@import './pages/secondary-pages-enhancements.css';
+@import './pages/footer-enhancements.css';
+@import './pages/test-page.css';
+
+/* === TESTS ESPECÍFICOS === */
+/* @import './03-pages/test.css'; - Carpeta no existe */

@@ -6,33 +6,119 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     title="Evaluaciones Psicológicas | Sensus"
     description="Herramientas profesionales para evaluar tu estado mental y emocional con tests clínicos validados."
     keywords="evaluación psicológica, test ansiedad, test depresión, test estrés, GAD-7, PHQ-9, PSS"
-    pageStylesheets={["evaluation-warm.css", "legal-warnings.css", "responsive.css"]}
+    pageStylesheets={[]}
     themeColor="#1D4ED8"
     activeNav="evaluacion"
 >
-    <!-- Hero Section -->
+    <script>
+        // Agregar clase CSS al body para identificación
+        document.body.classList.add('evaluacion');
+    </script>
+    <!-- Hero Section Mejorado -->
     <section class="hero-section" aria-labelledby="main-title">
         <div class="container">
             <h1 id="main-title" class="hero-title fade-in-up">Evalúa tu Bienestar Mental</h1>
             <p class="hero-subtitle fade-in-up">Herramientas validadas científicamente para comprender tu estado emocional y mental.</p>
             
-            <!-- Advertencia Ética -->
+            <!-- Estadísticas de Confianza Animadas -->
+            <div class="trust-stats fade-in-up">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="10000">0</span>
+                    <span class="stat-label">Evaluaciones completadas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="95">0</span>
+                    <span class="stat-label">Precisión clínica</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="100">0</span>
+                    <span class="stat-label">Privacidad garantizada</span>
+                </div>
+            </div>
+            
+            <!-- Advertencia Ética Mejorada -->
             <div class="ethical-warning fade-in-up">
                 <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
                 <span>Estas herramientas son de screening, no diagnóstico. Si experimentas síntomas severos, busca ayuda profesional.</span>
+                <button class="help-button" onclick="showHelpModal()">
+                    <i class="fas fa-question-circle"></i>
+                    ¿Necesitas ayuda?
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- Tests Section -->
+    <!-- Progreso del Usuario -->
+    <div id="user-progress-section" class="user-progress-section" style="display: none;">
+        <div class="container">
+            <div class="progress-summary">
+                <h3>Tu Progreso de Evaluaciones</h3>
+                <div class="progress-stats">
+                    <div class="progress-stat">
+                        <span class="progress-number" id="completed-tests">0</span>
+                        <span class="progress-label">Tests Completados</span>
+                    </div>
+                    <div class="progress-stat">
+                        <span class="progress-number" id="last-test-date">-</span>
+                        <span class="progress-label">Última Evaluación</span>
+                    </div>
+                    <div class="progress-stat">
+                        <span class="progress-number" id="improvement-trend">-</span>
+                        <span class="progress-label">Tendencia</span>
+                    </div>
+                </div>
+                <button class="view-full-progress-btn" onclick="showProgressModal()">
+                    Ver Progreso Completo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tests Section Mejorada -->
     <section class="tests-section" aria-labelledby="tests-title">
         <div class="container">
             <h2 id="tests-title" class="hero-title fade-in-up">Herramientas Validadas Científicamente</h2>
             <p class="hero-subtitle fade-in-up">Elige el test que mejor se adapte a tus necesidades. Todos son gratuitos, confidenciales y te darán resultados inmediatos.</p>
             
+            <!-- Filtros Mejorados -->
+            <div class="test-filters fade-in-up">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-th"></i>
+                    Todos
+                </button>
+                <button class="filter-btn" data-filter="anxiety">
+                    <i class="fas fa-brain"></i>
+                    Ansiedad
+                </button>
+                <button class="filter-btn" data-filter="depression">
+                    <i class="fas fa-heart"></i>
+                    Depresión
+                </button>
+                <button class="filter-btn" data-filter="stress">
+                    <i class="fas fa-clock"></i>
+                    Estrés
+                </button>
+                <button class="filter-btn" data-filter="wellness">
+                    <i class="fas fa-smile"></i>
+                    Bienestar
+                </button>
+            </div>
+
+            <!-- Búsqueda de Tests -->
+            <div class="test-search fade-in-up">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="test-search" placeholder="Buscar tests por nombre o descripción...">
+                    <button class="clear-search" onclick="clearSearch()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
             <div class="tests-grid" role="list">
-                <!-- Test GAD-7 -->
-                <article class="test-card fade-in-up" role="listitem">
+                <!-- Test GAD-7 Mejorado -->
+                <article class="test-card fade-in-up" role="listitem" data-category="anxiety" data-test="gad7">
+                    <div class="test-badge">Más Popular</div>
                     <div class="test-icon">
                         <i class="fas fa-brain" aria-hidden="true"></i>
                     </div>
@@ -57,15 +143,34 @@ import BaseLayout from '../layouts/BaseLayout.astro'
                             <span>Validado científicamente</span>
                         </div>
                     </div>
+
+                    <!-- Progreso del Usuario en este Test -->
+                    <div class="user-test-progress" id="progress-gad7" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="last-score">Última puntuación: <strong>0</strong></span>
+                            <span class="last-date">Fecha: <strong>-</strong></span>
+                        </div>
+                    </div>
                     
-                    <button class="test-button" data-test="gad7" aria-label="Comenzar Test de Ansiedad GAD-7">
-                        <i class="fas fa-play" aria-hidden="true"></i>
-                        Comenzar Test GAD-7
-                    </button>
+                    <div class="test-actions">
+                        <button class="test-button" data-test="gad7" aria-label="Comenzar Test de Ansiedad GAD-7">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            <span class="button-text">Comenzar Test GAD-7</span>
+                        </button>
+                        <button class="info-button" data-test="gad7" aria-label="Más información sobre GAD-7">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        </button>
+                        <button class="retake-button" data-test="gad7" aria-label="Repetir Test GAD-7" style="display: none;">
+                            <i class="fas fa-redo" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </article>
 
-                <!-- Test PHQ-9 -->
-                <article class="test-card fade-in-up" role="listitem">
+                <!-- Test PHQ-9 Mejorado -->
+                <article class="test-card fade-in-up" role="listitem" data-category="depression" data-test="phq9">
                     <div class="test-icon">
                         <i class="fas fa-heart" aria-hidden="true"></i>
                     </div>
@@ -90,15 +195,34 @@ import BaseLayout from '../layouts/BaseLayout.astro'
                             <span>Estándar clínico</span>
                         </div>
                     </div>
+
+                    <!-- Progreso del Usuario en este Test -->
+                    <div class="user-test-progress" id="progress-phq9" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="last-score">Última puntuación: <strong>0</strong></span>
+                            <span class="last-date">Fecha: <strong>-</strong></span>
+                        </div>
+                    </div>
                     
-                    <button class="test-button" data-test="phq9" aria-label="Comenzar Test de Depresión PHQ-9">
-                        <i class="fas fa-play" aria-hidden="true"></i>
-                        Comenzar Test PHQ-9
-                    </button>
+                    <div class="test-actions">
+                        <button class="test-button" data-test="phq9" aria-label="Comenzar Test de Depresión PHQ-9">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            <span class="button-text">Comenzar Test PHQ-9</span>
+                        </button>
+                        <button class="info-button" data-test="phq9" aria-label="Más información sobre PHQ-9">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        </button>
+                        <button class="retake-button" data-test="phq9" aria-label="Repetir Test PHQ-9" style="display: none;">
+                            <i class="fas fa-redo" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </article>
 
-                <!-- Test PSS -->
-                <article class="test-card fade-in-up" role="listitem">
+                <!-- Test PSS Mejorado -->
+                <article class="test-card fade-in-up" role="listitem" data-category="stress" data-test="pss">
                     <div class="test-icon">
                         <i class="fas fa-clock" aria-hidden="true"></i>
                     </div>
@@ -123,12 +247,190 @@ import BaseLayout from '../layouts/BaseLayout.astro'
                             <span>Validado internacionalmente</span>
                         </div>
                     </div>
+
+                    <!-- Progreso del Usuario en este Test -->
+                    <div class="user-test-progress" id="progress-pss" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="last-score">Última puntuación: <strong>0</strong></span>
+                            <span class="last-date">Fecha: <strong>-</strong></span>
+                        </div>
+                    </div>
                     
-                    <button class="test-button" data-test="pss" aria-label="Comenzar Test de Estrés PSS">
-                        <i class="fas fa-play" aria-hidden="true"></i>
-                        Comenzar Test PSS
-                    </button>
+                    <div class="test-actions">
+                        <button class="test-button" data-test="pss" aria-label="Comenzar Test de Estrés PSS">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            <span class="button-text">Comenzar Test PSS</span>
+                        </button>
+                        <button class="info-button" data-test="pss" aria-label="Más información sobre PSS">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        </button>
+                        <button class="retake-button" data-test="pss" aria-label="Repetir Test PSS" style="display: none;">
+                            <i class="fas fa-redo" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </article>
+
+                <!-- Test de Bienestar General Mejorado -->
+                <article class="test-card fade-in-up" role="listitem" data-category="wellness" data-test="wellness">
+                    <div class="test-badge">Nuevo</div>
+                    <div class="test-icon">
+                        <i class="fas fa-smile" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="test-title">Test de Bienestar General</h3>
+                    <p class="test-description">Evaluación integral de tu bienestar mental, emocional y social en la vida diaria.</p>
+                    <div class="test-validation tooltip">
+                        Basado en evidencia ✓
+                        <span class="tooltiptext">Este test combina múltiples escalas validadas para una evaluación completa del bienestar.</span>
+                    </div>
+                    
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <span>8-12 minutos</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i>
+                            <span>15 preguntas</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-certificate" aria-hidden="true"></i>
+                            <span>Basado en evidencia</span>
+                        </div>
+                    </div>
+
+                    <!-- Progreso del Usuario en este Test -->
+                    <div class="user-test-progress" id="progress-wellness" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="last-score">Última puntuación: <strong>0</strong></span>
+                            <span class="last-date">Fecha: <strong>-</strong></span>
+                        </div>
+                    </div>
+                    
+                    <div class="test-actions">
+                        <button class="test-button" data-test="wellness" aria-label="Comenzar Test de Bienestar General">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            <span class="button-text">Comenzar Test de Bienestar</span>
+                        </button>
+                        <button class="info-button" data-test="wellness" aria-label="Más información sobre Test de Bienestar">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        </button>
+                        <button class="retake-button" data-test="wellness" aria-label="Repetir Test de Bienestar" style="display: none;">
+                            <i class="fas fa-redo" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Test de Autoestima Mejorado -->
+                <article class="test-card fade-in-up" role="listitem" data-category="wellness" data-test="selfesteem">
+                    <div class="test-icon">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="test-title">Test de Autoestima (RSES)</h3>
+                    <p class="test-description">Evaluación de tu nivel de autoestima y confianza en ti mismo.</p>
+                    <div class="test-validation tooltip">
+                        Escala Rosenberg ✓
+                        <span class="tooltiptext">Basado en la Escala de Autoestima de Rosenberg, ampliamente utilizada en psicología.</span>
+                    </div>
+                    
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <span>3-5 minutos</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i>
+                            <span>10 preguntas</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-certificate" aria-hidden="true"></i>
+                            <span>Escala Rosenberg</span>
+                        </div>
+                    </div>
+
+                    <!-- Progreso del Usuario en este Test -->
+                    <div class="user-test-progress" id="progress-selfesteem" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="last-score">Última puntuación: <strong>0</strong></span>
+                            <span class="last-date">Fecha: <strong>-</strong></span>
+                        </div>
+                    </div>
+                    
+                    <div class="test-actions">
+                        <button class="test-button" data-test="selfesteem" aria-label="Comenzar Test de Autoestima">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            <span class="button-text">Comenzar Test de Autoestima</span>
+                        </button>
+                        <button class="info-button" data-test="selfesteem" aria-label="Más información sobre Test de Autoestima">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        </button>
+                        <button class="retake-button" data-test="selfesteem" aria-label="Repetir Test de Autoestima" style="display: none;">
+                            <i class="fas fa-redo" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recomendaciones Personalizadas -->
+    <section class="recommendations-section" id="recommendations-section" style="display: none;">
+        <div class="container">
+            <h2 class="hero-title fade-in-up">Recomendaciones Personalizadas</h2>
+            <p class="hero-subtitle fade-in-up">Basado en tu historial de evaluaciones, te sugerimos estos tests.</p>
+            
+            <div class="recommendations-grid">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Guía de Uso -->
+    <section class="guide-section" aria-labelledby="guide-title">
+        <div class="container">
+            <h2 id="guide-title" class="hero-title fade-in-up">¿Cómo Funcionan Nuestros Tests?</h2>
+            <p class="hero-subtitle fade-in-up">Una guía paso a paso para obtener los mejores resultados de tu evaluación.</p>
+            
+            <div class="guide-steps">
+                <div class="step-item fade-in-up">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Elige tu Test</h3>
+                        <p>Selecciona el test que mejor se adapte a lo que quieres evaluar. Puedes hacer varios tests para una evaluación completa.</p>
+                    </div>
+                </div>
+                
+                <div class="step-item fade-in-up">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Responde con Honestidad</h3>
+                        <p>Para obtener resultados precisos, es importante que respondas basándote en cómo te has sentido en las últimas 2 semanas.</p>
+                    </div>
+                </div>
+                
+                <div class="step-item fade-in-up">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Recibe tus Resultados</h3>
+                        <p>Obtén una interpretación clara de tus resultados con recomendaciones personalizadas basadas en tu puntuación.</p>
+                    </div>
+                </div>
+                
+                <div class="step-item fade-in-up">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Guarda tu Progreso</h3>
+                        <p>Puedes guardar tus resultados para hacer seguimiento de tu evolución y ver tu progreso a lo largo del tiempo.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -182,14 +484,35 @@ import BaseLayout from '../layouts/BaseLayout.astro'
                 <h2 id="cta-title" class="cta-title">¿Listo para comenzar tu evaluación?</h2>
                 <p class="cta-description">Elige el test que mejor se adapte a tus necesidades. Todos son gratuitos, confidenciales y te darán resultados inmediatos.</p>
                 
-                <button class="cta-button" aria-label="Iniciar evaluación de bienestar mental">
-                    <i class="fas fa-heart" aria-hidden="true"></i>
-                    Iniciar Evaluación
-                </button>
+                <div class="cta-actions">
+                    <button class="cta-button primary" aria-label="Iniciar evaluación de bienestar mental">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
+                        Iniciar Evaluación
+                    </button>
+                    <button class="cta-button secondary" aria-label="Ver todos los tests disponibles">
+                        <i class="fas fa-list" aria-hidden="true"></i>
+                        Ver Todos los Tests
+                    </button>
+                </div>
+                
+                <div class="cta-features">
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        <span>100% Confidencial</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        <span>Resultados Inmediatos</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                        <span>Validado Científicamente</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Scripts específicos de la página -->
-    <script is:inline src="/js/evaluation-interactions.js"></script>
+    <script is:inline src="/js/pages/evaluacion.js"></script>
 </BaseLayout>

@@ -1,0 +1,600 @@
+/* Sensus - Evaluation Page Enhanced Styles */
+/* Estilos adicionales para las mejoras de la página de evaluación */
+
+/* === ANIMACIONES DE CONTADORES === */
+.stat-number {
+  transition: all 0.3s ease;
+}
+
+.stat-number.animating {
+  transform: scale(1.1);
+  color: var(--primary);
+}
+
+/* === FUNCIONALIDAD DE BÚSQUEDA === */
+.test-search {
+  margin: var(--space-8) 0;
+  display: flex;
+  justify-content: center;
+}
+
+.search-container {
+  position: relative;
+  max-width: 500px;
+  width: 100%;
+}
+
+.search-container i {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+#test-search {
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-12);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+}
+
+#test-search:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+#test-search::placeholder {
+  color: var(--text-tertiary);
+}
+
+.clear-search {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  display: none;
+}
+
+.clear-search:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.search-results {
+  text-align: center;
+  margin-top: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* === PROGRESO DEL USUARIO === */
+.user-progress-section {
+  background: var(--peace-gradient-soft);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin: var(--space-8) 0;
+  box-shadow: var(--shadow-md);
+}
+
+.progress-summary h3 {
+  text-align: center;
+  margin-bottom: var(--space-6);
+  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.progress-stat {
+  text-align: center;
+  padding: var(--space-4);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.progress-number {
+  display: block;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  margin-bottom: var(--space-2);
+}
+
+.progress-number.trend-mejorando {
+  color: var(--success);
+}
+
+.progress-number.trend-empeorando {
+  color: var(--error);
+}
+
+.progress-number.trend-estable {
+  color: var(--warning);
+}
+
+.progress-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.view-full-progress-btn {
+  display: block;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-6);
+  background: var(--primary);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.view-full-progress-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* === PROGRESO EN TARJETAS DE TEST === */
+.user-test-progress {
+  margin: var(--space-4) 0;
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--primary);
+}
+
+.user-test-progress .progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-3);
+}
+
+.user-test-progress .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.progress-info strong {
+  color: var(--text-primary);
+}
+
+/* === BOTONES DE REPETIR TEST === */
+.retake-button {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--warning);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-lg);
+  color: var(--text-inverse);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.retake-button:hover {
+  background: var(--warning-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* === RECOMENDACIONES PERSONALIZADAS === */
+.recommendations-section {
+  background: var(--bg-secondary);
+  padding: var(--space-16) 0;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.recommendation-card {
+  background: var(--bg-primary);
+  border: 2px solid var(--primary-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  text-align: center;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.recommendation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.recommendation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.recommendation-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--primary-100), var(--secondary-100));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+  font-size: var(--font-size-xl);
+  color: var(--primary);
+}
+
+.recommendation-card h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.recommendation-card p {
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0 0 var(--space-4) 0;
+}
+
+/* === MODAL DE AYUDA === */
+.help-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.help-modal .modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.help-modal .modal-content {
+  position: relative;
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.help-modal .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.help-modal .modal-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.help-modal .close-modal {
+  background: none;
+  border: none;
+  font-size: var(--font-size-2xl);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+.help-modal .close-modal:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.help-modal .modal-body {
+  padding: var(--space-6);
+}
+
+.help-sections {
+  margin-bottom: var(--space-6);
+}
+
+.help-section {
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.help-section h4 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+}
+
+.help-section h4 i {
+  color: var(--primary);
+}
+
+.help-section p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.help-resources h4 {
+  margin: 0 0 var(--space-4) 0;
+  color: var(--text-primary);
+}
+
+.resource-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.resource-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+}
+
+.resource-link:hover {
+  background: var(--primary-50);
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
+.resource-link i {
+  color: var(--primary);
+  width: 20px;
+  text-align: center;
+}
+
+/* === BOTÓN DE AYUDA === */
+.help-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--info);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  margin-left: var(--space-4);
+}
+
+.help-button:hover {
+  background: var(--info-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* === MEJORAS EN FILTROS === */
+.test-filters .filter-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.test-filters .filter-btn i {
+  font-size: var(--font-size-sm);
+}
+
+/* === MEJORAS EN TARJETAS DE TEST === */
+.test-card .test-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.test-card .test-button {
+  flex: 1;
+}
+
+.test-card .button-text {
+  margin-left: var(--space-2);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .search-container {
+    max-width: 100%;
+  }
+  
+  .progress-stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .test-card .test-actions {
+    flex-direction: column;
+  }
+  
+  .test-card .test-button {
+    width: 100%;
+  }
+  
+  .progress-info {
+    flex-direction: column;
+    gap: var(--space-2);
+    text-align: center;
+  }
+  
+  .help-modal .modal-content {
+    margin: var(--space-4);
+    max-width: none;
+  }
+  
+  .resource-links {
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .user-progress-section {
+    padding: var(--space-6);
+  }
+  
+  .progress-summary h3 {
+    font-size: var(--font-size-lg);
+  }
+  
+  .recommendation-card {
+    padding: var(--space-4);
+  }
+  
+  .help-modal .modal-body {
+    padding: var(--space-4);
+  }
+  
+  .help-section {
+    padding: var(--space-3);
+  }
+}
+
+/* === ANIMACIONES ADICIONALES === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* === ESTADOS DE CARGA === */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--primary);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* === ACCESIBILIDAD === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === MEJORAS EN TOOLTIPS === */
+.tooltip .tooltiptext {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+/* === ESTADOS DE HOVER MEJORADOS === */
+.test-card:hover .user-test-progress {
+  background: var(--primary-50);
+  border-left-color: var(--primary);
+}
+
+.recommendation-card:hover .recommendation-icon {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, var(--primary-200), var(--secondary-200));
+}

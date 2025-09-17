@@ -1,0 +1,601 @@
+/* Sensus - Mejores Prácticas y Estándares */
+/* Guías de estilo y mejores prácticas para el desarrollo */
+
+/* === ESTÁNDARES DE CÓDIGO === */
+
+/* 
+  CONVENCIONES DE NOMENCLATURA:
+  - Utilizar kebab-case para clases CSS
+  - Utilizar BEM para componentes complejos
+  - Utilizar prefijos semánticos (btn-, card-, form-)
+  - Utilizar sufijos de estado (-active, -disabled, -loading)
+*/
+
+/* === COMPONENTES BEM === */
+
+/* Bloque */
+.button {
+  /* Estilos del bloque */
+}
+
+/* Elemento */
+.button__icon {
+  /* Estilos del elemento */
+}
+
+.button__text {
+  /* Estilos del elemento */
+}
+
+/* Modificador */
+.button--primary {
+  /* Estilos del modificador */
+}
+
+.button--large {
+  /* Estilos del modificador */
+}
+
+.button--disabled {
+  /* Estilos del modificador */
+}
+
+/* === ESTÁNDARES DE ESPACIADO === */
+
+/* Utilizar variables CSS para espaciado consistente */
+.spacing-standard {
+  margin: var(--space-4);
+  padding: var(--space-6);
+}
+
+/* Espaciado semántico */
+.spacing-semantic {
+  margin-top: var(--space-section);
+  padding: var(--space-component);
+}
+
+/* === ESTÁNDARES DE COLORES === */
+
+/* Utilizar variables CSS para colores */
+.color-standard {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+/* Colores semánticos */
+.color-semantic {
+  color: var(--success);
+  background-color: var(--success-50);
+}
+
+/* === ESTÁNDARES DE TIPOGRAFÍA === */
+
+/* Utilizar variables CSS para tipografía */
+.typography-standard {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+/* Jerarquía tipográfica */
+.typography-hierarchy h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-bold);
+}
+
+.typography-hierarchy h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* === ESTÁNDARES DE LAYOUT === */
+
+/* Utilizar CSS Grid para layouts complejos */
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+}
+
+/* Utilizar Flexbox para layouts simples */
+.layout-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* === ESTÁNDARES DE RESPONSIVE === */
+
+/* Mobile-first approach */
+.responsive-standard {
+  /* Estilos base para móvil */
+}
+
+@media (min-width: 768px) {
+  .responsive-standard {
+    /* Estilos para tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-standard {
+    /* Estilos para desktop */
+  }
+}
+
+/* === ESTÁNDARES DE ACCESIBILIDAD === */
+
+/* Contraste mínimo WCAG AA */
+.accessibility-standard {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Contraste mínimo WCAG AAA */
+.accessibility-high-contrast {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* === ESTÁNDARES DE ANIMACIONES === */
+
+/* Duración estándar de animaciones */
+.animation-standard {
+  transition: all var(--transition-normal);
+}
+
+/* Animaciones de entrada */
+.animation-entrance {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Animaciones de salida */
+.animation-exit {
+  animation: fadeOutDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* === ESTÁNDARES DE ESTADOS === */
+
+/* Estados de interacción */
+.state-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.state-focus:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.state-active:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
+}
+
+.state-disabled:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* === ESTÁNDARES DE FORMULARIOS === */
+
+/* Campos de formulario estándar */
+.form-field-standard {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+}
+
+.form-field-standard:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-50);
+}
+
+/* === ESTÁNDARES DE NAVEGACIÓN === */
+
+/* Navegación principal */
+.navigation-standard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.navigation-standard a {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.navigation-standard a:hover {
+  background-color: var(--bg-secondary);
+}
+
+.navigation-standard a.active {
+  background-color: var(--primary-50);
+  color: var(--primary);
+}
+
+/* === ESTÁNDARES DE MODALES === */
+
+/* Modal estándar */
+.modal-standard {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
+.modal-content-standard {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* === ESTÁNDARES DE NOTIFICACIONES === */
+
+/* Notificación estándar */
+.notification-standard {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: var(--bg-primary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-tooltip);
+}
+
+.notification-standard.success {
+  border-left: 4px solid var(--success);
+}
+
+.notification-standard.error {
+  border-left: 4px solid var(--error);
+}
+
+.notification-standard.warning {
+  border-left: 4px solid var(--warning);
+}
+
+.notification-standard.info {
+  border-left: 4px solid var(--info);
+}
+
+/* === ESTÁNDARES DE LOADING === */
+
+/* Loading spinner estándar */
+.loading-standard {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--gray-200);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Loading skeleton estándar */
+.skeleton-standard {
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* === ESTÁNDARES DE TABLAS === */
+
+/* Tabla estándar */
+.table-standard {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.table-standard th,
+.table-standard td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.table-standard th {
+  background: var(--bg-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.table-standard tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+/* === ESTÁNDARES DE CARDS === */
+
+/* Card estándar */
+.card-standard {
+  background: var(--bg-primary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+}
+
+.card-standard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* === ESTÁNDARES DE BOTONES === */
+
+/* Botón estándar */
+.btn-standard {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-standard--primary {
+  background: var(--primary);
+  color: var(--text-inverse);
+}
+
+.btn-standard--secondary {
+  background: var(--bg-primary);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* === ESTÁNDARES DE ICONOS === */
+
+/* Icono estándar */
+.icon-standard {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-standard--small {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-standard--large {
+  width: 32px;
+  height: 32px;
+}
+
+/* === ESTÁNDARES DE UTILIDADES === */
+
+/* Utilidades de espaciado */
+.m-0 { margin: 0; }
+.m-1 { margin: var(--space-1); }
+.m-2 { margin: var(--space-2); }
+.m-3 { margin: var(--space-3); }
+.m-4 { margin: var(--space-4); }
+.m-6 { margin: var(--space-6); }
+.m-8 { margin: var(--space-8); }
+
+.p-0 { padding: 0; }
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+
+/* Utilidades de texto */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+/* Utilidades de color */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-tertiary { background-color: var(--bg-tertiary); }
+
+/* Utilidades de display */
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+.flex { display: flex; }
+.grid { display: grid; }
+.hidden { display: none; }
+
+/* === ESTÁNDARES DE TESTING === */
+
+/* Selectores para testing */
+[data-testid] {
+  /* Estilos para elementos de testing */
+}
+
+.test-selector {
+  /* Estilos para elementos de testing */
+}
+
+/* === ESTÁNDARES DE DOCUMENTACIÓN === */
+
+/* Comentarios de documentación */
+/*
+  COMPONENTE: Botón primario
+  DESCRIPCIÓN: Botón principal para acciones importantes
+  USO: <button class="btn btn--primary">Texto</button>
+  VARIANTES: --secondary, --tertiary, --large, --small
+  ESTADOS: :hover, :focus, :active, :disabled
+*/
+
+/* === ESTÁNDARES DE MANTENIMIENTO === */
+
+/* Estilos que necesitan revisión */
+.needs-review {
+  /* TODO: Revisar este estilo */
+}
+
+/* Estilos deprecados */
+.deprecated {
+  /* DEPRECATED: Este estilo será removido en la próxima versión */
+}
+
+/* === ESTÁNDARES DE PERFORMANCE === */
+
+/* Estilos optimizados para performance */
+.performance-optimized {
+  contain: layout style paint;
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* === ESTÁNDARES DE ACCESIBILIDAD === */
+
+/* Estilos que mejoran la accesibilidad */
+.accessibility-enhanced {
+  /* Mejoras de accesibilidad */
+}
+
+/* === ESTÁNDARES DE RESPONSIVE === */
+
+/* Estilos que se adaptan a diferentes pantallas */
+.responsive-enhanced {
+  /* Mejoras de responsive design */
+}
+
+/* === ESTÁNDARES DE INTERNACIONALIZACIÓN === */
+
+/* Estilos que soportan diferentes idiomas */
+.i18n-enhanced {
+  /* Mejoras de internacionalización */
+}
+
+/* === ESTÁNDARES DE SEGURIDAD === */
+
+/* Estilos que mejoran la seguridad */
+.security-enhanced {
+  /* Mejoras de seguridad */
+}
+
+/* === ESTÁNDARES DE SEO === */
+
+/* Estilos que mejoran el SEO */
+.seo-enhanced {
+  /* Mejoras de SEO */
+}
+
+/* === ESTÁNDARES DE USABILIDAD === */
+
+/* Estilos que mejoran la usabilidad */
+.usability-enhanced {
+  /* Mejoras de usabilidad */
+}
+
+/* === ESTÁNDARES DE CONSISTENCIA === */
+
+/* Estilos que mantienen la consistencia */
+.consistency-enhanced {
+  /* Mejoras de consistencia */
+}
+
+/* === ESTÁNDARES DE ESCALABILIDAD === */
+
+/* Estilos que son escalables */
+.scalability-enhanced {
+  /* Mejoras de escalabilidad */
+}
+
+/* === ESTÁNDARES DE MANTENIBILIDAD === */
+
+/* Estilos que son fáciles de mantener */
+.maintainability-enhanced {
+  /* Mejoras de mantenibilidad */
+}
+
+/* === ESTÁNDARES DE REUTILIZACIÓN === */
+
+/* Estilos que son reutilizables */
+.reusability-enhanced {
+  /* Mejoras de reutilización */
+}
+
+/* === ESTÁNDARES DE FLEXIBILIDAD === */
+
+/* Estilos que son flexibles */
+.flexibility-enhanced {
+  /* Mejoras de flexibilidad */
+}
+
+/* === ESTÁNDARES DE ROBUSTEZ === */
+
+/* Estilos que son robustos */
+.robustness-enhanced {
+  /* Mejoras de robustez */
+}
+
+/* === ESTÁNDARES DE CALIDAD === */
+
+/* Estilos que mantienen alta calidad */
+.quality-enhanced {
+  /* Mejoras de calidad */
+}
+
+/* === ESTÁNDARES DE INNOVACIÓN === */
+
+/* Estilos que incorporan innovación */
+.innovation-enhanced {
+  /* Mejoras de innovación */
+}
+
+/* === ESTÁNDARES DE FUTURO === */
+
+/* Estilos preparados para el futuro */
+.future-ready {
+  /* Preparación para el futuro */
+}

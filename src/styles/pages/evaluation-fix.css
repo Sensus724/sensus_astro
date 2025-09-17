@@ -1,0 +1,122 @@
+/* Sensus - Evaluation Page Fix */
+/* Solución específica para problemas de visualización de test cards */
+
+/* === FIX PARA TEST CARDS === */
+.tests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+/* Solo forzar visibilidad, no redefinir estilos */
+.tests-grid .test-card {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* === PROGRESO DEL USUARIO EN TEST === */
+.user-test-progress {
+  margin: var(--space-4) 0;
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--primary);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.progress-info strong {
+  color: var(--text-primary);
+}
+
+/* === BOTONES DE REPETIR TEST === */
+.retake-button {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--warning);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-lg);
+  color: var(--text-inverse);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.retake-button:hover {
+  background: var(--warning-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .tests-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .progress-info {
+    flex-direction: column;
+    gap: var(--space-2);
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-test-progress {
+    padding: var(--space-3);
+  }
+}
+
+/* === FORZAR VISIBILIDAD === */
+.tests-section .test-card {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Forzar visibilidad específica para cada test */
+.tests-grid .test-card[data-test="gad7"],
+.tests-grid .test-card[data-test="phq9"],
+.tests-grid .test-card[data-test="pss"],
+.tests-grid .test-card[data-test="wellness"],
+.tests-grid .test-card[data-test="selfesteem"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Asegurar que el grid funcione correctamente */
+.tests-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+  gap: var(--space-6) !important;
+  margin-top: var(--space-8) !important;
+}

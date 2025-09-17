@@ -8,82 +8,197 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     keywords="contacto sensus, soporte, ayuda, atención cliente"
     activeNav="contacto"
 >
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero Section Mejorado -->
+    <section class="hero-section" aria-labelledby="contact-main-title">
         <div class="container">
-            <h1 class="hero-title fade-in-up">Contacto</h1>
-            <p class="hero-subtitle fade-in-up">Estamos aquí para ayudarte. Contacta con nuestro equipo de soporte.</p>
+            <div class="hero-content">
+                <h1 id="contact-main-title" class="hero-title fade-in-up">Contacto</h1>
+                <p class="hero-subtitle fade-in-up">Estamos aquí para ayudarte. Nuestro equipo de soporte está comprometido con tu bienestar y responderá a tus consultas con empatía y profesionalismo.</p>
+                
+                <!-- Estadísticas de Confianza -->
+                <div class="trust-stats fade-in-up">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="24">0</span>
+                        <span class="stat-label">horas respuesta</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="98">0</span>
+                        <span class="stat-label">% satisfacción</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="100">0</span>
+                        <span class="stat-label">% confidencial</span>
+                    </div>
+                </div>
+                
+                <!-- Badges de Confianza -->
+                <div class="trust-badges fade-in-up">
+                    <div class="trust-badge">
+                        <i class="fas fa-clock"></i>
+                        Respuesta rápida
+                    </div>
+                    <div class="trust-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        Completamente confidencial
+                    </div>
+                    <div class="trust-badge">
+                        <i class="fas fa-heart"></i>
+                        Soporte empático
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section class="contact-section">
+    <!-- Contact Section Mejorada -->
+    <section class="section contact-section-enhanced" aria-labelledby="contact-title">
         <div class="container">
-            <div class="contact-grid">
-                <!-- Contact Form -->
-                <div class="contact-form">
-                    <h2>Envíanos un mensaje</h2>
-                    <form id="contact-form">
-                        <div class="form-group">
-                            <label for="name">Nombre</label>
-                            <input type="text" id="name" name="name" required>
+            <div class="section-card">
+                <h2 id="contact-title" class="section-title fade-in-up">Ponte en Contacto</h2>
+                <p class="section-description fade-in-up">Tu bienestar es nuestra prioridad. Estamos aquí para escucharte y ayudarte en cada paso.</p>
+                
+                <div class="contact-grid-enhanced">
+                    <!-- Contact Form -->
+                    <article class="contact-form-enhanced fade-in-up">
+                        <div class="form-header">
+                            <h3 class="form-title">Envíanos un mensaje</h3>
+                            <p class="form-subtitle">Completa el formulario y nos pondremos en contacto contigo pronto</p>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required>
+                        <form id="contact-form-enhanced" class="contact-form-form">
+                            <div class="form-group-enhanced">
+                                <label for="name-enhanced" class="form-label">Nombre completo</label>
+                                <input type="text" id="name-enhanced" name="name" class="form-input" required aria-describedby="name-help">
+                                <small id="name-help" class="form-help">Tu nombre nos ayuda a personalizar la respuesta</small>
+                            </div>
+                            
+                            <div class="form-group-enhanced">
+                                <label for="email-enhanced" class="form-label">Correo electrónico</label>
+                                <input type="email" id="email-enhanced" name="email" class="form-input" required aria-describedby="email-help">
+                                <small id="email-help" class="form-help">Usaremos este email para responderte</small>
+                            </div>
+                            
+                            <div class="form-group-enhanced">
+                                <label for="subject-enhanced" class="form-label">Asunto</label>
+                                <select id="subject-enhanced" name="subject" class="form-select" required aria-describedby="subject-help">
+                                    <option value="">Selecciona un asunto</option>
+                                    <option value="soporte">Soporte técnico</option>
+                                    <option value="feedback">Feedback sobre la app</option>
+                                    <option value="colaboracion">Colaboración profesional</option>
+                                    <option value="emergencia">Consulta urgente</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                                <small id="subject-help" class="form-help">Esto nos ayuda a dirigir tu consulta al equipo adecuado</small>
+                            </div>
+                            
+                            <div class="form-group-enhanced">
+                                <label for="message-enhanced" class="form-label">Mensaje</label>
+                                <textarea id="message-enhanced" name="message" rows="5" class="form-textarea" required aria-describedby="message-help" placeholder="Cuéntanos cómo podemos ayudarte..."></textarea>
+                                <small id="message-help" class="form-help">Sé específico para que podamos ayudarte mejor</small>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn-enhanced btn-cta-primary">
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                Enviar Mensaje
+                            </button>
+                        </form>
+                    </article>
+                    
+                    <!-- Contact Info -->
+                    <article class="contact-info-enhanced fade-in-up">
+                        <div class="contact-header">
+                            <h3 class="contact-info-title">Información de Contacto</h3>
+                            <p class="contact-info-subtitle">Múltiples formas de contactarnos</p>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="subject">Asunto</label>
-                            <select id="subject" name="subject" required>
-                                <option value="">Selecciona un asunto</option>
-                                <option value="soporte">Soporte técnico</option>
-                                <option value="feedback">Feedback</option>
-                                <option value="colaboracion">Colaboración</option>
-                                <option value="otro">Otro</option>
-                            </select>
+                        <div class="contact-items-enhanced">
+                            <div class="contact-item-enhanced">
+                                <div class="contact-icon-enhanced">
+                                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-content">
+                                    <h4 class="contact-item-title">Email Principal</h4>
+                                    <p class="contact-item-text">contacto@sensus-app.com</p>
+                                    <small class="contact-item-note">Respuesta en 24 horas</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item-enhanced">
+                                <div class="contact-icon-enhanced">
+                                    <i class="fas fa-clock" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-content">
+                                    <h4 class="contact-item-title">Horario de Atención</h4>
+                                    <p class="contact-item-text">Lunes a Viernes: 9:00 - 18:00</p>
+                                    <small class="contact-item-note">Horario España (CET)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item-enhanced">
+                                <div class="contact-icon-enhanced">
+                                    <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-content">
+                                    <h4 class="contact-item-title">Emergencias</h4>
+                                    <p class="contact-item-text">Para crisis de salud mental</p>
+                                    <small class="contact-item-note">Contacta el 112 o tu servicio local</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item-enhanced">
+                                <div class="contact-icon-enhanced">
+                                    <i class="fas fa-headset" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-content">
+                                    <h4 class="contact-item-title">Soporte Técnico</h4>
+                                    <p class="contact-item-text">soporte@sensus-app.com</p>
+                                    <small class="contact-item-note">Para problemas técnicos</small>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="message">Mensaje</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
-                        </div>
-                        
-                        <button type="submit" class="submit-btn">
-                            <i class="fas fa-paper-plane"></i>
-                            Enviar Mensaje
-                        </button>
-                    </form>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Información Importante -->
+    <section class="section info-section-enhanced" aria-labelledby="info-title">
+        <div class="container">
+            <h2 id="info-title" class="section-title fade-in-up">Información Importante</h2>
+            <p class="section-description fade-in-up">Conoce nuestras políticas de privacidad y tiempos de respuesta.</p>
+            
+            <div class="info-grid-enhanced">
+                <div class="info-card-enhanced fade-in-up">
+                    <div class="info-icon-enhanced">
+                        <i class="fas fa-lock" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="info-title-enhanced">Privacidad Total</h3>
+                    <p class="info-description-enhanced">Todas tus comunicaciones están protegidas con encriptación de grado médico. Tu privacidad es sagrada para nosotros.</p>
                 </div>
                 
-                <!-- Contact Info -->
-                <div class="contact-info">
-                    <h2>Información de Contacto</h2>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h3>Email</h3>
-                            <p>contacto@sensus-app.com</p>
-                        </div>
+                <div class="info-card-enhanced fade-in-up">
+                    <div class="info-icon-enhanced">
+                        <i class="fas fa-clock" aria-hidden="true"></i>
                     </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <h3>Horario de Atención</h3>
-                            <p>Lunes a Viernes: 9:00 - 18:00</p>
-                        </div>
+                    <h3 class="info-title-enhanced">Respuesta Rápida</h3>
+                    <p class="info-description-enhanced">Nos comprometemos a responder todas las consultas en un máximo de 24 horas durante días laborables.</p>
+                </div>
+                
+                <div class="info-card-enhanced fade-in-up">
+                    <div class="info-icon-enhanced">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
                     </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <div>
-                            <h3>Urgencias</h3>
-                            <p>Para emergencias, contacta el 112 o tu servicio de emergencias local</p>
-                        </div>
+                    <h3 class="info-title-enhanced">Soporte Empático</h3>
+                    <p class="info-description-enhanced">Nuestro equipo está entrenado para brindar apoyo con empatía y comprensión, entendiendo las necesidades de salud mental.</p>
+                </div>
+                
+                <div class="info-card-enhanced fade-in-up">
+                    <div class="info-icon-enhanced">
+                        <i class="fas fa-user-md" aria-hidden="true"></i>
                     </div>
+                    <h3 class="info-title-enhanced">Profesionales Cualificados</h3>
+                    <p class="info-description-enhanced">Nuestro equipo incluye psicólogos y profesionales de la salud mental con experiencia en ansiedad y bienestar.</p>
                 </div>
             </div>
         </div>

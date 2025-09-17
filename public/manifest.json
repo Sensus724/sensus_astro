@@ -1,0 +1,58 @@
+{
+  "name": "Sensus - Bienestar Mental",
+  "short_name": "Sensus",
+  "description": "Aplicación de bienestar mental con diario, evaluaciones y planes personalizados",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["health", "lifestyle", "medical"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/images/calma.jpeg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mi Diario",
+      "short_name": "Diario",
+      "description": "Acceder a mi diario personal",
+      "url": "/diario",
+      "icons": [{ "src": "/favicon.ico", "sizes": "96x96" }]
+    },
+    {
+      "name": "Evaluación",
+      "short_name": "Test",
+      "description": "Realizar evaluación de bienestar",
+      "url": "/evaluacion",
+      "icons": [{ "src": "/favicon.ico", "sizes": "96x96" }]
+    },
+    {
+      "name": "Planes",
+      "short_name": "Planes",
+      "description": "Ver mis planes de bienestar",
+      "url": "/planes",
+      "icons": [{ "src": "/favicon.ico", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout 
+    title="Test Psicológico | Sensus"
+    description="Realiza tests psicológicos validados científicamente para evaluar tu bienestar mental."
+    keywords="test psicológico, test ansiedad, test depresión, test estrés, GAD-7, PHQ-9, PSS"
+    pageStylesheets={[]}
+    themeColor="#1D4ED8"
+    activeNav="evaluacion"
+>
+    <!-- Test Container -->
+    <div id="test-container" class="test-page-container">
+        <!-- Test será cargado aquí dinámicamente -->
+    </div>
+
+    <!-- Loading State -->
+    <div id="test-loading" class="test-loading">
+        <div class="loading-spinner">
+            <i class="fas fa-heart"></i>
+        </div>
+        <p>Cargando test...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="test-error" class="test-error" style="display: none;">
+        <div class="error-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Error al cargar el test</h2>
+            <p>No se pudo cargar el test solicitado. Por favor, intenta de nuevo.</p>
+            <a href="/evaluacion" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i>
+                Volver a Evaluación
+            </a>
+        </div>
+    </div>
+</BaseLayout>
+
+    <script is:inline src="/js/pages/test.js"></script>
+
+<style>
+/* Test Page Styles */
+.test-page-container {
+    min-height: 100vh;
+    background: var(--bg-secondary);
+    padding: var(--space-8) 0;
+}
+
+.test-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.loading-spinner {
+    font-size: 3rem;
+    color: var(--primary);
+    animation: heartbeat 2s ease-in-out infinite;
+    margin-bottom: var(--space-4);
+}
+
+.test-loading p {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+}
+
+.test-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.error-content {
+    max-width: 500px;
+    padding: var(--space-8);
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.error-content i {
+    font-size: 4rem;
+    color: var(--error);
+    margin-bottom: var(--space-4);
+}
+
+.error-content h2 {
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.error-content p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-6);
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .test-page-container {
+        padding: var(--space-4) 0;
+    }
+    
+    .error-content {
+        margin: var(--space-4);
+        padding: var(--space-6);
+    }
+}
+</style>
+
+<script>
+// Test Page Script
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const testType = urlParams.get('test');
+    
+    if (!testType) {
+        showError();
+        return;
+    }
+    
+    loadTest(testType);
+});
+
+function loadTest(testType) {
+    const loading = document.getElementById('test-loading');
+    const container = document.getElementById('test-container');
+    
+    // Simular carga del test
+    setTimeout(() => {
+        loading.style.display = 'none';
+        
+        // Cargar el test usando el sistema unificado
+        if (window.TestSystemUnified) {
+            const testSystem = new window.TestSystemUnified();
+        } else {
+            // Fallback: redirigir a la página de evaluación
+            window.location.href = '/evaluacion';
+        }
+    }, 1500);
+}
+
+function showError() {
+    const loading = document.getElementById('test-loading');
+    const error = document.getElementById('test-error');
+    
+    loading.style.display = 'none';
+    error.style.display = 'flex';
+}
+</script>

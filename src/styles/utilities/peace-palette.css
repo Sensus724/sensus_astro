@@ -1,0 +1,352 @@
+/* Sensus - Paleta PAZ Interior CSS */
+/* Paleta de colores suaves y armoniosos para bienestar mental */
+
+/* === PALETA PAZ INTERIOR === */
+:root {
+  /* Colores base de la paleta */
+  --peace-cream: #EDEEE9;
+  --peace-beige: #E7DAD1;
+  --peace-rose: #E5C4B9;
+  --peace-blue: #C1D2DB;
+  --peace-sage: #BFCECB;
+  --peace-gray: #868A8E;
+  
+  /* Gradientes de la paleta */
+  --peace-gradient-soft: linear-gradient(135deg, var(--peace-cream), var(--peace-beige));
+  --peace-gradient-warm: linear-gradient(135deg, var(--peace-rose), var(--peace-beige));
+  --peace-gradient-cool: linear-gradient(135deg, var(--peace-blue), var(--peace-sage));
+  --peace-gradient-neutral: linear-gradient(135deg, var(--peace-sage), var(--peace-gray));
+  
+  /* Gradientes complejos */
+  --peace-gradient-full: linear-gradient(135deg, 
+    var(--peace-cream) 0%, 
+    var(--peace-beige) 20%, 
+    var(--peace-rose) 40%, 
+    var(--peace-blue) 60%, 
+    var(--peace-sage) 80%, 
+    var(--peace-gray) 100%
+  );
+  
+  /* Efectos de transparencia */
+  --peace-overlay-light: rgba(237, 238, 233, 0.8);
+  --peace-overlay-medium: rgba(231, 218, 209, 0.6);
+  --peace-overlay-dark: rgba(134, 138, 142, 0.4);
+}
+
+/* === TEMA OSCURO - PALETA INVERTIDA === */
+[data-theme="dark"] {
+  /* Colores base invertidos */
+  --peace-cream: #2D3748;
+  --peace-beige: #4A5568;
+  --peace-rose: #6B7280;
+  --peace-blue: #868A8E;
+  --peace-sage: #BFCECB;
+  --peace-gray: #C1D2DB;
+  
+  /* Gradientes adaptados */
+  --peace-gradient-soft: linear-gradient(135deg, var(--peace-cream), var(--peace-beige));
+  --peace-gradient-warm: linear-gradient(135deg, var(--peace-rose), var(--peace-beige));
+  --peace-gradient-cool: linear-gradient(135deg, var(--peace-blue), var(--peace-sage));
+  --peace-gradient-neutral: linear-gradient(135deg, var(--peace-sage), var(--peace-gray));
+  
+  /* Gradiente completo invertido */
+  --peace-gradient-full: linear-gradient(135deg, 
+    var(--peace-cream) 0%, 
+    var(--peace-beige) 20%, 
+    var(--peace-rose) 40%, 
+    var(--peace-blue) 60%, 
+    var(--peace-sage) 80%, 
+    var(--peace-gray) 100%
+  );
+  
+  /* Overlays adaptados */
+  --peace-overlay-light: rgba(45, 55, 72, 0.8);
+  --peace-overlay-medium: rgba(74, 85, 104, 0.6);
+  --peace-overlay-dark: rgba(134, 138, 142, 0.4);
+}
+
+/* === COMPONENTES CON PALETA PAZ === */
+
+/* === HERO CON PALETA PAZ === */
+.hero-peace {
+  background: var(--peace-gradient-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-peace::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--peace-gradient-full);
+  opacity: 0.1;
+  animation: peace-flow 20s ease-in-out infinite;
+}
+
+@keyframes peace-flow {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(10px) translateY(-5px); }
+  50% { transform: translateX(-5px) translateY(10px); }
+  75% { transform: translateX(5px) translateY(-10px); }
+}
+
+/* === CARDS CON PALETA PAZ === */
+.card-peace {
+  background: var(--peace-gradient-soft);
+  border: 1px solid var(--peace-blue);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(191, 206, 203, 0.2);
+  transition: all var(--transition-normal);
+}
+
+.card-peace:hover {
+  background: var(--peace-gradient-warm);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(191, 206, 203, 0.3);
+}
+
+[data-theme="dark"] .card-peace {
+  background: var(--peace-gradient-soft);
+  border-color: var(--peace-sage);
+  box-shadow: 0 4px 20px rgba(45, 55, 72, 0.3);
+}
+
+[data-theme="dark"] .card-peace:hover {
+  background: var(--peace-gradient-warm);
+  box-shadow: 0 8px 30px rgba(45, 55, 72, 0.4);
+}
+
+/* === BOTONES CON PALETA PAZ === */
+.btn-peace {
+  background: var(--peace-gradient-cool);
+  color: var(--text-primary);
+  border: 1px solid var(--peace-sage);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-6);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-peace::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--peace-gradient-warm);
+  transition: left 0.6s ease;
+  z-index: -1;
+}
+
+.btn-peace:hover::before {
+  left: 0;
+}
+
+.btn-peace:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(191, 206, 203, 0.4);
+  border-color: var(--peace-rose);
+}
+
+.btn-peace:active {
+  transform: translateY(0);
+}
+
+/* === HEADER CON PALETA PAZ === */
+.header-peace {
+  background: var(--peace-overlay-light);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--peace-blue);
+  transition: all var(--transition-normal);
+}
+
+[data-theme="dark"] .header-peace {
+  background: var(--peace-overlay-light);
+  border-bottom-color: var(--peace-sage);
+}
+
+/* === FOOTER CON PALETA PAZ === */
+.footer-peace {
+  background: var(--peace-gradient-neutral);
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-peace::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--peace-gradient-full);
+  opacity: 0.05;
+  animation: peace-float 30s ease-in-out infinite;
+}
+
+@keyframes peace-float {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+  33% { transform: translateX(20px) translateY(-10px) rotate(1deg); }
+  66% { transform: translateX(-10px) translateY(15px) rotate(-1deg); }
+}
+
+/* === FORMULARIOS CON PALETA PAZ === */
+.form-peace input,
+.form-peace textarea,
+.form-peace select {
+  background: var(--peace-cream);
+  border: 1px solid var(--peace-blue);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+}
+
+.form-peace input:focus,
+.form-peace textarea:focus,
+.form-peace select:focus {
+  background: var(--peace-beige);
+  border-color: var(--peace-sage);
+  box-shadow: 0 0 0 3px rgba(191, 206, 203, 0.2);
+  outline: none;
+}
+
+[data-theme="dark"] .form-peace input,
+[data-theme="dark"] .form-peace textarea,
+[data-theme="dark"] .form-peace select {
+  background: var(--peace-cream);
+  border-color: var(--peace-sage);
+}
+
+[data-theme="dark"] .form-peace input:focus,
+[data-theme="dark"] .form-peace textarea:focus,
+[data-theme="dark"] .form-peace select:focus {
+  background: var(--peace-beige);
+  border-color: var(--peace-blue);
+  box-shadow: 0 0 0 3px rgba(45, 55, 72, 0.3);
+}
+
+/* === NAVEGACIÓN CON PALETA PAZ === */
+.nav-peace a {
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+  position: relative;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+.nav-peace a::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--peace-gradient-cool);
+  transition: all var(--transition-normal);
+  transform: translateX(-50%);
+}
+
+.nav-peace a:hover::before {
+  width: 80%;
+}
+
+.nav-peace a:hover {
+  background: var(--peace-overlay-medium);
+  color: var(--peace-sage);
+}
+
+.nav-peace a.active {
+  background: var(--peace-gradient-soft);
+  color: var(--peace-gray);
+}
+
+/* === EFECTOS ESPECIALES PAZ === */
+.peace-glow {
+  position: relative;
+}
+
+.peace-glow::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--peace-gradient-full);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.peace-glow:hover::after {
+  opacity: 0.3;
+}
+
+/* === ANIMACIONES PAZ === */
+@keyframes peace-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.peace-pulse {
+  animation: peace-pulse 3s ease-in-out infinite;
+}
+
+@keyframes peace-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.peace-rotate {
+  animation: peace-rotate 20s linear infinite;
+}
+
+/* === RESPONSIVE PAZ === */
+@media (max-width: 768px) {
+  .hero-peace::before {
+    animation-duration: 15s;
+  }
+  
+  .footer-peace::before {
+    animation-duration: 20s;
+  }
+  
+  .card-peace {
+    margin: var(--space-2);
+  }
+  
+  .btn-peace {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* === UTILIDADES PAZ === */
+.text-peace-cream { color: var(--peace-cream); }
+.text-peace-beige { color: var(--peace-beige); }
+.text-peace-rose { color: var(--peace-rose); }
+.text-peace-blue { color: var(--peace-blue); }
+.text-peace-sage { color: var(--peace-sage); }
+.text-peace-gray { color: var(--peace-gray); }
+
+.bg-peace-cream { background-color: var(--peace-cream); }
+.bg-peace-beige { background-color: var(--peace-beige); }
+.bg-peace-rose { background-color: var(--peace-rose); }
+.bg-peace-blue { background-color: var(--peace-blue); }
+.bg-peace-sage { background-color: var(--peace-sage); }
+.bg-peace-gray { background-color: var(--peace-gray); }
+
+.border-peace-cream { border-color: var(--peace-cream); }
+.border-peace-beige { border-color: var(--peace-beige); }
+.border-peace-rose { border-color: var(--peace-rose); }
+.border-peace-blue { border-color: var(--peace-blue); }
+.border-peace-sage { border-color: var(--peace-sage); }
+.border-peace-gray { border-color: var(--peace-gray); }
+

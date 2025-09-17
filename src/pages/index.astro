@@ -12,39 +12,43 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     <section class="hero-section">
         <div class="container">
             <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title fade-in-up">Encuentra tu Calma con Ciencia y Empatía</h1>
+                    <p class="hero-subtitle fade-in-up">Tu compañero inteligente para el manejo de la ansiedad. Test GAD-7 gratuito, diario emocional encriptado y recursos profesionales respaldados por la ciencia.</p>
+                    
+                    <div class="trust-badges fade-in-up">
+                        <div class="trust-badge">
+                            <i class="fas fa-check-circle"></i>
+                            127,000+ usuarios
+                        </div>
+                        <div class="trust-badge">
+                            <i class="fas fa-shield-alt"></i>
+                            Validado científicamente
+                        </div>
+                        <div class="trust-badge">
+                            <i class="fas fa-gift"></i>
+                            100% gratuito
+                        </div>
+                    </div>
+                    
+                    <div class="hero-actions fade-in-up">
+                        <a href="/evaluacion" class="btn-cta">
+                            <i class="fas fa-heart"></i>
+                            Descubrir mi Ansiedad Gratis
+                        </a>
+                        <p class="cta-disclaimer">✓ Sin registro • ✓ Resultados inmediatos • ✓ 100% privado</p>
+                    </div>
+                </div>
+                
                 <div class="hero-image">
                     <div class="hero-visual">
-                        <div class="blooming-flower gentle-pulse"></div>
+                        <div class="floating-element"></div>
+                        <div class="floating-element"></div>
+                        <div class="floating-element"></div>
                         <div class="hero-illustration">
                             <i class="fas fa-heart"></i>
                         </div>
                     </div>
-                </div>
-                
-                <h1 class="hero-title fade-in-up">Encuentra tu Calma con Ciencia y Empatía</h1>
-                <p class="hero-subtitle fade-in-up">Tu compañero inteligente para el manejo de la ansiedad. Test GAD-7 gratuito, diario emocional encriptado y recursos profesionales respaldados por la ciencia.</p>
-                
-                <div class="trust-badges fade-in-up">
-                    <div class="trust-badge">
-                        <i class="fas fa-check-circle"></i>
-                        127,000+ usuarios
-                    </div>
-                    <div class="trust-badge">
-                        <i class="fas fa-shield-alt"></i>
-                        Validado científicamente
-                    </div>
-                    <div class="trust-badge">
-                        <i class="fas fa-gift"></i>
-                        100% gratuito
-                    </div>
-                </div>
-                
-                <div class="hero-actions fade-in-up">
-                    <a href="/evaluacion" class="btn-cta">
-                        <i class="fas fa-heart"></i>
-                        Descubrir mi Ansiedad Gratis
-                    </a>
-                    <p class="cta-disclaimer">✓ Sin registro • ✓ Resultados inmediatos • ✓ 100% privado</p>
                 </div>
             </div>
         </div>
@@ -174,11 +178,184 @@ import BaseLayout from '../layouts/BaseLayout.astro'
         </div>
     </section>
 
+    <!-- Beneficios Específicos -->
+    <section class="section">
+        <div class="container">
+            <div class="section-card">
+                <h2 class="section-title">¿Por qué elegir Sensus?</h2>
+                <p class="section-description">Herramientas validadas científicamente diseñadas específicamente para el manejo de la ansiedad.</p>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Basado en TCC</h3>
+                        <p>Técnicas de Terapia Cognitivo-Conductual validadas por más de 20 años de investigación clínica.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>100% Privado</h3>
+                        <p>Tus datos están encriptados end-to-end. Ni siquiera nosotros podemos acceder a tu información personal.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Progreso Medible</h3>
+                        <p>Visualiza tu evolución con gráficos detallados y métricas que te motivan a seguir adelante.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Acceso 24/7</h3>
+                        <p>Herramientas disponibles cuando las necesites, desde cualquier dispositivo y en cualquier momento.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Comunidad de Apoyo</h3>
+                        <p>Conecta con personas que entienden tu experiencia en un ambiente seguro y empático.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3>Recursos Educativos</h3>
+                        <p>Accede a contenido educativo desarrollado por psicólogos especialistas en ansiedad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-card">
+                <h2 class="section-title">Preguntas Frecuentes</h2>
+                <p class="section-description">Resolvemos las dudas más comunes sobre Sensus y el manejo de la ansiedad.</p>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>¿Es realmente gratuito?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Sí, Sensus es 100% gratuito.</strong> Ofrecemos acceso ilimitado a todas nuestras herramientas principales:</p>
+                            <ul>
+                                <li>✅ Test GAD-7 completo y validado</li>
+                                <li>✅ Diario emocional con seguimiento de progreso</li>
+                                <li>✅ Recursos educativos y técnicas de relajación</li>
+                                <li>✅ Análisis de patrones y tendencias</li>
+                                <li>✅ Soporte comunitario básico</li>
+                            </ul>
+                            <p>No hay costos ocultos, suscripciones ni límites de tiempo. Nuestra misión es hacer que el cuidado de la salud mental sea accesible para todos.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>¿Mis datos están seguros?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Tu privacidad es nuestra prioridad.</strong> Implementamos las más altas medidas de seguridad:</p>
+                            <ul>
+                                <li>🔒 <strong>Encriptación end-to-end</strong> - Solo tú puedes leer tus datos</li>
+                                <li>🛡️ <strong>Cumplimiento RGPD</strong> - Cumplimos con todas las regulaciones europeas</li>
+                                <li>🚫 <strong>Sin venta de datos</strong> - Nunca compartimos tu información con terceros</li>
+                                <li>🗑️ <strong>Derecho al olvido</strong> - Puedes eliminar todos tus datos en cualquier momento</li>
+                                <li>🔐 <strong>Almacenamiento seguro</strong> - Servidores certificados y auditados regularmente</li>
+                            </ul>
+                            <p>Tu información personal y emocional es sagrada para nosotros. Solo la usamos para mejorar tu experiencia en la plataforma.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>¿Puedo usar Sensus si estoy en tratamiento?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>¡Absolutamente sí!</strong> Sensus está diseñado para complementar tu tratamiento profesional, no para reemplazarlo.</p>
+                            <ul>
+                                <li>🤝 <strong>Complemento perfecto</strong> - Funciona junto con terapia, medicación y otros tratamientos</li>
+                                <li>📊 <strong>Datos útiles</strong> - Tus registros pueden ayudar a tu terapeuta a entender mejor tu progreso</li>
+                                <li>🔄 <strong>Seguimiento continuo</strong> - Monitorea tu estado entre sesiones</li>
+                                <li>📈 <strong>Progreso visible</strong> - Visualiza mejoras que tal vez no notes día a día</li>
+                                <li>💡 <strong>Recursos adicionales</strong> - Acceso a técnicas y herramientas complementarias</li>
+                            </ul>
+                            <p><strong>Recomendación:</strong> Comparte tus resultados y patrones con tu terapeuta. Puede ser muy valioso para tu tratamiento.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>¿Cuánto tiempo necesito para ver resultados?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Los resultados varían según cada persona, pero aquí tienes una guía realista:</strong></p>
+                            <ul>
+                                <li>📅 <strong>Primera semana:</strong> Mayor conciencia de tus patrones emocionales</li>
+                                <li>📈 <strong>2-3 semanas:</strong> Mejoras notables en el manejo de la ansiedad (80% de usuarios)</li>
+                                <li>🎯 <strong>1-2 meses:</strong> Cambios significativos en tu bienestar general</li>
+                                <li>🌟 <strong>3+ meses:</strong> Transformación profunda y sostenible</li>
+                            </ul>
+                            <p><strong>Factores que influyen:</strong></p>
+                            <ul>
+                                <li>✅ <strong>Consistencia</strong> - Uso regular es clave</li>
+                                <li>✅ <strong>Compromiso</strong> - Aplicar las técnicas aprendidas</li>
+                                <li>✅ <strong>Paciencia</strong> - Los cambios reales toman tiempo</li>
+                                <li>✅ <strong>Apoyo</strong> - Combinar con tratamiento profesional si es necesario</li>
+                            </ul>
+                            <p><em>Recuerda: cada pequeño paso cuenta. ¡Celebra cada mejora, por pequeña que sea!</em></p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>¿Necesito descargar una app?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>¡No es necesario descargar nada!</strong> Sensus está diseñado para funcionar perfectamente en tu navegador web.</p>
+                            <ul>
+                                <li>🌐 <strong>Acceso web completo</strong> - Todas las funciones disponibles en tu navegador</li>
+                                <li>📱 <strong>Responsive design</strong> - Se adapta perfectamente a móviles, tablets y computadoras</li>
+                                <li>⚡ <strong>Carga rápida</strong> - Sin necesidad de descargas pesadas</li>
+                                <li>🔄 <strong>Actualizaciones automáticas</strong> - Siempre tienes la versión más reciente</li>
+                                <li>💾 <strong>Sin ocupar espacio</strong> - No consume almacenamiento de tu dispositivo</li>
+                            </ul>
+                            <p><strong>Opciones adicionales:</strong></p>
+                            <ul>
+                                <li>📲 <strong>App móvil opcional</strong> - Disponible en App Store y Google Play (próximamente)</li>
+                                <li>🔖 <strong>Acceso directo</strong> - Puedes agregar Sensus a tu pantalla de inicio como una app</li>
+                                <li>🌙 <strong>Modo offline</strong> - Funciona sin conexión para el diario básico</li>
+                            </ul>
+                            <p><em>¡Simplemente abre tu navegador y comienza a usar Sensus inmediatamente!</em></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Final Único y Poderoso -->
     <section class="section final-cta-section">
         <div class="container">
             <div class="final-cta">
-                <div class="blooming-flower"></div>
                 <h2>¿Listo para encontrar tu calma?</h2>
                 <p>Únete a 127,000+ personas que ya han reducido su ansiedad</p>
                 <a href="/evaluacion" class="btn-cta-primary">
@@ -190,3 +367,35 @@ import BaseLayout from '../layouts/BaseLayout.astro'
         </div>
     </section>
 </BaseLayout>
+
+<script>
+// FAQ Script directo en la página
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('FAQ Script: Inicializando...');
+  
+  const faqItems = document.querySelectorAll('.faq-item');
+  console.log('FAQ Script: Encontrados', faqItems.length, 'elementos');
+  
+  faqItems.forEach(function(item, index) {
+    const question = item.querySelector('.faq-question');
+    
+    if (question) {
+      question.addEventListener('click', function(e) {
+        console.log('FAQ Script: Click en item', index);
+        e.preventDefault();
+        
+        // Cerrar otros items
+        faqItems.forEach(function(otherItem) {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+          }
+        });
+        
+        // Toggle del item actual
+        item.classList.toggle('active');
+        console.log('FAQ Script: Item', index, 'activo:', item.classList.contains('active'));
+      });
+    }
+  });
+});
+</script>

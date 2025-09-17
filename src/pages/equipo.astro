@@ -8,54 +8,186 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     keywords="equipo sensus, psicólogos, profesionales salud mental, team"
     activeNav="equipo"
 >
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero Section Mejorado -->
+    <section class="hero-section" aria-labelledby="team-main-title">
         <div class="container">
-            <h1 class="hero-title fade-in-up">Nuestro Equipo</h1>
-            <p class="hero-subtitle fade-in-up">Profesionales comprometidos con tu bienestar mental y respaldados por la ciencia.</p>
-        </div>
-    </section>
-
-    <!-- Team Section -->
-    <section class="team-section">
-        <div class="container">
-            <div class="team-grid">
-                <div class="team-member">
-                    <div class="member-photo">
-                        <i class="fas fa-user-md"></i>
+            <div class="hero-content">
+                <h1 id="team-main-title" class="hero-title fade-in-up">Nuestro Equipo</h1>
+                <p class="hero-subtitle fade-in-up">Un equipo multidisciplinario comprometido con tu bienestar mental y el desarrollo de soluciones innovadoras.</p>
+                
+                <!-- Estadísticas de Confianza -->
+                <div class="trust-stats fade-in-up">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="4">0</span>
+                        <span class="stat-label">profesionales</span>
                     </div>
-                    <h3>Dr. María García</h3>
-                    <p class="member-role">Psicóloga Clínica</p>
-                    <p class="member-description">Especialista en trastornos de ansiedad con más de 15 años de experiencia.</p>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="15">0</span>
+                        <span class="stat-label">años experiencia</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="100">0</span>
+                        <span class="stat-label">% dedicación</span>
+                    </div>
                 </div>
                 
-                <div class="team-member">
-                    <div class="member-photo">
-                        <i class="fas fa-brain"></i>
+                <!-- Badges de Confianza -->
+                <div class="trust-badges fade-in-up">
+                    <div class="trust-badge">
+                        <i class="fas fa-graduation-cap"></i>
+                        Formación especializada
                     </div>
-                    <h3>Dr. Carlos Rodríguez</h3>
-                    <p class="member-role">Neurocientífico</p>
-                    <p class="member-description">Investigador en neurociencia cognitiva y terapias digitales.</p>
-                </div>
-                
-                <div class="team-member">
-                    <div class="member-photo">
-                        <i class="fas fa-code"></i>
+                    <div class="trust-badge">
+                        <i class="fas fa-heart"></i>
+                        Compromiso genuino
                     </div>
-                    <h3>Ana López</h3>
-                    <p class="member-role">Desarrolladora Senior</p>
-                    <p class="member-description">Experta en desarrollo de aplicaciones de salud digital.</p>
+                    <div class="trust-badge">
+                        <i class="fas fa-users"></i>
+                        Trabajo en equipo
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Mission Section -->
-    <section class="mission-section">
+    <!-- Team Section Mejorada -->
+    <section class="section team-section-enhanced" aria-labelledby="team-title">
         <div class="container">
-            <div class="mission-content">
-                <h2>Nuestra Misión</h2>
-                <p>Democratizar el acceso a herramientas de salud mental de calidad, combinando la rigurosidad científica con la calidez humana.</p>
+            <div class="section-card">
+                <h2 id="team-title" class="section-title fade-in-up">Conoce a Nuestro Equipo</h2>
+                <p class="section-description fade-in-up">Profesionales apasionados que combinan experiencia clínica con innovación tecnológica para crear soluciones que realmente funcionan.</p>
+                
+                <div class="team-grid-enhanced">
+                    <article class="team-member-enhanced fade-in-up">
+                        <div class="member-photo-enhanced">
+                            <div class="photo-placeholder">
+                                <span class="member-initial">DR</span>
+                            </div>
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">Daniel Reina</h3>
+                            <p class="member-role">Programador & Ayudante de Psicología</p>
+                            <p class="member-description">Desarrollador apasionado por la tecnología y el bienestar mental. Apoya a la psicóloga en la creación de herramientas digitales que facilitan el manejo de la ansiedad.</p>
+                        </div>
+                    </article>
+                    
+                    <article class="team-member-enhanced fade-in-up">
+                        <div class="member-photo-enhanced">
+                            <div class="photo-placeholder">
+                                <span class="member-initial">EA</span>
+                            </div>
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">Evelyn Aponte</h3>
+                            <p class="member-role">Programadora & Ayudante de Psicología</p>
+                            <p class="member-description">Especialista en desarrollo web y entusiasta de la salud mental. Colabora estrechamente con la psicóloga para transformar el conocimiento clínico en soluciones digitales accesibles.</p>
+                        </div>
+                    </article>
+                    
+                    <article class="team-member-enhanced fade-in-up">
+                        <div class="member-photo-enhanced">
+                            <div class="photo-placeholder">
+                                <span class="member-initial">DG</span>
+                            </div>
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">Dayan Gaviria</h3>
+                            <p class="member-role">Programador & Ayudante de Psicología</p>
+                            <p class="member-description">Apasionado por la programación y el impacto social de la tecnología. Su trabajo se centra en crear experiencias digitales que apoyan la labor terapéutica de la psicóloga Milena Paul.</p>
+                        </div>
+                    </article>
+                    
+                    <article class="team-member-enhanced fade-in-up">
+                        <div class="member-photo-enhanced">
+                            <div class="photo-placeholder">
+                                <span class="member-initial">MP</span>
+                            </div>
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">Milena Paul</h3>
+                            <p class="member-role">Psicóloga Clínica</p>
+                            <p class="member-description">Psicóloga con amplia experiencia en el tratamiento de la ansiedad y el bienestar emocional. Líder del equipo, integra la ciencia psicológica con la tecnología para ofrecer soluciones efectivas y humanas.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section Mejorada -->
+    <section class="section mission-section-enhanced" aria-labelledby="mission-title">
+        <div class="container">
+            <div class="section-card">
+                <h2 id="mission-title" class="section-title fade-in-up">Nuestra Misión</h2>
+                <p class="section-description fade-in-up">Democratizar el acceso a herramientas de salud mental de calidad, combinando la rigurosidad científica con la calidez humana.</p>
+                
+                <div class="mission-grid-enhanced">
+                    <div class="mission-card-enhanced fade-in-up">
+                        <div class="mission-icon-enhanced">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="mission-title-enhanced">Compromiso</h3>
+                        <p class="mission-description-enhanced">Estamos comprometidos con tu bienestar mental y trabajamos cada día para crear herramientas que realmente te ayuden.</p>
+                    </div>
+                    
+                    <div class="mission-card-enhanced fade-in-up">
+                        <div class="mission-icon-enhanced">
+                            <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="mission-title-enhanced">Ciencia</h3>
+                        <p class="mission-description-enhanced">Todas nuestras herramientas están basadas en evidencia científica y respaldadas por profesionales de la salud mental.</p>
+                    </div>
+                    
+                    <div class="mission-card-enhanced fade-in-up">
+                        <div class="mission-icon-enhanced">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="mission-title-enhanced">Accesibilidad</h3>
+                        <p class="mission-description-enhanced">Creemos que el cuidado de la salud mental debe ser accesible para todos, sin importar las circunstancias.</p>
+                    </div>
+                    
+                    <div class="mission-card-enhanced fade-in-up">
+                        <div class="mission-icon-enhanced">
+                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="mission-title-enhanced">Privacidad</h3>
+                        <p class="mission-description-enhanced">Tu privacidad es sagrada. Todos tus datos están protegidos con los más altos estándares de seguridad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="section final-cta-section-enhanced" aria-labelledby="final-cta-title">
+        <div class="container">
+            <div class="final-cta-enhanced">
+                <h2 id="final-cta-title">¿Listo para conocer más sobre nosotros?</h2>
+                <p>Descubre cómo nuestro equipo puede ayudarte en tu camino hacia el bienestar mental</p>
+                <div class="cta-actions-enhanced">
+                    <a href="/evaluacion" class="btn-cta-primary" aria-label="Comenzar evaluación gratuita">
+                        <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                        Comenzar Evaluación
+                    </a>
+                    <a href="/contacto" class="btn-cta-secondary" aria-label="Contactar con el equipo">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        Contactar Equipo
+                    </a>
+                </div>
+                <div class="cta-features-enhanced">
+                    <div class="feature-item-enhanced">
+                        <i class="fas fa-user-md" aria-hidden="true"></i>
+                        <span>Profesionales Cualificados</span>
+                    </div>
+                    <div class="feature-item-enhanced">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
+                        <span>Compromiso Genuino</span>
+                    </div>
+                    <div class="feature-item-enhanced">
+                        <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                        <span>Basado en Ciencia</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

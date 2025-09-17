@@ -1,0 +1,414 @@
+/* Sensus - Micro-interactions CSS */
+/* Sistema completo de interacciones sutiles y elegantes */
+
+/* === VARIABLES DE INTERACCIÓN === */
+:root {
+  --interaction-duration: 0.3s;
+  --interaction-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --hover-scale: 1.02;
+  --active-scale: 0.98;
+  --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-active: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* === BOTONES INTERACTIVOS === */
+.btn-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  transform-origin: center;
+}
+
+.btn-interactive::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  z-index: 0;
+}
+
+.btn-interactive:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-interactive:hover {
+  transform: translateY(-2px) scale(var(--hover-scale));
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-interactive:active {
+  transform: translateY(0) scale(var(--active-scale));
+  box-shadow: var(--shadow-active);
+}
+
+.btn-interactive:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* === ENLACES INTERACTIVOS === */
+.link-interactive {
+  position: relative;
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  text-decoration: none;
+}
+
+.link-interactive::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width var(--interaction-duration) var(--interaction-easing);
+}
+
+.link-interactive:hover::after {
+  width: 100%;
+}
+
+.link-interactive:hover {
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* === CARDS INTERACTIVAS === */
+.card-interactive {
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  transform-origin: center;
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px) scale(var(--hover-scale));
+  box-shadow: var(--shadow-hover);
+}
+
+.card-interactive:active {
+  transform: translateY(-2px) scale(var(--active-scale));
+  box-shadow: var(--shadow-active);
+}
+
+/* === FORMULARIOS INTERACTIVOS === */
+.form-group {
+  position: relative;
+  margin-bottom: var(--space-4);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--focus-ring);
+  transform: scale(1.01);
+}
+
+.form-input:valid {
+  border-color: var(--success);
+}
+
+.form-input:invalid:not(:placeholder-shown) {
+  border-color: var(--error);
+}
+
+.form-label {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  pointer-events: none;
+  background: var(--background);
+  padding: 0 var(--space-1);
+}
+
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  top: -8px;
+  left: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* === ICONOS INTERACTIVOS === */
+.icon-interactive {
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  cursor: pointer;
+}
+
+.icon-interactive:hover {
+  transform: scale(1.1) rotate(5deg);
+  color: var(--primary);
+}
+
+.icon-interactive:active {
+  transform: scale(0.95) rotate(-2deg);
+}
+
+/* === LOADING STATES === */
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* === SPINNER MINIMALISTA === */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* @keyframes spin está definido en animations.css */
+
+/* === PULSE EFFECT === */
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* === FADE IN ANIMATIONS === */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s var(--interaction-easing);
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.6s var(--interaction-easing);
+}
+
+.fade-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.6s var(--interaction-easing);
+}
+
+.fade-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* === SCALE IN ANIMATIONS === */
+.scale-in {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.6s var(--interaction-easing);
+}
+
+.scale-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* === ROTATE IN ANIMATIONS === */
+.rotate-in {
+  opacity: 0;
+  transform: rotate(-10deg) scale(0.8);
+  transition: all 0.6s var(--interaction-easing);
+}
+
+.rotate-in.visible {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* === BOUNCE IN ANIMATIONS === */
+.bounce-in {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.bounce-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === STAGGERED ANIMATIONS === */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s var(--interaction-easing);
+}
+
+.stagger-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stagger-item:nth-child(1) { transition-delay: 0.1s; }
+.stagger-item:nth-child(2) { transition-delay: 0.2s; }
+.stagger-item:nth-child(3) { transition-delay: 0.3s; }
+.stagger-item:nth-child(4) { transition-delay: 0.4s; }
+.stagger-item:nth-child(5) { transition-delay: 0.5s; }
+.stagger-item:nth-child(6) { transition-delay: 0.6s; }
+
+/* === HOVER EFFECTS PARA IMÁGENES === */
+.image-hover {
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  overflow: hidden;
+}
+
+.image-hover img {
+  transition: all var(--interaction-duration) var(--interaction-easing);
+}
+
+.image-hover:hover img {
+  transform: scale(1.05);
+}
+
+.image-hover:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* === TOOLTIP INTERACTIVO === */
+.tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--background);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--interaction-duration) var(--interaction-easing);
+  z-index: 1000;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--text-primary);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--interaction-duration) var(--interaction-easing);
+}
+
+.tooltip:hover::before,
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+@media (max-width: 768px) {
+  .btn-interactive:hover {
+    transform: none;
+  }
+  
+  .card-interactive:hover {
+    transform: none;
+  }
+  
+  .icon-interactive:hover {
+    transform: none;
+  }
+}
+
+/* === DARK MODE SUPPORT === */
+[data-theme="dark"] .form-input {
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-label {
+  background: var(--background);
+}
+
+[data-theme="dark"] .tooltip::before {
+  background: var(--text-primary);
+  color: var(--background);
+}
+
+[data-theme="dark"] .tooltip::after {
+  border-top-color: var(--text-primary);
+}

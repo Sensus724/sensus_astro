@@ -69,7 +69,11 @@ function initializeServices() {
         firebaseFirestore = firebase.firestore();
         
         // Storage
-        firebaseStorage = firebase.storage();
+        if (firebase.storage) {
+            firebaseStorage = firebase.storage();
+        } else {
+            console.warn('Firebase Storage no está disponible');
+        }
         
         // Analytics
         if (firebase.analytics) {
@@ -91,7 +95,7 @@ function initializeServices() {
             firebaseFirestore.settings({
                 host: 'localhost:8080',
                 ssl: false
-            });
+            }, { merge: true });
         }
         
         console.log('Todos los servicios de Firebase inicializados correctamente');
