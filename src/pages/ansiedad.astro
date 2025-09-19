@@ -6,14 +6,38 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     title="Síntomas de Ansiedad | Sensus"
     description="Aprende a identificar y comprender los síntomas de la ansiedad. Información basada en evidencia científica."
     keywords="síntomas ansiedad, trastorno ansiedad generalizada, ataques pánico, ansiedad social"
+    pageStylesheets={[
+        '/src/styles/pages/anxiety-symptoms.css'
+    ]}
+    themeColor="#E5C4B9"
     activeNav="ansiedad"
 >
     <!-- Hero Section Mejorado -->
-    <section class="hero-section" aria-labelledby="symptoms-main-title">
+    <section class="hero-section anxiety-hero-enhanced" aria-labelledby="symptoms-main-title">
         <div class="container">
             <div class="hero-content">
                 <h1 id="symptoms-main-title" class="hero-title fade-in-up">Síntomas de Ansiedad</h1>
-                <p class="hero-subtitle fade-in-up">Aprende a identificar y comprender los síntomas de la ansiedad con información basada en evidencia científica y respaldada por profesionales.</p>
+                <p class="hero-subtitle fade-in-up">Aprende a identificar y comprender los síntomas de la ansiedad con información basada en evidencia científica y respaldada por profesionales de la salud mental.</p>
+                
+                <!-- Quick Actions Bar -->
+                <div class="quick-actions-bar fade-in-up">
+                    <button class="quick-action-btn" id="quick-assessment" title="Evaluación rápida de síntomas">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Evaluación</span>
+                    </button>
+                    <button class="quick-action-btn" id="quick-tips" title="Consejos para manejar la ansiedad">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Consejos</span>
+                    </button>
+                    <button class="quick-action-btn" id="quick-resources" title="Recursos de ayuda">
+                        <i class="fas fa-hands-helping"></i>
+                        <span>Ayuda</span>
+                    </button>
+                    <button class="quick-action-btn" id="quick-diary" title="Acceder al diario de bienestar">
+                        <i class="fas fa-book-open"></i>
+                        <span>Mi Diario</span>
+                    </button>
+                </div>
                 
                 <!-- Estadísticas de Confianza -->
                 <div class="trust-stats fade-in-up">
@@ -168,6 +192,104 @@ import BaseLayout from '../layouts/BaseLayout.astro'
         </div>
     </section>
 
+    <!-- Sección de Consejos Prácticos -->
+    <section class="section tips-section-enhanced" aria-labelledby="tips-title">
+        <div class="container">
+            <div class="section-card">
+                <h2 id="tips-title" class="section-title fade-in-up">Consejos Prácticos para Manejar la Ansiedad</h2>
+                <p class="section-description fade-in-up">Técnicas basadas en evidencia científica que puedes aplicar inmediatamente para reducir los síntomas de ansiedad.</p>
+                
+                <div class="tips-grid-enhanced">
+                    <article class="tip-card-enhanced fade-in-up">
+                        <div class="tip-icon-enhanced">
+                            <i class="fas fa-lungs" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="tip-title">Respiración 4-7-8</h3>
+                        <p class="tip-description">Técnica de respiración que activa el sistema nervioso parasimpático para reducir la ansiedad.</p>
+                        <div class="tip-steps">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <span>Inhala por 4 segundos</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <span>Mantén por 7 segundos</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <span>Exhala por 8 segundos</span>
+                            </div>
+                        </div>
+                        <button class="tip-action-btn" data-tip="breathing">
+                            <i class="fas fa-play"></i>
+                            Practicar Ahora
+                        </button>
+                    </article>
+                    
+                    <article class="tip-card-enhanced fade-in-up">
+                        <div class="tip-icon-enhanced">
+                            <i class="fas fa-mind" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="tip-title">Grounding 5-4-3-2-1</h3>
+                        <p class="tip-description">Técnica de conexión con el presente para reducir pensamientos ansiosos.</p>
+                        <div class="tip-steps">
+                            <div class="step-item">
+                                <span class="step-number">5</span>
+                                <span>5 cosas que puedes ver</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">4</span>
+                                <span>4 cosas que puedes tocar</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <span>3 cosas que puedes oír</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <span>2 cosas que puedes oler</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <span>1 cosa que puedes saborear</span>
+                            </div>
+                        </div>
+                        <button class="tip-action-btn" data-tip="grounding">
+                            <i class="fas fa-play"></i>
+                            Practicar Ahora
+                        </button>
+                    </article>
+                    
+                    <article class="tip-card-enhanced fade-in-up">
+                        <div class="tip-icon-enhanced">
+                            <i class="fas fa-muscle" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="tip-title">Relajación Muscular</h3>
+                        <p class="tip-description">Tensión y relajación progresiva de grupos musculares para reducir la tensión física.</p>
+                        <div class="tip-steps">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <span>Tensa cada grupo muscular</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <span>Mantén por 5 segundos</span>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <span>Relaja completamente</span>
+                            </div>
+                        </div>
+                        <button class="tip-action-btn" data-tip="muscle">
+                            <i class="fas fa-play"></i>
+                            Practicar Ahora
+                        </button>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Información Importante -->
     <section class="section info-section-enhanced" aria-labelledby="info-title">
         <div class="container">
@@ -210,6 +332,104 @@ import BaseLayout from '../layouts/BaseLayout.astro'
         </div>
     </section>
 
+    <!-- Sección de Recursos de Ayuda -->
+    <section class="section resources-section-enhanced" aria-labelledby="resources-title">
+        <div class="container">
+            <div class="section-card">
+                <h2 id="resources-title" class="section-title fade-in-up">Recursos de Ayuda y Emergencia</h2>
+                <p class="section-description fade-in-up">Si necesitas ayuda inmediata o apoyo profesional, estos recursos están disponibles para ti.</p>
+                
+                <div class="resources-grid-enhanced">
+                    <div class="resource-card-enhanced emergency-card fade-in-up">
+                        <div class="resource-icon-enhanced emergency-icon">
+                            <i class="fas fa-phone-alt" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="resource-title">Líneas de Emergencia</h3>
+                        <p class="resource-description">Servicios disponibles 24/7 para crisis de ansiedad o situaciones de emergencia.</p>
+                        <div class="resource-contacts">
+                            <div class="contact-item">
+                                <span class="contact-label">Emergencias:</span>
+                                <span class="contact-number">911</span>
+                            </div>
+                            <div class="contact-item">
+                                <span class="contact-label">Línea de Crisis:</span>
+                                <span class="contact-number">1-800-273-8255</span>
+                            </div>
+                            <div class="contact-item">
+                                <span class="contact-label">Texto de Crisis:</span>
+                                <span class="contact-number">Text HOME to 741741</span>
+                            </div>
+                        </div>
+                        <button class="resource-action-btn emergency-btn">
+                            <i class="fas fa-phone"></i>
+                            Llamar Ahora
+                        </button>
+                    </div>
+                    
+                    <div class="resource-card-enhanced professional-card fade-in-up">
+                        <div class="resource-icon-enhanced professional-icon">
+                            <i class="fas fa-user-md" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="resource-title">Ayuda Profesional</h3>
+                        <p class="resource-description">Conecta con profesionales de la salud mental especializados en ansiedad.</p>
+                        <div class="resource-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Psicólogos especializados</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Psiquiatras certificados</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Terapia cognitivo-conductual</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Sesiones online disponibles</span>
+                            </div>
+                        </div>
+                        <button class="resource-action-btn professional-btn">
+                            <i class="fas fa-search"></i>
+                            Buscar Profesional
+                        </button>
+                    </div>
+                    
+                    <div class="resource-card-enhanced community-card fade-in-up">
+                        <div class="resource-icon-enhanced community-icon">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="resource-title">Comunidad de Apoyo</h3>
+                        <p class="resource-description">Conecta con otras personas que entienden lo que estás pasando.</p>
+                        <div class="resource-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Grupos de apoyo locales</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Foros online seguros</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Recursos educativos</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Testimonios inspiradores</span>
+                            </div>
+                        </div>
+                        <button class="resource-action-btn community-btn">
+                            <i class="fas fa-heart"></i>
+                            Unirse a la Comunidad
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Final -->
     <section class="section final-cta-section-enhanced" aria-labelledby="final-cta-title">
         <div class="container">
@@ -243,4 +463,344 @@ import BaseLayout from '../layouts/BaseLayout.astro'
             </div>
         </div>
     </section>
+
+    <!-- JavaScript para interactividad -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Quick Actions
+            const quickAssessment = document.getElementById('quick-assessment');
+            const quickTips = document.getElementById('quick-tips');
+            const quickResources = document.getElementById('quick-resources');
+            const quickDiary = document.getElementById('quick-diary');
+
+            if (quickAssessment) {
+                quickAssessment.addEventListener('click', function() {
+                    window.location.href = '/evaluacion';
+                });
+            }
+
+            if (quickTips) {
+                quickTips.addEventListener('click', function() {
+                    document.getElementById('tips-title').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                });
+            }
+
+            if (quickResources) {
+                quickResources.addEventListener('click', function() {
+                    document.getElementById('resources-title').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                });
+            }
+
+            if (quickDiary) {
+                quickDiary.addEventListener('click', function() {
+                    window.location.href = '/diario';
+                });
+            }
+
+            // Tip Action Buttons
+            const tipButtons = document.querySelectorAll('.tip-action-btn');
+            tipButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tipType = this.getAttribute('data-tip');
+                    showTipModal(tipType);
+                });
+            });
+
+            // Resource Action Buttons
+            const emergencyBtn = document.querySelector('.emergency-btn');
+            const professionalBtn = document.querySelector('.professional-btn');
+            const communityBtn = document.querySelector('.community-btn');
+
+            if (emergencyBtn) {
+                emergencyBtn.addEventListener('click', function() {
+                    alert('En caso de emergencia, llama al 911 o a la línea de crisis 1-800-273-8255');
+                });
+            }
+
+            if (professionalBtn) {
+                professionalBtn.addEventListener('click', function() {
+                    alert('Te ayudaremos a encontrar profesionales especializados en ansiedad. Esta función estará disponible próximamente.');
+                });
+            }
+
+            if (communityBtn) {
+                communityBtn.addEventListener('click', function() {
+                    alert('Pronto podrás unirte a nuestra comunidad de apoyo. ¡Mantente atento!');
+                });
+            }
+
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.5,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateNumbers();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const statsSection = document.querySelector('.trust-stats');
+            if (statsSection) {
+                observer.observe(statsSection);
+            }
+        });
+
+        function showTipModal(tipType) {
+            const modals = {
+                breathing: {
+                    title: 'Ejercicio de Respiración 4-7-8',
+                    steps: [
+                        'Siéntate cómodamente y cierra los ojos',
+                        'Inhala por la nariz contando hasta 4',
+                        'Mantén la respiración contando hasta 7',
+                        'Exhala por la boca contando hasta 8',
+                        'Repite el ciclo 4 veces'
+                    ],
+                    duration: '4 minutos'
+                },
+                grounding: {
+                    title: 'Técnica Grounding 5-4-3-2-1',
+                    steps: [
+                        'Identifica 5 cosas que puedes VER',
+                        'Identifica 4 cosas que puedes TOCAR',
+                        'Identifica 3 cosas que puedes OÍR',
+                        'Identifica 2 cosas que puedes OLER',
+                        'Identifica 1 cosa que puedes SABOREAR'
+                    ],
+                    duration: '5 minutos'
+                },
+                muscle: {
+                    title: 'Relajación Muscular Progresiva',
+                    steps: [
+                        'Tensa los músculos de los pies por 5 segundos',
+                        'Relaja completamente y siente la diferencia',
+                        'Continúa con pantorrillas, muslos, abdomen',
+                        'Sigue con brazos, manos, cuello y cara',
+                        'Termina con una respiración profunda'
+                    ],
+                    duration: '10 minutos'
+                }
+            };
+
+            const modal = modals[tipType];
+            if (modal) {
+                const modalHtml = `
+                    <div class="tip-modal-overlay" onclick="closeTipModal()">
+                        <div class="tip-modal-content" onclick="event.stopPropagation()">
+                            <div class="tip-modal-header">
+                                <h3>${modal.title}</h3>
+                                <button class="tip-modal-close" onclick="closeTipModal()">&times;</button>
+                            </div>
+                            <div class="tip-modal-body">
+                                <div class="tip-modal-steps">
+                                    ${modal.steps.map((step, index) => `
+                                        <div class="tip-modal-step">
+                                            <span class="tip-step-number">${index + 1}</span>
+                                            <span class="tip-step-text">${step}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="tip-modal-duration">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Tiempo estimado: ${modal.duration}</span>
+                                </div>
+                            </div>
+                            <div class="tip-modal-footer">
+                                <button class="tip-modal-start" onclick="startTipExercise('${tipType}')">
+                                    <i class="fas fa-play"></i>
+                                    Comenzar Ejercicio
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            }
+        }
+
+        function closeTipModal() {
+            const modal = document.querySelector('.tip-modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function startTipExercise(tipType) {
+            closeTipModal();
+            alert(`¡Perfecto! Comenzando el ejercicio de ${tipType}. Encuentra un lugar tranquilo y sigue las instrucciones paso a paso.`);
+        }
+
+        function animateNumbers() {
+            const numberElements = document.querySelectorAll('.stat-number[data-count]');
+            
+            numberElements.forEach(element => {
+                const target = parseInt(element.getAttribute('data-count'));
+                const duration = 2000; // 2 seconds
+                const increment = target / (duration / 16); // 60fps
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    element.textContent = Math.floor(current);
+                }, 16);
+            });
+        }
+    </script>
+
+    <!-- Estilos para el modal -->
+    <style>
+        .tip-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .tip-modal-content {
+            background: var(--anxiety-card-bg);
+            border-radius: 25px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--anxiety-shadow-xl);
+            border: 1px solid var(--anxiety-border);
+        }
+
+        .tip-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--anxiety-border);
+        }
+
+        .tip-modal-header h3 {
+            color: var(--anxiety-text);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .tip-modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--anxiety-text-light);
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tip-modal-close:hover {
+            color: var(--anxiety-text);
+        }
+
+        .tip-modal-steps {
+            margin-bottom: 2rem;
+        }
+
+        .tip-modal-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: var(--anxiety-gradient-subtle);
+            border-radius: 15px;
+            border: 1px solid var(--anxiety-border);
+        }
+
+        .tip-step-number {
+            width: 30px;
+            height: 30px;
+            background: var(--anxiety-gradient-button);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .tip-step-text {
+            color: var(--anxiety-text);
+            font-weight: 500;
+        }
+
+        .tip-modal-duration {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--anxiety-gradient-accent);
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .tip-modal-duration i {
+            font-size: 1.2rem;
+        }
+
+        .tip-modal-footer {
+            text-align: center;
+        }
+
+        .tip-modal-start {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--anxiety-gradient-button);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--anxiety-shadow);
+        }
+
+        .tip-modal-start:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--anxiety-shadow-lg);
+            background: var(--anxiety-gradient-button-hover);
+        }
+
+        .tip-modal-start i {
+            font-size: 1.1rem;
+        }
+    </style>
 </BaseLayout>

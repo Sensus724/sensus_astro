@@ -17,7 +17,7 @@ const organizedFiles = {
     
     // === MÓDULOS ===
     modules: [
-        '/js/modules/auth.js',
+        '/js/modules/auth-enhanced.js',
         '/js/modules/firebase-config.js'
     ],
     

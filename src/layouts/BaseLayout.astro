@@ -25,9 +25,9 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
     
-    <!-- CSS Principal Completo -->
+    <!-- CSS Principal Optimizado -->
     <style is:global>
-        @import "/src/styles/main-complete.css";
+        @import "/src/styles/main.css";
     </style>
     
     <!-- Fuentes -->
@@ -43,10 +43,90 @@ const {
     <meta name="keywords" content={keywords}>
     <meta name="author" content="Sensus Team">
     
+    <!-- SEO Mejorado -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    <meta name="bingbot" content="index, follow">
+    <link rel="canonical" href="https://sensus.app{import.meta.env.BASE_URL}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sensus.app{import.meta.env.BASE_URL}">
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:image" content="https://sensus.app/assets/images/Logo.jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Sensus">
+    <meta property="og:locale" content="es_ES">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://sensus.app{import.meta.env.BASE_URL}">
+    <meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description}>
+    <meta name="twitter:image" content="https://sensus.app/assets/images/Logo.jpeg">
+    <meta name="twitter:creator" content="@sensus_app">
+    <meta name="twitter:site" content="@sensus_app">
+    
+    <!-- Mobile App -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sensus">
+    <meta name="application-name" content="Sensus">
+    
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Preload crítico -->
+    <link rel="preload" href="/src/styles/main.css" as="style">
+    <link rel="preload" href="/js/base/core.js" as="script">
+    <link rel="preload" href="/js/modules/auth-enhanced.js" as="script">
+    
     <!-- Favicon -->
     <link rel="icon" href="/assets/images/Logo.jpeg" type="image/jpeg">
     <link rel="apple-touch-icon" href="/assets/images/Logo.jpeg">
     <meta name="theme-color" content={themeColor}>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Sensus",
+      "description": "Tu compañero inteligente para la calma. Test GAD-7 gratuito, diario emocional encriptado y recursos profesionales respaldados por la ciencia.",
+      "url": "https://sensus.app",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "127000"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Sensus Team"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Sensus",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://sensus.app/assets/images/Logo.jpeg"
+        }
+      }
+    }
+    </script>
 </head>
 <body>
     <!-- Animación de carga -->
@@ -417,17 +497,17 @@ const {
                                 <li><a href="/planes"><i class="fas fa-star"></i> Planes</a></li>
                                 <li><a href="/equipo"><i class="fas fa-users"></i> Equipo</a></li>
                                 <li><a href="/contacto"><i class="fas fa-envelope"></i> Contacto</a></li>
-                                <li><a href="/blog"><i class="fas fa-blog"></i> Blog</a></li>
+                                <li><a href="/test"><i class="fas fa-clipboard-check"></i> Test</a></li>
                             </ul>
                         </div>
 
                         <div class="footer-section">
-                            <h3 class="footer-section-title">Soporte</h3>
+                            <h3 class="footer-section-title">Legal</h3>
                             <ul class="footer-links">
-                                <li><a href="/ayuda"><i class="fas fa-question-circle"></i> Ayuda</a></li>
-                                <li><a href="/faq"><i class="fas fa-comments"></i> FAQ</a></li>
-                                <li><a href="/comunidad"><i class="fas fa-users"></i> Comunidad</a></li>
-                                <li><a href="/reportar"><i class="fas fa-flag"></i> Reportar</a></li>
+                                <li><a href="/politica-privacidad"><i class="fas fa-shield-alt"></i> Política de Privacidad</a></li>
+                                <li><a href="/terminos-uso"><i class="fas fa-file-contract"></i> Términos de Uso</a></li>
+                                <li><a href="/contacto"><i class="fas fa-envelope"></i> Contacto</a></li>
+                                <li><a href="/equipo"><i class="fas fa-users"></i> Equipo</a></li>
                             </ul>
                         </div>
                     </div>
@@ -497,6 +577,219 @@ const {
     <script is:inline src="/js/firebase-init.js"></script>
     <script is:inline src="/js/modules/firebase-services.js"></script>
     <script is:inline src="/js/modules/auth-enhanced.js"></script>
+    
+    <!-- Scripts Core -->
+    <script is:inline src="/js/base/core.js"></script>
+    <script is:inline src="/js/components/header-interactions.js"></script>
+
+    <!-- Script de Funcionalidades Básicas -->
+    <script is:inline>
+      // ===== SISTEMA DE MENÚ MÓVIL =====
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Script de menú móvil cargado');
+        
+        const menuToggle = document.querySelector('.menu-toggle');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const menuBackdrop = document.querySelector('.menu-backdrop');
+        
+        console.log('Elementos encontrados:', {
+          menuToggle: !!menuToggle,
+          menuOverlay: !!menuOverlay,
+          menuBackdrop: !!menuBackdrop
+        });
+        
+        if (menuToggle && menuOverlay) {
+          // Función para abrir menú
+          function openMenu() {
+            console.log('Abriendo menú');
+            menuToggle.classList.add('active');
+            menuOverlay.classList.add('active');
+            if (menuBackdrop) menuBackdrop.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          }
+          
+          // Función para cerrar menú
+          function closeMenu() {
+            console.log('Cerrando menú');
+            menuToggle.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            if (menuBackdrop) menuBackdrop.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+          
+          // Event listener principal del botón hamburguesa
+          menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Botón hamburguesa clickeado');
+            
+            if (menuOverlay.classList.contains('active')) {
+              closeMenu();
+            } else {
+              openMenu();
+            }
+          });
+          
+          // Cerrar menú al hacer clic en backdrop
+          if (menuBackdrop) {
+            menuBackdrop.addEventListener('click', function(e) {
+              e.preventDefault();
+              closeMenu();
+            });
+          }
+          
+          // Cerrar menú al hacer clic en enlaces
+          const mobileNavItems = menuOverlay.querySelectorAll('a');
+          console.log('Enlaces del menú móvil encontrados:', mobileNavItems.length);
+          
+          mobileNavItems.forEach((link, index) => {
+            link.addEventListener('click', function(e) {
+              const href = this.getAttribute('href');
+              console.log(`Enlace ${index} clickeado:`, href);
+              
+              // Verificar que el enlace no sea un enlace externo o especial
+              if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+                // Cerrar menú antes de navegar
+                closeMenu();
+                // Pequeña demora para permitir que la animación se complete
+                setTimeout(() => {
+                  window.location.href = href;
+                }, 150);
+              } else {
+                closeMenu();
+              }
+            });
+          });
+          
+          // Cerrar menú con Escape
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+              closeMenu();
+            }
+          });
+          
+          // Cerrar menú al redimensionar
+          window.addEventListener('resize', function() {
+            if (window.innerWidth > 767) {
+              closeMenu();
+            }
+          });
+          
+          console.log('Event listeners del menú móvil configurados');
+        } else {
+          console.error('No se encontraron los elementos del menú móvil');
+        }
+        
+        // ===== SISTEMA DE TEMAS =====
+        const themeButtons = document.querySelectorAll('.theme-toggle');
+        let currentTheme = localStorage.getItem('sensus_theme') || 'light';
+        
+        // Aplicar tema inicial
+        function applyTheme(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+          currentTheme = theme;
+          localStorage.setItem('sensus_theme', theme);
+          
+          // Actualizar botones
+          themeButtons.forEach(button => {
+            const sunIcon = button.querySelector('.sun');
+            const moonIcon = button.querySelector('.moon');
+            
+            if (theme === 'dark') {
+              if (sunIcon) sunIcon.style.display = 'none';
+              if (moonIcon) moonIcon.style.display = 'inline-block';
+              button.setAttribute('aria-pressed', 'true');
+            } else {
+              if (sunIcon) sunIcon.style.display = 'inline-block';
+              if (moonIcon) moonIcon.style.display = 'none';
+              button.setAttribute('aria-pressed', 'false');
+            }
+          });
+        }
+        
+        // Aplicar tema guardado
+        applyTheme(currentTheme);
+        
+        // Event listeners para botones de tema
+        themeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+          });
+        });
+        
+        // ===== NAVEGACIÓN DEL FOOTER =====
+        const footerLinks = document.querySelectorAll('.footer-links a');
+        footerLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:') && !href.startsWith('http')) {
+              e.preventDefault();
+              // Navegar a la página
+              window.location.href = href;
+            }
+          });
+        });
+        
+        // ===== BOTÓN SCROLL TO TOP =====
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        if (scrollToTopBtn) {
+          // Mostrar/ocultar botón según scroll
+          window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+              scrollToTopBtn.classList.add('visible');
+            } else {
+              scrollToTopBtn.classList.remove('visible');
+            }
+          });
+          
+          // Funcionalidad del botón
+          scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
+          });
+        }
+      });
+      
+      // ===== SCRIPT DE PRUEBA ADICIONAL =====
+      // Ejecutar después de un pequeño delay para asegurar que todo esté cargado
+      setTimeout(function() {
+        console.log('Ejecutando script de prueba del menú móvil');
+        
+        const menuToggle = document.querySelector('.menu-toggle');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        
+        if (menuToggle) {
+          console.log('Botón hamburguesa encontrado, añadiendo event listener adicional');
+          
+          // Añadir un event listener adicional como respaldo
+          menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Event listener adicional activado');
+            
+            if (menuOverlay) {
+              if (menuOverlay.classList.contains('active')) {
+                menuOverlay.classList.remove('active');
+                menuToggle.classList.remove('active');
+                document.body.style.overflow = '';
+                console.log('Menú cerrado');
+              } else {
+                menuOverlay.classList.add('active');
+                menuToggle.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                console.log('Menú abierto');
+              }
+            }
+          });
+        } else {
+          console.error('Botón hamburguesa no encontrado en el script de prueba');
+        }
+      }, 1000);
+    </script>
 
     <!-- Script del Modal de Autenticación -->
     <script is:inline>

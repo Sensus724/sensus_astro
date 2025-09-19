@@ -439,6 +439,193 @@ class FirebaseServices {
         }
     }
 
+    // === SEGUIMIENTO DE ANSIEDAD ===
+    async saveAnxietyLevel(anxietyData) {
+        try {
+            if (!this.currentUser) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            const anxietyEntry = {
+                userId: this.currentUser.uid,
+                level: anxietyData.level,
+                date: firebase.firestore.FieldValue.serverTimestamp(),
+                timestamp: anxietyData.timestamp || Date.now(),
+                notes: anxietyData.notes || '',
+                context: anxietyData.context || 'general',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const docRef = await this.db.collection('anxiety_levels').add(anxietyEntry);
+            
+            // Actualizar estadísticas del usuario
+            await this.updateUserStats('averageMood', anxietyData.level);
+            
+            console.log('✅ Nivel de ansiedad guardado:', docRef.id);
+            return docRef.id;
+        } catch (error) {
+            console.error('❌ Error guardando nivel de ansiedad:', error);
+            throw error;
+        }
+    }
+
+    async getAnxietyLevels(limit = 30, startAfter = null) {
+        try {
+            if (!this.currentUser) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            let query = this.db.collection('anxiety_levels')
+                .where('userId', '==', this.currentUser.uid)
+                .orderBy('createdAt', 'desc')
+                .limit(limit);
+
+            if (startAfter) {
+                query = query.startAfter(startAfter);
+            }
+
+            const snapshot = await query.get();
+            const levels = [];
+            
+            snapshot.forEach(doc => {
+                levels.push({ id: doc.id, ...doc.data() });
+            });
+
+            return levels;
+        } catch (error) {
+            console.error('❌ Error obteniendo niveles de ansiedad:', error);
+            throw error;
+        }
+    }
+
+    // === PLAN PERSONALIZADO ===
+    async savePersonalizedPlan(planData) {
+        try {
+            if (!this.currentUser) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            const plan = {
+                userId: this.currentUser.uid,
+                anxietyLevel: planData.anxietyLevel,
+                planType: planData.planType,
+                weeklyGoal: planData.weeklyGoal,
+                recommendations: planData.recommendations,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                isActive: true
+            };
+
+            // Verificar si ya existe un plan activo
+            const existingPlan = await this.db.collection('personalized_plans')
+                .where('userId', '==', this.currentUser.uid)
+                .where('isActive', '==', true)
+                .get();
+
+            if (!existingPlan.empty) {
+                // Desactivar plan anterior
+                const batch = this.db.batch();
+                existingPlan.forEach(doc => {
+                    batch.update(doc.ref, { isActive: false });
+                });
+                await batch.commit();
+            }
+
+            const docRef = await this.db.collection('personalized_plans').add(plan);
+            
+            console.log('✅ Plan personalizado guardado:', docRef.id);
+            return docRef.id;
+        } catch (error) {
+            console.error('❌ Error guardando plan personalizado:', error);
+            throw error;
+        }
+    }
+
+    async getPersonalizedPlan() {
+        try {
+            if (!this.currentUser) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            const snapshot = await this.db.collection('personalized_plans')
+                .where('userId', '==', this.currentUser.uid)
+                .where('isActive', '==', true)
+                .orderBy('createdAt', 'desc')
+                .limit(1)
+                .get();
+
+            if (!snapshot.empty) {
+                const doc = snapshot.docs[0];
+                return { id: doc.id, ...doc.data() };
+            }
+            return null;
+        } catch (error) {
+            console.error('❌ Error obteniendo plan personalizado:', error);
+            throw error;
+        }
+    }
+
+    // === ACTIVIDADES DIARIAS ===
+    async saveDailyActivity(activityData) {
+        try {
+            if (!this.currentUser) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            const activity = {
+                userId: this.currentUser.uid,
+                activityId: activityData.activityId,
+                title: activityData.title,
+                description: activityData.description,
+                duration: activityData.duration,
+                priority: activityData.priority,
+                completed: activityData.completed,
+                completedAt: activityData.completed ? firebase.firestore.FieldValue.serverTimestamp() : null,
+                date: activityData.date,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const docRef = await this.db.collection('daily_activities').add(activity);
+            
+            console.log('✅ Actividad diaria guardada:', docRef.id);
+            return docRef.id;
+        } catch (error) {
+            console.error('❌ Error guardando actividad diaria:', error);
+            throw error;
+        }
+    }
+
+    async getDailyActivities(date) {
+        try {
+            if (!this.currentUser) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0);
+            
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            const snapshot = await this.db.collection('daily_activities')
+                .where('userId', '==', this.currentUser.uid)
+                .where('date', '>=', startOfDay)
+                .where('date', '<=', endOfDay)
+                .orderBy('date', 'asc')
+                .get();
+
+            const activities = [];
+            snapshot.forEach(doc => {
+                activities.push({ id: doc.id, ...doc.data() });
+            });
+
+            return activities;
+        } catch (error) {
+            console.error('❌ Error obteniendo actividades diarias:', error);
+            throw error;
+        }
+    }
+
     // === NOTIFICACIONES ===
     async createNotification(notificationData) {
         try {

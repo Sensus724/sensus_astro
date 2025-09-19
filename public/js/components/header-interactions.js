@@ -9,53 +9,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const logo = document.querySelector('.logo-placeholder');
     
     // ===== MENÚ HAMBURGUESA =====
-    if (menuToggle && navLinks) {
-        // Crear overlay si no existe
-        let menuOverlay = document.querySelector('.menu-overlay');
-        if (!menuOverlay) {
-            menuOverlay = document.createElement('div');
-            menuOverlay.className = 'menu-overlay';
-            document.body.appendChild(menuOverlay);
-        }
+    if (menuToggle) {
+        // Obtener elementos del menú móvil
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const menuBackdrop = document.querySelector('.menu-backdrop');
         
         // Función para abrir menú
         function openMenu() {
             menuToggle.classList.add('active');
-            navLinks.classList.add('active');
-            menuOverlay.classList.add('active');
+            if (menuOverlay) menuOverlay.classList.add('active');
+            if (menuBackdrop) menuBackdrop.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
         
         // Función para cerrar menú
         function closeMenu() {
             menuToggle.classList.remove('active');
-            navLinks.classList.remove('active');
-            menuOverlay.classList.remove('active');
+            if (menuOverlay) menuOverlay.classList.remove('active');
+            if (menuBackdrop) menuBackdrop.classList.remove('active');
             document.body.style.overflow = '';
         }
         
         // Event listeners
         menuToggle.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (navLinks.classList.contains('active')) {
+            if (menuOverlay && menuOverlay.classList.contains('active')) {
                 closeMenu();
             } else {
                 openMenu();
             }
         });
         
-        // Cerrar menú al hacer clic en overlay
-        menuOverlay.addEventListener('click', closeMenu);
+        // Cerrar menú al hacer clic en backdrop
+        if (menuBackdrop) {
+            menuBackdrop.addEventListener('click', closeMenu);
+        }
         
-        // Cerrar menú al hacer clic en enlaces
-        const navItems = navLinks.querySelectorAll('a');
-        navItems.forEach(link => {
-            link.addEventListener('click', closeMenu);
-        });
+        // Cerrar menú al hacer clic en enlaces del menú móvil
+        if (menuOverlay) {
+            const mobileNavItems = menuOverlay.querySelectorAll('a');
+            mobileNavItems.forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
+        }
         
         // Cerrar menú con tecla Escape
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+            if (e.key === 'Escape' && menuOverlay && menuOverlay.classList.contains('active')) {
                 closeMenu();
             }
         });
@@ -222,21 +222,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // Función para toggle de menú móvil
 function toggleMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
     const menuOverlay = document.querySelector('.menu-overlay');
+    const menuBackdrop = document.querySelector('.menu-backdrop');
     
-    if (menuToggle && navLinks) {
-        const isActive = navLinks.classList.contains('active');
+    if (menuToggle && menuOverlay) {
+        const isActive = menuOverlay.classList.contains('active');
         
         if (isActive) {
             menuToggle.classList.remove('active');
-            navLinks.classList.remove('active');
-            if (menuOverlay) menuOverlay.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            if (menuBackdrop) menuBackdrop.classList.remove('active');
             document.body.style.overflow = '';
         } else {
             menuToggle.classList.add('active');
-            navLinks.classList.add('active');
-            if (menuOverlay) menuOverlay.classList.add('active');
+            menuOverlay.classList.add('active');
+            if (menuBackdrop) menuBackdrop.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
     }
@@ -245,13 +245,13 @@ function toggleMobileMenu() {
 // Función para cerrar menú móvil
 function closeMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
     const menuOverlay = document.querySelector('.menu-overlay');
+    const menuBackdrop = document.querySelector('.menu-backdrop');
     
-    if (menuToggle && navLinks) {
+    if (menuToggle && menuOverlay) {
         menuToggle.classList.remove('active');
-        navLinks.classList.remove('active');
-        if (menuOverlay) menuOverlay.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        if (menuBackdrop) menuBackdrop.classList.remove('active');
         document.body.style.overflow = '';
     }
 }

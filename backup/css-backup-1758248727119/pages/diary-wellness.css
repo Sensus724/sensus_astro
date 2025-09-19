@@ -376,6 +376,15 @@
     display: flex;
 }
 
+.modal-content {
+    background: var(--diary-card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
 .modal-header {
     display: flex;
@@ -1474,8 +1483,34 @@
 }
 
 /* === PROGRESS BARS ENHANCED === */
+.progress-bar-enhanced {
+    width: 100%;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
 
+.progress-fill-enhanced {
+    height: 100%;
+    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+    border-radius: 4px;
+    transition: width 0.8s ease;
+    position: relative;
+    overflow: hidden;
+}
 
+.progress-fill-enhanced::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
 
 @keyframes shimmer {
     0% { transform: translateX(-100%); }
@@ -1878,10 +1913,35 @@
     overflow-y: auto;
 }
 
+.modal-content-enhanced h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--diary-text);
+    margin-bottom: 1rem;
+}
 
+.modal-content-enhanced ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
 
+.modal-content-enhanced li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
 
+.modal-content-enhanced li:last-child {
+    border-bottom: none;
+}
 
+.modal-content-enhanced strong {
+    color: var(--diary-text);
+    font-weight: 600;
+}
 
 .modal-footer {
     padding: 1rem 2rem 2rem;
@@ -3618,6 +3678,15 @@
     display: flex;
 }
 
+.goal-modal .modal-content {
+    background: var(--diary-card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
 .form-group {
     margin-bottom: 1.5rem;
@@ -3738,6 +3807,15 @@
     display: flex;
 }
 
+.reminder-modal .modal-content {
+    background: var(--diary-card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 450px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
 .form-checkbox {
     display: flex;
@@ -4184,7 +4262,19 @@
     margin-bottom: 0.5rem;
 }
 
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--diary-bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
 
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--diary-primary), var(--diary-accent));
+    transition: width 0.3s ease;
+}
 
 .plan-recommendations h3 {
     font-size: 1.5rem;
@@ -4448,6 +4538,15 @@
     display: flex;
 }
 
+.daily-activity-modal .modal-content {
+    background: var(--diary-card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
 .daily-activities {
     margin-bottom: 2rem;
@@ -4543,6 +4642,14 @@
     margin-bottom: 0.5rem;
 }
 
+.activity-progress .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: var(--diary-border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
 
 .activity-progress .progress-fill {
     height: 100%;
@@ -4665,6 +4772,13 @@
     gap: 0.5rem;
 }
 
+.achievement-progress .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--diary-bg);
+    border-radius: 3px;
+    overflow: hidden;
+}
 
 .achievement-progress .progress-fill {
     height: 100%;
@@ -5147,6 +5261,14 @@
     z-index: 1000;
 }
 
+.quick-modal .modal-content {
+    background: var(--diary-card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--diary-shadow-lg);
+}
 
 .quick-mood-buttons {
     display: grid;
@@ -5902,7 +6024,14 @@
         padding: 1.5rem;
     }
     
+    .modal-content-enhanced h3 {
+        font-size: 1.125rem;
+    }
     
+    .modal-content-enhanced li {
+        padding: 0.5rem 0;
+        font-size: 0.875rem;
+    }
     
     .modal-footer {
         padding: 1rem 1.5rem 1.5rem;
@@ -6013,6 +6142,10 @@
         gap: 1rem;
     }
     
+    .daily-activity-modal .modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
     
     .activity-details {
         flex-direction: column;
@@ -6071,6 +6204,10 @@
         padding: 1.5rem;
     }
     
+    .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
     
     .timer-display {
         font-size: 2rem;
@@ -6107,8 +6244,29 @@
     z-index: 1;
 }
 
+.section-title-professional {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--diary-text);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
 
+.section-title-professional i {
+    color: var(--diary-primary);
+    font-size: 2rem;
+}
 
+.section-description-professional {
+    font-size: 1.125rem;
+    color: var(--diary-text-light);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
 
 .exercise-filters {
     display: flex;
@@ -6543,6 +6701,11 @@
         padding: 2rem 0;
     }
     
+    .section-title-professional {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
     
     .exercise-filters {
         gap: 0.5rem;
@@ -6578,7 +6741,13 @@
 }
 
 @media (max-width: 480px) {
+    .section-title-professional {
+        font-size: 1.75rem;
+    }
     
+    .section-description-professional {
+        font-size: 1rem;
+    }
     
     .exercise-card-professional {
         padding: 1.25rem;
@@ -6867,6 +7036,17 @@
     backdrop-filter: blur(5px);
 }
 
+.modal-content-simple {
+    position: relative;
+    background: white;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
 
 @keyframes modalSlideIn {
     from {
@@ -7005,6 +7185,10 @@
 }
 
 @media (max-width: 768px) {
+    .modal-content-simple {
+        width: 95%;
+        margin: 1rem;
+    }
     
     .modal-header-simple,
     .modal-body-simple {

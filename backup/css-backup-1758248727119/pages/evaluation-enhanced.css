@@ -35,7 +35,26 @@
   z-index: 1;
 }
 
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 var(--space-4) 0;
+  line-height: 1.2;
+}
 
+.hero-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0 0 var(--space-8) 0;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 /* === ESTADÍSTICAS DE CONFIANZA === */
 .trust-stats {
@@ -662,6 +681,14 @@
   border-left: 4px solid var(--primary);
 }
 
+.user-test-progress .progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-3);
+}
 
 .user-test-progress .progress-fill {
   height: 100%;
@@ -953,7 +980,13 @@
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
+  .hero-title {
+    font-size: var(--font-size-2xl);
+  }
   
+  .hero-subtitle {
+    font-size: var(--font-size-base);
+  }
   
   .trust-stats {
     grid-template-columns: 1fr;

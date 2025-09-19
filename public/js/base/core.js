@@ -194,39 +194,77 @@ window.SensusNotifications = {
 
 // === SISTEMA DE TEMAS ===
 window.SensusThemes = {
-    current: 'default',
+    current: 'light',
     
     init: () => {
         const savedTheme = localStorage.getItem('sensus_theme');
         if (savedTheme) {
-            this.apply(savedTheme);
+            SensusThemes.apply(savedTheme);
+        } else {
+            // Detectar preferencia del sistema
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            SensusThemes.apply(prefersDark ? 'dark' : 'light');
         }
     },
     
     apply: (themeName) => {
         // Remover tema anterior
-        document.body.classList.remove(`theme-${this.current}`);
+        document.documentElement.removeAttribute('data-theme');
+        document.body.classList.remove(`theme-${SensusThemes.current}`);
         
         // Aplicar nuevo tema
+        document.documentElement.setAttribute('data-theme', themeName);
         document.body.classList.add(`theme-${themeName}`);
-        this.current = themeName;
+        SensusThemes.current = themeName;
         
         // Guardar preferencia
         localStorage.setItem('sensus_theme', themeName);
+        
+        // Actualizar botones de tema
+        SensusThemes.updateThemeButtons();
         
         // Emitir evento
         SensusEvents.emit('themeChanged', themeName);
     },
     
-    getAvailable: () => [
-        'default', 'sunshine', 'ocean', 'forest', 'sunset', 'night'
-    ]
+    toggle: () => {
+        const newTheme = SensusThemes.current === 'light' ? 'dark' : 'light';
+        SensusThemes.apply(newTheme);
+    },
+    
+    updateThemeButtons: () => {
+        const themeButtons = document.querySelectorAll('.theme-toggle');
+        themeButtons.forEach(button => {
+            const sunIcon = button.querySelector('.sun');
+            const moonIcon = button.querySelector('.moon');
+            
+            if (SensusThemes.current === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'inline-block';
+                button.setAttribute('aria-pressed', 'true');
+            } else {
+                sunIcon.style.display = 'inline-block';
+                moonIcon.style.display = 'none';
+                button.setAttribute('aria-pressed', 'false');
+            }
+        });
+    },
+    
+    getAvailable: () => ['light', 'dark']
 };
 
 // === INICIALIZACIÓN ===
 document.addEventListener('DOMContentLoaded', () => {
     // Inicializar sistemas base
     SensusThemes.init();
+    
+    // Configurar botones de tema
+    const themeButtons = document.querySelectorAll('.theme-toggle');
+    themeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            SensusThemes.toggle();
+        });
+    });
     
     // Verificar soporte de características
     if (!SensusUtils.checkSupport.localStorage()) {
