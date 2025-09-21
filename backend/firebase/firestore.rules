@@ -1,0 +1,266 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ========================================
+    // REGLAS PARA USUARIOS
+    // ========================================
+    match /users/{userId} {
+      // Solo el usuario propietario puede leer y escribir sus datos
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Validación para creación de usuarios
+      allow create: if request.auth != null && 
+        request.auth.uid == userId &&
+        isValidUserData(request.resource.data);
+      
+      // Validación para actualización de usuarios
+      allow update: if request.auth != null && 
+        request.auth.uid == userId &&
+        isValidUserUpdate(request.resource.data, resource.data);
+    }
+    
+    // ========================================
+    // REGLAS PARA ENTRADAS DEL DIARIO
+    // ========================================
+    match /diary_entries/{entryId} {
+      // Solo el usuario propietario puede acceder a sus entradas
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      
+      // Validación para creación de entradas
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        isValidDiaryEntry(request.resource.data);
+      
+      // Validación para actualización de entradas
+      allow update: if request.auth != null && 
+        request.auth.uid == resource.data.userId &&
+        isValidDiaryEntryUpdate(request.resource.data, resource.data);
+    }
+    
+    // ========================================
+    // REGLAS PARA EVALUACIONES
+    // ========================================
+    match /evaluations/{evaluationId} {
+      // Solo el usuario propietario puede acceder a sus evaluaciones
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      
+      // Validación para creación de evaluaciones
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        isValidEvaluation(request.resource.data);
+      
+      // Validación para actualización de evaluaciones
+      allow update: if request.auth != null && 
+        request.auth.uid == resource.data.userId &&
+        isValidEvaluationUpdate(request.resource.data, resource.data);
+    }
+    
+    // ========================================
+    // REGLAS PARA SESIONES DE EJERCICIOS
+    // ========================================
+    match /exercise_sessions/{sessionId} {
+      // Solo el usuario propietario puede acceder a sus sesiones
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      
+      // Validación para creación de sesiones
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        isValidExerciseSession(request.resource.data);
+    }
+    
+    // ========================================
+    // REGLAS PARA PLANES DE BIENESTAR
+    // ========================================
+    match /wellness_plans/{planId} {
+      // Solo el usuario propietario puede acceder a sus planes
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      
+      // Validación para creación de planes
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        isValidWellnessPlan(request.resource.data);
+    }
+    
+    // ========================================
+    // REGLAS PARA ESTADÍSTICAS DEL USUARIO
+    // ========================================
+    match /user_stats/{userId} {
+      // Solo el usuario propietario puede acceder a sus estadísticas
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Validación para creación de estadísticas
+      allow create: if request.auth != null && 
+        request.auth.uid == userId &&
+        isValidUserStats(request.resource.data);
+    }
+    
+    // ========================================
+    // REGLAS PARA NOTIFICACIONES
+    // ========================================
+    match /notifications/{notificationId} {
+      // Solo el usuario propietario puede acceder a sus notificaciones
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      
+      // Validación para creación de notificaciones
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        isValidNotification(request.resource.data);
+    }
+    
+    // ========================================
+    // REGLAS PARA ANALYTICS
+    // ========================================
+    match /analytics/{document} {
+      // Solo el usuario propietario puede leer sus analytics
+      allow read: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      
+      // Solo el sistema puede escribir analytics
+      allow write: if false;
+    }
+    
+    // ========================================
+    // REGLAS PARA CONTENIDO PÚBLICO
+    // ========================================
+    match /public_content/{document} {
+      // Cualquiera puede leer contenido público
+      allow read: if true;
+      
+      // Solo administradores pueden escribir contenido público
+      allow write: if request.auth != null && 
+        isAdmin(request.auth.uid);
+    }
+    
+    // ========================================
+    // REGLAS PARA CONFIGURACIÓN DEL SISTEMA
+    // ========================================
+    match /system_config/{document} {
+      // Solo administradores pueden acceder a la configuración del sistema
+      allow read, write: if request.auth != null && 
+        isAdmin(request.auth.uid);
+    }
+    
+    // ========================================
+    // FUNCIONES DE VALIDACIÓN
+    // ========================================
+    
+    // Validar datos de usuario
+    function isValidUserData(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'createdAt', 'preferences', 'stats', 'privacy']) &&
+             data.uid is string &&
+             data.email is string &&
+             data.displayName is string &&
+             data.createdAt is timestamp &&
+             data.preferences is map &&
+             data.stats is map &&
+             data.privacy is map;
+    }
+    
+    // Validar actualización de usuario
+    function isValidUserUpdate(newData, oldData) {
+      // No permitir cambios en campos críticos
+      return newData.uid == oldData.uid &&
+             newData.email == oldData.email &&
+             newData.createdAt == oldData.createdAt;
+    }
+    
+    // Validar entrada del diario
+    function isValidDiaryEntry(data) {
+      return data.keys().hasAll(['userId', 'date', 'mood', 'moodScore', 'content']) &&
+             data.userId is string &&
+             data.date is timestamp &&
+             data.mood in ['calm', 'relaxed', 'neutral', 'anxious', 'overwhelmed'] &&
+             data.moodScore is number &&
+             data.moodScore >= 1 && data.moodScore <= 10 &&
+             data.content is string &&
+             data.content.size() <= 5000;
+    }
+    
+    // Validar actualización de entrada del diario
+    function isValidDiaryEntryUpdate(newData, oldData) {
+      return newData.userId == oldData.userId &&
+             newData.date == oldData.date &&
+             newData.createdAt == oldData.createdAt;
+    }
+    
+    // Validar evaluación
+    function isValidEvaluation(data) {
+      return data.keys().hasAll(['userId', 'testType', 'testName', 'answers', 'score', 'maxScore']) &&
+             data.userId is string &&
+             data.testType in ['gad7', 'phq9', 'pss', 'wellness', 'selfesteem'] &&
+             data.testName is string &&
+             data.answers is list &&
+             data.score is number &&
+             data.maxScore is number &&
+             data.score >= 0 && data.score <= data.maxScore;
+    }
+    
+    // Validar actualización de evaluación
+    function isValidEvaluationUpdate(newData, oldData) {
+      return newData.userId == oldData.userId &&
+             newData.testType == oldData.testType &&
+             newData.completedAt == oldData.completedAt;
+    }
+    
+    // Validar sesión de ejercicio
+    function isValidExerciseSession(data) {
+      return data.keys().hasAll(['userId', 'exerciseType', 'exerciseName', 'duration', 'effectiveness']) &&
+             data.userId is string &&
+             data.exerciseType in ['breathing', 'meditation', 'progressive-relaxation', 'grounding'] &&
+             data.exerciseName is string &&
+             data.duration is number &&
+             data.duration >= 1 && data.duration <= 120 &&
+             data.effectiveness is number &&
+             data.effectiveness >= 1 && data.effectiveness <= 10;
+    }
+    
+    // Validar plan de bienestar
+    function isValidWellnessPlan(data) {
+      return data.keys().hasAll(['userId', 'name', 'description', 'category', 'goals', 'activities']) &&
+             data.userId is string &&
+             data.name is string &&
+             data.description is string &&
+             data.category in ['anxiety', 'depression', 'stress', 'general'] &&
+             data.goals is list &&
+             data.activities is list;
+    }
+    
+    // Validar estadísticas de usuario
+    function isValidUserStats(data) {
+      return data.keys().hasAll(['userId', 'dailyStats', 'weeklyStats', 'monthlyStats']) &&
+             data.userId is string &&
+             data.dailyStats is map &&
+             data.weeklyStats is map &&
+             data.monthlyStats is map;
+    }
+    
+    // Validar notificación
+    function isValidNotification(data) {
+      return data.keys().hasAll(['userId', 'type', 'title', 'message']) &&
+             data.userId is string &&
+             data.type in ['reminder', 'achievement', 'weekly_report', 'motivational', 'system'] &&
+             data.title is string &&
+             data.message is string;
+    }
+    
+    // Verificar si el usuario es administrador
+    function isAdmin(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId)) &&
+             get(/databases/$(database)/documents/users/$(userId)).data.role == 'admin';
+    }
+    
+    // ========================================
+    // REGLAS DE DENEGACIÓN POR DEFECTO
+    // ========================================
+    // Cualquier documento que no coincida con las reglas anteriores será denegado
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
