@@ -1,154 +1,145 @@
 import { Request, Response } from 'express';
-import evaluationService from '../services/evaluation.service';
 import { logger } from '../utils/logger.util';
-import { CreateEvaluationRequest, EvaluationFilters } from '../models/evaluation.model';
+import FirebaseService from '../services/firebase.service';
 
 class EvaluationController {
-  // Crear nueva evaluación
+  // Crear nueva evaluación GAD-7
   async createEvaluation(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
+      const { answers, totalScore, date } = req.body;
+
+      // Validación de respuestas GAD-7
+      if (!answers || !Array.isArray(answers) || answers.length !== 7) {
+        res.status(400).json({
+          success: false,
+          error: 'Respuestas inválidas',
+          message: 'Debe proporcionar exactamente 7 respuestas para el GAD-7'
+        });
         return;
       }
 
-      const data: CreateEvaluationRequest = req.body;
-      const evaluation = await evaluationService.createEvaluation(userId, data);
-      const response = evaluationService.formatEvaluationResponse(evaluation);
+      // Validar que las respuestas estén en el rango correcto (0-3)
+      const validAnswers = answers.every(answer => 
+        typeof answer === 'number' && answer >= 0 && answer <= 3
+      );
 
-      logger.info(`Evaluación creada para usuario ${userId}: ${data.testType}`);
+      if (!validAnswers) {
+        res.status(400).json({
+          success: false,
+          error: 'Respuestas inválidas',
+          message: 'Las respuestas deben estar entre 0 y 3'
+        });
+        return;
+      }
+
+      // Calcular puntuación total
+      const calculatedScore = answers.reduce((sum, answer) => sum + answer, 0);
+      
+      if (totalScore && totalScore !== calculatedScore) {
+        res.status(400).json({
+          success: false,
+          error: 'Puntuación inconsistente',
+          message: 'La puntuación total no coincide con las respuestas'
+        });
+        return;
+      }
+
+      // Determinar nivel de ansiedad
+      let anxietyLevel = 'mínima';
+      let recommendation = 'Continúa con tus actividades normales';
+      
+      if (calculatedScore >= 15) {
+        anxietyLevel = 'severa';
+        recommendation = 'Es recomendable buscar ayuda profesional inmediatamente';
+      } else if (calculatedScore >= 10) {
+        anxietyLevel = 'moderada';
+        recommendation = 'Considera hablar con un profesional de la salud mental';
+      } else if (calculatedScore >= 5) {
+        anxietyLevel = 'leve';
+        recommendation = 'Puedes beneficiarte de técnicas de relajación y mindfulness';
+      }
+
+      const evaluation = {
+        userId,
+        answers,
+        totalScore: calculatedScore,
+        anxietyLevel,
+        recommendation,
+        date: date || new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      const db = FirebaseService.getFirestore();
+      const docRef = await db.collection('evaluations').add(evaluation);
+
+      logger.info(`Nueva evaluación GAD-7 creada: ${docRef.id} para usuario: ${userId}, puntuación: ${calculatedScore}`);
+
       res.status(201).json({
         success: true,
-        data: response,
+        data: {
+          id: docRef.id,
+          ...evaluation
+        },
         message: 'Evaluación completada exitosamente'
       });
+
     } catch (error) {
       logger.error('Error creando evaluación:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudo completar la evaluación'
       });
     }
   }
 
-  // Obtener evaluaciones con filtros
+  // Obtener evaluaciones del usuario
   async getEvaluations(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
+      const { limit = 10, offset = 0, startDate, endDate } = req.query;
+
+      const db = FirebaseService.getFirestore();
+      let query = db.collection('evaluations')
+        .where('userId', '==', userId)
+        .orderBy('date', 'desc')
+        .limit(parseInt(limit as string))
+        .offset(parseInt(offset as string));
+
+      // Filtros opcionales
+      if (startDate) {
+        query = query.where('date', '>=', startDate);
+      }
+      if (endDate) {
+        query = query.where('date', '<=', endDate);
       }
 
-      const filters: EvaluationFilters = {
-        testType: req.query.testType ? (req.query.testType as string).split(',') as any : undefined,
-        dateFrom: req.query.dateFrom ? new Date(req.query.dateFrom as string) : undefined,
-        dateTo: req.query.dateTo ? new Date(req.query.dateTo as string) : undefined,
-        scoreMin: req.query.scoreMin ? parseInt(req.query.scoreMin as string) : undefined,
-        scoreMax: req.query.scoreMax ? parseInt(req.query.scoreMax as string) : undefined,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : 50,
-        offset: req.query.offset ? parseInt(req.query.offset as string) : 0
-      };
+      const snapshot = await query.get();
+      const evaluations = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-      const evaluations = await evaluationService.getEvaluations(userId, filters);
-      const responses = evaluations.map(evaluation => 
-        evaluationService.formatEvaluationResponse(evaluation)
-      );
+      logger.info(`Evaluaciones obtenidas para usuario: ${userId}, cantidad: ${evaluations.length}`);
 
       res.status(200).json({
         success: true,
-        data: responses,
-        count: responses.length,
-        message: 'Evaluaciones obtenidas exitosamente'
+        data: evaluations,
+        pagination: {
+          limit: parseInt(limit as string),
+          offset: parseInt(offset as string),
+          total: evaluations.length
+        }
       });
+
     } catch (error) {
       logger.error('Error obteniendo evaluaciones:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Obtener evaluación específica
-  async getEvaluationById(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
-
-      const { evaluationId } = req.params;
-      const evaluation = await evaluationService.getEvaluationById(userId, evaluationId);
-
-      if (!evaluation) {
-        res.status(404).json({
-          success: false,
-          error: 'Evaluación no encontrada',
-          message: 'La evaluación no existe o no tienes permisos para acceder a ella'
-        });
-        return;
-      }
-
-      const response = evaluationService.formatEvaluationResponse(evaluation);
-
-      res.status(200).json({
-        success: true,
-        data: response,
-        message: 'Evaluación obtenida exitosamente'
-      });
-    } catch (error) {
-      logger.error('Error obteniendo evaluación:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Obtener evaluaciones por tipo de test
-  async getEvaluationsByTestType(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
-
-      const { testType } = req.params;
-      
-      if (!['gad7', 'phq9', 'pss', 'wellness', 'selfesteem'].includes(testType)) {
-        res.status(400).json({
-          success: false,
-          error: 'Tipo de test inválido',
-          message: 'El tipo de test debe ser uno de: gad7, phq9, pss, wellness, selfesteem'
-        });
-        return;
-      }
-
-      const evaluations = await evaluationService.getEvaluationsByTestType(userId, testType as any);
-      const responses = evaluations.map(evaluation => 
-        evaluationService.formatEvaluationResponse(evaluation)
-      );
-
-      res.status(200).json({
-        success: true,
-        data: responses,
-        count: responses.length,
-        testType: testType,
-        message: `Evaluaciones de ${testType} obtenidas exitosamente`
-      });
-    } catch (error) {
-      logger.error('Error obteniendo evaluaciones por tipo:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudieron obtener las evaluaciones'
       });
     }
   }
@@ -157,142 +148,143 @@ class EvaluationController {
   async getStats(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      const { period = '30d' } = req.query;
 
-      const stats = await evaluationService.getEvaluationStats(userId);
+      const db = FirebaseService.getFirestore();
+      const now = new Date();
+      const startDate = new Date(now.getTime() - (parseInt(period as string) * 24 * 60 * 60 * 1000));
+
+      const snapshot = await db.collection('evaluations')
+        .where('userId', '==', userId)
+        .where('date', '>=', startDate.toISOString())
+        .get();
+
+      const evaluations = snapshot.docs.map(doc => doc.data());
+      
+      // Calcular estadísticas
+      const totalEvaluations = evaluations.length;
+      const avgScore = evaluations.reduce((sum, eval) => sum + eval.totalScore, 0) / totalEvaluations || 0;
+      
+      const levelDistribution = evaluations.reduce((acc, eval) => {
+        acc[eval.anxietyLevel] = (acc[eval.anxietyLevel] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Calcular tendencia
+      const recentEvaluations = evaluations.slice(0, 3);
+      const olderEvaluations = evaluations.slice(-3);
+      const recentAvg = recentEvaluations.reduce((sum, eval) => sum + eval.totalScore, 0) / recentEvaluations.length || 0;
+      const olderAvg = olderEvaluations.reduce((sum, eval) => sum + eval.totalScore, 0) / olderEvaluations.length || 0;
+      const trend = recentAvg - olderAvg;
+
+      logger.info(`Estadísticas de evaluaciones calculadas para usuario: ${userId}`);
 
       res.status(200).json({
         success: true,
-        data: stats,
-        message: 'Estadísticas de evaluaciones obtenidas exitosamente'
+        data: {
+          totalEvaluations,
+          avgScore: Math.round(avgScore * 100) / 100,
+          levelDistribution,
+          trend: Math.round(trend * 100) / 100,
+          trendDirection: trend > 0 ? 'increasing' : trend < 0 ? 'decreasing' : 'stable',
+          period: period
+        }
       });
+
     } catch (error) {
-      logger.error('Error obteniendo estadísticas de evaluaciones:', error);
+      logger.error('Error calculando estadísticas de evaluaciones:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudieron calcular las estadísticas'
       });
     }
   }
 
-  // Obtener última evaluación de un tipo específico
-  async getLatestEvaluation(req: Request, res: Response): Promise<void> {
+  // Obtener evaluación específica
+  async getEvaluationById(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      const { evaluationId } = req.params;
 
-      const { testType } = req.params;
-      
-      if (!['gad7', 'phq9', 'pss', 'wellness', 'selfesteem'].includes(testType)) {
-        res.status(400).json({
-          success: false,
-          error: 'Tipo de test inválido',
-          message: 'El tipo de test debe ser uno de: gad7, phq9, pss, wellness, selfesteem'
-        });
-        return;
-      }
+      const db = FirebaseService.getFirestore();
+      const doc = await db.collection('evaluations').doc(evaluationId).get();
 
-      const evaluations = await evaluationService.getEvaluationsByTestType(userId, testType as any);
-      
-      if (evaluations.length === 0) {
+      if (!doc.exists) {
         res.status(404).json({
           success: false,
-          error: 'No hay evaluaciones',
-          message: `No se encontraron evaluaciones de tipo ${testType}`
+          error: 'Evaluación no encontrada',
+          message: 'La evaluación no existe'
         });
         return;
       }
 
-      const latestEvaluation = evaluations[0]; // Ya están ordenadas por fecha descendente
-      const response = evaluationService.formatEvaluationResponse(latestEvaluation);
+      const evaluation = doc.data();
+      if (evaluation.userId !== userId) {
+        res.status(403).json({
+          success: false,
+          error: 'Acceso denegado',
+          message: 'No tienes permisos para acceder a esta evaluación'
+        });
+        return;
+      }
 
       res.status(200).json({
         success: true,
-        data: response,
-        message: `Última evaluación de ${testType} obtenida exitosamente`
+        data: {
+          id: doc.id,
+          ...evaluation
+        }
       });
+
+    } catch (error) {
+      logger.error('Error obteniendo evaluación:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor',
+        message: 'No se pudo obtener la evaluación'
+      });
+    }
+  }
+
+  // Obtener la última evaluación
+  async getLatestEvaluation(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.uid;
+
+      const db = FirebaseService.getFirestore();
+      const snapshot = await db.collection('evaluations')
+        .where('userId', '==', userId)
+        .orderBy('date', 'desc')
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        res.status(404).json({
+          success: false,
+          error: 'No hay evaluaciones',
+          message: 'No se encontraron evaluaciones para este usuario'
+        });
+        return;
+      }
+
+      const doc = snapshot.docs[0];
+      const evaluation = {
+        id: doc.id,
+        ...doc.data()
+      };
+
+      res.status(200).json({
+        success: true,
+        data: evaluation
+      });
+
     } catch (error) {
       logger.error('Error obteniendo última evaluación:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Comparar evaluaciones (última vs anterior)
-  async compareEvaluations(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
-
-      const { testType } = req.params;
-      
-      if (!['gad7', 'phq9', 'pss', 'wellness', 'selfesteem'].includes(testType)) {
-        res.status(400).json({
-          success: false,
-          error: 'Tipo de test inválido',
-          message: 'El tipo de test debe ser uno de: gad7, phq9, pss, wellness, selfesteem'
-        });
-        return;
-      }
-
-      const evaluations = await evaluationService.getEvaluationsByTestType(userId, testType as any);
-      
-      if (evaluations.length < 2) {
-        res.status(404).json({
-          success: false,
-          error: 'Evaluaciones insuficientes',
-          message: 'Se necesitan al menos 2 evaluaciones para hacer la comparación'
-        });
-        return;
-      }
-
-      const latest = evaluations[0];
-      const previous = evaluations[1];
-
-      const isLowerBetter = ['gad7', 'phq9', 'pss'].includes(testType);
-      const scoreDifference = latest.score - previous.score;
-      const improvement = isLowerBetter ? -scoreDifference : scoreDifference;
-      const improvementPercentage = (improvement / previous.score) * 100;
-
-      const comparison = {
-        latest: evaluationService.formatEvaluationResponse(latest),
-        previous: evaluationService.formatEvaluationResponse(previous),
-        comparison: {
-          scoreDifference,
-          improvement,
-          improvementPercentage: Math.round(improvementPercentage * 100) / 100,
-          isImprovement: isLowerBetter ? scoreDifference < 0 : scoreDifference > 0,
-          daysBetween: Math.floor(
-            (latest.completedAt.toDate().getTime() - previous.completedAt.toDate().getTime()) / 
-            (1000 * 60 * 60 * 24)
-          )
-        }
-      };
-
-      res.status(200).json({
-        success: true,
-        data: comparison,
-        message: `Comparación de evaluaciones de ${testType} obtenida exitosamente`
-      });
-    } catch (error) {
-      logger.error('Error comparando evaluaciones:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudo obtener la última evaluación'
       });
     }
   }

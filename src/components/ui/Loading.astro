@@ -1,0 +1,192 @@
+---
+export interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'spinner' | 'dots' | 'pulse' | 'skeleton';
+  text?: string;
+  overlay?: boolean;
+  class?: string;
+}
+
+const {
+  size = 'md',
+  variant = 'spinner',
+  text = 'Cargando...',
+  overlay = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+// Generar clases CSS basadas en props
+const baseClasses = 'loading';
+const sizeClasses = {
+  sm: 'loading-sm',
+  md: 'loading-md',
+  lg: 'loading-lg'
+};
+
+const classes = [
+  baseClasses,
+  sizeClasses[size],
+  overlay ? 'loading-overlay' : '',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  {variant === 'spinner' && (
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+  )}
+  
+  {variant === 'dots' && (
+    <div class="loading-dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  )}
+  
+  {variant === 'pulse' && (
+    <div class="loading-pulse">
+      <div class="pulse"></div>
+    </div>
+  )}
+  
+  {variant === 'skeleton' && (
+    <div class="loading-skeleton">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line skeleton-short"></div>
+    </div>
+  )}
+  
+  {text && (
+    <div class="loading-text">
+      {text}
+    </div>
+  )}
+</div>
+
+<style>
+  .loading {
+    @apply flex flex-col items-center justify-center gap-3;
+  }
+
+  .loading-overlay {
+    @apply fixed inset-0 bg-white bg-opacity-90 backdrop-blur-sm z-50;
+  }
+
+  .loading-sm {
+    @apply text-sm;
+  }
+
+  .loading-md {
+    @apply text-base;
+  }
+
+  .loading-lg {
+    @apply text-lg;
+  }
+
+  .loading-text {
+    @apply text-gray-600 font-medium;
+  }
+
+  /* Spinner */
+  .loading-spinner {
+    @apply relative;
+  }
+
+  .spinner {
+    @apply border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin;
+  }
+
+  .loading-sm .spinner {
+    @apply w-6 h-6 border-2;
+  }
+
+  .loading-md .spinner {
+    @apply w-8 h-8 border-3;
+  }
+
+  .loading-lg .spinner {
+    @apply w-12 h-12 border-4;
+  }
+
+  /* Dots */
+  .loading-dots {
+    @apply flex gap-2;
+  }
+
+  .dot {
+    @apply w-3 h-3 bg-blue-600 rounded-full animate-bounce;
+  }
+
+  .loading-sm .dot {
+    @apply w-2 h-2;
+  }
+
+  .loading-lg .dot {
+    @apply w-4 h-4;
+  }
+
+  .dot:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .dot:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  /* Pulse */
+  .loading-pulse {
+    @apply relative;
+  }
+
+  .pulse {
+    @apply w-8 h-8 bg-blue-600 rounded-full animate-pulse;
+  }
+
+  .loading-sm .pulse {
+    @apply w-6 h-6;
+  }
+
+  .loading-lg .pulse {
+    @apply w-12 h-12;
+  }
+
+  /* Skeleton */
+  .loading-skeleton {
+    @apply w-full space-y-3;
+  }
+
+  .skeleton-line {
+    @apply h-4 bg-gray-200 rounded animate-pulse;
+  }
+
+  .skeleton-short {
+    @apply w-3/4;
+  }
+
+  .loading-sm .skeleton-line {
+    @apply h-3;
+  }
+
+  .loading-lg .skeleton-line {
+    @apply h-5;
+  }
+
+  /* Estados de accesibilidad */
+  .loading {
+    @apply aria-busy;
+  }
+
+  .loading-text {
+    @apply sr-only;
+  }
+
+  .loading:not([aria-label]) .loading-text {
+    @apply not-sr-only;
+  }
+</style>

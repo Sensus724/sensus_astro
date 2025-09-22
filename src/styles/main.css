@@ -9,6 +9,9 @@
 @import './utilities/responsive.css';
 @import './utilities/spacing-system.css';
 
+/* === TEMAS === */
+@import './themes/dark.css';
+
 /* === LAYOUT === */
 @import './layout/layout.css';
 

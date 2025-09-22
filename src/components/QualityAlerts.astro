@@ -1,0 +1,1100 @@
+---
+export interface Props {
+  class?: string;
+  showFilters?: boolean;
+  showActions?: boolean;
+  showHistory?: boolean;
+}
+
+const {
+  class: className = '',
+  showFilters = true,
+  showActions = true,
+  showHistory = true,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'quality-alerts',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <!-- Header de alertas -->
+  <div class="quality-alerts-header">
+    <h2 class="quality-alerts-title">
+      <i class="fas fa-exclamation-triangle"></i>
+      Alertas de Calidad
+    </h2>
+    
+    <div class="quality-alerts-controls">
+      <button class="quality-alerts-btn" id="mark-all-read">
+        <i class="fas fa-check-double"></i>
+        Marcar Todo Leído
+      </button>
+      <button class="quality-alerts-btn" id="clear-alerts">
+        <i class="fas fa-trash"></i>
+        Limpiar Alertas
+      </button>
+      <button class="quality-alerts-btn" id="refresh-alerts">
+        <i class="fas fa-sync-alt"></i>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros de alertas -->
+  {showFilters && (
+    <div class="quality-alerts-filters">
+      <h3 class="quality-alerts-section-title">Filtros</h3>
+      <div class="quality-alerts-filters-grid">
+        <div class="quality-alerts-filter-item">
+          <label class="quality-alerts-filter-label">
+            <span class="quality-alerts-filter-text">Severidad</span>
+            <select id="alert-severity" class="quality-alerts-filter-select">
+              <option value="all">Todas</option>
+              <option value="critical">Crítica</option>
+              <option value="high">Alta</option>
+              <option value="medium">Media</option>
+              <option value="low">Baja</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="quality-alerts-filter-item">
+          <label class="quality-alerts-filter-label">
+            <span class="quality-alerts-filter-text">Categoría</span>
+            <select id="alert-category" class="quality-alerts-filter-select">
+              <option value="all">Todas</option>
+              <option value="code">Código</option>
+              <option value="security">Seguridad</option>
+              <option value="performance">Rendimiento</option>
+              <option value="accessibility">Accesibilidad</option>
+              <option value="seo">SEO</option>
+              <option value="tests">Tests</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="quality-alerts-filter-item">
+          <label class="quality-alerts-filter-label">
+            <span class="quality-alerts-filter-text">Estado</span>
+            <select id="alert-status" class="quality-alerts-filter-select">
+              <option value="all">Todas</option>
+              <option value="unread">No leídas</option>
+              <option value="read">Leídas</option>
+              <option value="resolved">Resueltas</option>
+              <option value="ignored">Ignoradas</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="quality-alerts-filter-item">
+          <label class="quality-alerts-filter-label">
+            <span class="quality-alerts-filter-text">Período</span>
+            <select id="alert-period" class="quality-alerts-filter-select">
+              <option value="all">Todos</option>
+              <option value="today">Hoy</option>
+              <option value="week">Esta semana</option>
+              <option value="month">Este mes</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="quality-alerts-filter-item">
+          <label class="quality-alerts-filter-label">
+            <span class="quality-alerts-filter-text">Buscar</span>
+            <input type="text" id="alert-search" class="quality-alerts-filter-input" placeholder="Buscar alertas...">
+          </label>
+        </div>
+        
+        <div class="quality-alerts-filter-item">
+          <button class="quality-alerts-filter-btn" id="apply-alert-filters">
+            <i class="fas fa-filter"></i>
+            Aplicar Filtros
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Lista de alertas -->
+  <div class="quality-alerts-list">
+    <h3 class="quality-alerts-section-title">Alertas Activas</h3>
+    <div class="quality-alerts-container" id="alerts-container">
+      <!-- Alertas se cargarán dinámicamente -->
+    </div>
+  </div>
+
+  <!-- Estadísticas de alertas -->
+  <div class="quality-alerts-stats">
+    <h3 class="quality-alerts-section-title">Estadísticas</h3>
+    <div class="quality-alerts-stats-grid">
+      <div class="quality-alerts-stat-item">
+        <div class="quality-alerts-stat-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="quality-alerts-stat-content">
+          <div class="quality-alerts-stat-value" id="total-alerts">0</div>
+          <div class="quality-alerts-stat-label">Total Alertas</div>
+        </div>
+      </div>
+      
+      <div class="quality-alerts-stat-item">
+        <div class="quality-alerts-stat-icon">
+          <i class="fas fa-circle text-red-500"></i>
+        </div>
+        <div class="quality-alerts-stat-content">
+          <div class="quality-alerts-stat-value" id="critical-alerts">0</div>
+          <div class="quality-alerts-stat-label">Críticas</div>
+        </div>
+      </div>
+      
+      <div class="quality-alerts-stat-item">
+        <div class="quality-alerts-stat-icon">
+          <i class="fas fa-circle text-orange-500"></i>
+        </div>
+        <div class="quality-alerts-stat-content">
+          <div class="quality-alerts-stat-value" id="high-alerts">0</div>
+          <div class="quality-alerts-stat-label">Altas</div>
+        </div>
+      </div>
+      
+      <div class="quality-alerts-stat-item">
+        <div class="quality-alerts-stat-icon">
+          <i class="fas fa-circle text-yellow-500"></i>
+        </div>
+        <div class="quality-alerts-stat-content">
+          <div class="quality-alerts-stat-value" id="medium-alerts">0</div>
+          <div class="quality-alerts-stat-label">Medias</div>
+        </div>
+      </div>
+      
+      <div class="quality-alerts-stat-item">
+        <div class="quality-alerts-stat-icon">
+          <i class="fas fa-circle text-blue-500"></i>
+        </div>
+        <div class="quality-alerts-stat-content">
+          <div class="quality-alerts-stat-value" id="low-alerts">0</div>
+          <div class="quality-alerts-stat-label">Bajas</div>
+        </div>
+      </div>
+      
+      <div class="quality-alerts-stat-item">
+        <div class="quality-alerts-stat-icon">
+          <i class="fas fa-eye-slash"></i>
+        </div>
+        <div class="quality-alerts-stat-content">
+          <div class="quality-alerts-stat-value" id="unread-alerts">0</div>
+          <div class="quality-alerts-stat-label">No Leídas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historial de alertas -->
+  {showHistory && (
+    <div class="quality-alerts-history">
+      <h3 class="quality-alerts-section-title">Historial de Alertas</h3>
+      <div class="quality-alerts-history-list" id="alerts-history">
+        <!-- Historial se cargará dinámicamente -->
+      </div>
+    </div>
+  )}
+
+  <!-- Modal de configuración de alertas -->
+  <div class="quality-alerts-modal" id="alerts-modal">
+    <div class="quality-alerts-modal-content">
+      <div class="quality-alerts-modal-header">
+        <h3 class="quality-alerts-modal-title">Configurar Alertas</h3>
+        <button class="quality-alerts-modal-close" id="close-alerts-modal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="quality-alerts-modal-body">
+        <div class="quality-alerts-form">
+          <div class="quality-alerts-form-group">
+            <label class="quality-alerts-form-label">
+              <span class="quality-alerts-form-text">Umbral de calidad</span>
+              <input type="range" id="quality-threshold" min="0" max="100" value="80" class="quality-alerts-form-range">
+              <span class="quality-alerts-form-value" id="quality-threshold-value">80%</span>
+            </label>
+          </div>
+          
+          <div class="quality-alerts-form-group">
+            <label class="quality-alerts-form-label">
+              <span class="quality-alerts-form-text">Umbral de seguridad</span>
+              <input type="range" id="security-threshold" min="0" max="100" value="90" class="quality-alerts-form-range">
+              <span class="quality-alerts-form-value" id="security-threshold-value">90%</span>
+            </label>
+          </div>
+          
+          <div class="quality-alerts-form-group">
+            <label class="quality-alerts-form-label">
+              <span class="quality-alerts-form-text">Umbral de rendimiento</span>
+              <input type="range" id="performance-threshold" min="0" max="100" value="80" class="quality-alerts-form-range">
+              <span class="quality-alerts-form-value" id="performance-threshold-value">80%</span>
+            </label>
+          </div>
+          
+          <div class="quality-alerts-form-group">
+            <label class="quality-alerts-form-label">
+              <span class="quality-alerts-form-text">Notificaciones</span>
+              <div class="quality-alerts-form-checkboxes">
+                <label class="quality-alerts-form-checkbox">
+                  <input type="checkbox" id="enable-email-alerts" checked>
+                  <span class="quality-alerts-form-checkbox-text">Email</span>
+                </label>
+                <label class="quality-alerts-form-checkbox">
+                  <input type="checkbox" id="enable-browser-alerts" checked>
+                  <span class="quality-alerts-form-checkbox-text">Navegador</span>
+                </label>
+                <label class="quality-alerts-form-checkbox">
+                  <input type="checkbox" id="enable-slack-alerts">
+                  <span class="quality-alerts-form-checkbox-text">Slack</span>
+                </label>
+                <label class="quality-alerts-form-checkbox">
+                  <input type="checkbox" id="enable-webhook-alerts">
+                  <span class="quality-alerts-form-checkbox-text">Webhook</span>
+                </label>
+              </div>
+            </label>
+          </div>
+          
+          <div class="quality-alerts-form-group">
+            <label class="quality-alerts-form-label">
+              <span class="quality-alerts-form-text">Frecuencia de verificación</span>
+              <select id="check-frequency" class="quality-alerts-form-select">
+                <option value="immediate">Inmediata</option>
+                <option value="hourly">Cada hora</option>
+                <option value="daily" selected>Diaria</option>
+                <option value="weekly">Semanal</option>
+              </select>
+            </label>
+          </div>
+          
+          <div class="quality-alerts-form-group">
+            <label class="quality-alerts-form-label">
+              <span class="quality-alerts-form-text">Email de alertas</span>
+              <input type="email" id="alerts-email" class="quality-alerts-form-input" placeholder="alertas@empresa.com">
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quality-alerts-modal-footer">
+        <button class="quality-alerts-modal-btn quality-alerts-modal-btn-secondary" id="cancel-alerts">
+          Cancelar
+        </button>
+        <button class="quality-alerts-modal-btn quality-alerts-modal-btn-primary" id="save-alerts">
+          Guardar Configuración
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .quality-alerts {
+    @apply bg-white rounded-xl shadow-lg p-6 space-y-6;
+  }
+
+  /* Header */
+  .quality-alerts-header {
+    @apply flex items-center justify-between pb-4 border-b border-gray-200;
+  }
+
+  .quality-alerts-title {
+    @apply text-2xl font-bold text-gray-900 flex items-center gap-3;
+  }
+
+  .quality-alerts-controls {
+    @apply flex gap-2;
+  }
+
+  .quality-alerts-btn {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg;
+    @apply hover:bg-blue-700 transition-colors duration-200;
+    @apply flex items-center gap-2 text-sm font-medium;
+  }
+
+  /* Filtros */
+  .quality-alerts-filters {
+    @apply space-y-4;
+  }
+
+  .quality-alerts-section-title {
+    @apply text-lg font-semibold text-gray-900;
+  }
+
+  .quality-alerts-filters-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+
+  .quality-alerts-filter-item {
+    @apply space-y-2;
+  }
+
+  .quality-alerts-filter-label {
+    @apply flex flex-col gap-2;
+  }
+
+  .quality-alerts-filter-text {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  .quality-alerts-filter-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-alerts-filter-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-alerts-filter-btn {
+    @apply w-full px-4 py-2 bg-green-600 text-white rounded-lg;
+    @apply hover:bg-green-700 transition-colors duration-200;
+    @apply flex items-center justify-center gap-2 text-sm font-medium;
+  }
+
+  /* Lista de alertas */
+  .quality-alerts-container {
+    @apply space-y-3;
+  }
+
+  .quality-alert-item {
+    @apply bg-white border-l-4 rounded-lg p-4 shadow-sm;
+    @apply hover:shadow-md transition-shadow duration-200;
+  }
+
+  .quality-alert-item.critical {
+    @apply border-red-500 bg-red-50;
+  }
+
+  .quality-alert-item.high {
+    @apply border-orange-500 bg-orange-50;
+  }
+
+  .quality-alert-item.medium {
+    @apply border-yellow-500 bg-yellow-50;
+  }
+
+  .quality-alert-item.low {
+    @apply border-blue-500 bg-blue-50;
+  }
+
+  .quality-alert-item.read {
+    @apply opacity-60;
+  }
+
+  .quality-alert-header {
+    @apply flex items-center justify-between mb-2;
+  }
+
+  .quality-alert-title {
+    @apply font-medium text-gray-900;
+  }
+
+  .quality-alert-time {
+    @apply text-sm text-gray-600;
+  }
+
+  .quality-alert-body {
+    @apply text-sm text-gray-700 mb-3;
+  }
+
+  .quality-alert-actions {
+    @apply flex gap-2;
+  }
+
+  .quality-alert-action {
+    @apply px-3 py-1 text-xs rounded;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-alert-action.mark-read {
+    @apply bg-blue-100 text-blue-800 hover:bg-blue-200;
+  }
+
+  .quality-alert-action.resolve {
+    @apply bg-green-100 text-green-800 hover:bg-green-200;
+  }
+
+  .quality-alert-action.ignore {
+    @apply bg-gray-100 text-gray-800 hover:bg-gray-200;
+  }
+
+  .quality-alert-action.view {
+    @apply bg-purple-100 text-purple-800 hover:bg-purple-200;
+  }
+
+  /* Estadísticas */
+  .quality-alerts-stats-grid {
+    @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4;
+  }
+
+  .quality-alerts-stat-item {
+    @apply bg-gray-50 rounded-lg p-4 text-center;
+  }
+
+  .quality-alerts-stat-icon {
+    @apply w-8 h-8 bg-gray-100 text-gray-600 rounded-lg;
+    @apply flex items-center justify-center mx-auto mb-2;
+  }
+
+  .quality-alerts-stat-value {
+    @apply text-lg font-bold text-gray-900 mb-1;
+  }
+
+  .quality-alerts-stat-label {
+    @apply text-sm text-gray-600;
+  }
+
+  /* Historial */
+  .quality-alerts-history-list {
+    @apply space-y-2;
+  }
+
+  .quality-alerts-history-item {
+    @apply bg-gray-50 rounded-lg p-3 flex items-center justify-between;
+  }
+
+  .quality-alerts-history-info {
+    @apply flex-1;
+  }
+
+  .quality-alerts-history-title {
+    @apply text-sm font-medium text-gray-900;
+  }
+
+  .quality-alerts-history-details {
+    @apply text-xs text-gray-600 mt-1;
+  }
+
+  .quality-alerts-history-status {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .quality-alerts-history-status.resolved {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .quality-alerts-history-status.ignored {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  /* Modal */
+  .quality-alerts-modal {
+    @apply fixed inset-0 bg-black bg-opacity-50 hidden;
+    @apply flex items-center justify-center z-50;
+  }
+
+  .quality-alerts-modal-content {
+    @apply bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4;
+  }
+
+  .quality-alerts-modal-header {
+    @apply flex items-center justify-between p-6 border-b border-gray-200;
+  }
+
+  .quality-alerts-modal-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .quality-alerts-modal-close {
+    @apply w-8 h-8 bg-gray-100 text-gray-600 rounded-lg;
+    @apply hover:bg-gray-200 transition-colors duration-200;
+    @apply flex items-center justify-center;
+  }
+
+  .quality-alerts-modal-body {
+    @apply p-6;
+  }
+
+  .quality-alerts-form {
+    @apply space-y-4;
+  }
+
+  .quality-alerts-form-group {
+    @apply space-y-2;
+  }
+
+  .quality-alerts-form-label {
+    @apply flex flex-col gap-2;
+  }
+
+  .quality-alerts-form-text {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  .quality-alerts-form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-alerts-form-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-alerts-form-range {
+    @apply w-full h-2 bg-gray-200 rounded-lg appearance-none;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+
+  .quality-alerts-form-range::-webkit-slider-thumb {
+    @apply appearance-none w-5 h-5 bg-blue-600 rounded-full;
+    @apply cursor-pointer;
+  }
+
+  .quality-alerts-form-range::-moz-range-thumb {
+    @apply w-5 h-5 bg-blue-600 rounded-full;
+    @apply cursor-pointer border-0;
+  }
+
+  .quality-alerts-form-value {
+    @apply text-sm font-medium text-gray-900 min-w-12;
+  }
+
+  .quality-alerts-form-checkboxes {
+    @apply grid grid-cols-2 gap-2;
+  }
+
+  .quality-alerts-form-checkbox {
+    @apply flex items-center gap-2;
+  }
+
+  .quality-alerts-form-checkbox input[type="checkbox"] {
+    @apply sr-only;
+  }
+
+  .quality-alerts-form-checkbox-text {
+    @apply text-sm text-gray-700;
+  }
+
+  .quality-alerts-modal-footer {
+    @apply flex items-center justify-end gap-3 p-6 border-t border-gray-200;
+  }
+
+  .quality-alerts-modal-btn {
+    @apply px-4 py-2 rounded-lg font-medium;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-alerts-modal-btn-secondary {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  }
+
+  .quality-alerts-modal-btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .quality-alerts-header {
+      @apply flex-col items-start gap-4;
+    }
+    
+    .quality-alerts-controls {
+      @apply w-full justify-center;
+    }
+    
+    .quality-alerts-filters-grid {
+      @apply grid-cols-1 gap-3;
+    }
+    
+    .quality-alerts-stats-grid {
+      @apply grid-cols-2 gap-3;
+    }
+    
+    .quality-alerts-form-checkboxes {
+      @apply grid-cols-1 gap-2;
+    }
+  }
+
+  /* Modo oscuro */
+  [data-theme="dark"] .quality-alerts {
+    @apply bg-gray-800 border border-gray-700;
+  }
+
+  [data-theme="dark"] .quality-alerts-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-section-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-filter-text {
+    @apply text-gray-300;
+  }
+
+  [data-theme="dark"] .quality-alerts-filter-select {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-filter-input {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alert-item {
+    @apply bg-gray-800;
+  }
+
+  [data-theme="dark"] .quality-alert-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alert-time {
+    @apply text-gray-400;
+  }
+
+  [data-theme="dark"] .quality-alert-body {
+    @apply text-gray-300;
+  }
+
+  [data-theme="dark"] .quality-alerts-stat-item {
+    @apply bg-gray-700;
+  }
+
+  [data-theme="dark"] .quality-alerts-stat-value {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-stat-label {
+    @apply text-gray-400;
+  }
+
+  [data-theme="dark"] .quality-alerts-history-item {
+    @apply bg-gray-700;
+  }
+
+  [data-theme="dark"] .quality-alerts-history-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-history-details {
+    @apply text-gray-400;
+  }
+
+  [data-theme="dark"] .quality-alerts-modal-content {
+    @apply bg-gray-800;
+  }
+
+  [data-theme="dark"] .quality-alerts-modal-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-modal-close {
+    @apply bg-gray-700 text-gray-300 hover:bg-gray-600;
+  }
+
+  [data-theme="dark"] .quality-alerts-form-text {
+    @apply text-gray-300;
+  }
+
+  [data-theme="dark"] .quality-alerts-form-input {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-form-select {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-form-range {
+    @apply bg-gray-600;
+  }
+
+  [data-theme="dark"] .quality-alerts-form-value {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-alerts-form-checkbox-text {
+    @apply text-gray-300;
+  }
+</style>
+
+<script>
+  class QualityAlerts {
+    constructor(element) {
+      this.element = element;
+      this.alerts = [];
+      this.history = [];
+      
+      this.init();
+    }
+    
+    init() {
+      this.setupEventListeners();
+      this.loadAlerts();
+      this.loadHistory();
+      this.updateStats();
+      this.startAlertCheck();
+    }
+    
+    setupEventListeners() {
+      // Botones de control
+      document.getElementById('mark-all-read')?.addEventListener('click', () => {
+        this.markAllAsRead();
+      });
+      
+      document.getElementById('clear-alerts')?.addEventListener('click', () => {
+        this.clearAlerts();
+      });
+      
+      document.getElementById('refresh-alerts')?.addEventListener('click', () => {
+        this.refreshAlerts();
+      });
+      
+      // Filtros
+      document.getElementById('apply-alert-filters')?.addEventListener('click', () => {
+        this.applyFilters();
+      });
+      
+      // Modal
+      document.getElementById('close-alerts-modal')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+      
+      document.getElementById('cancel-alerts')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+      
+      document.getElementById('save-alerts')?.addEventListener('click', () => {
+        this.saveAlertConfig();
+      });
+      
+      // Actualizar valores de range
+      document.querySelectorAll('.quality-alerts-form-range').forEach(range => {
+        range.addEventListener('input', (e) => {
+          const valueElement = document.getElementById(`${e.target.id}-value`);
+          if (valueElement) {
+            valueElement.textContent = `${e.target.value}%`;
+          }
+        });
+      });
+      
+      // Cerrar modal al hacer clic fuera
+      document.getElementById('alerts-modal')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+          this.closeModal();
+        }
+      });
+    }
+    
+    loadAlerts() {
+      // Cargar alertas desde localStorage
+      try {
+        const savedAlerts = localStorage.getItem('quality-alerts');
+        this.alerts = savedAlerts ? JSON.parse(savedAlerts) : [];
+      } catch (error) {
+        console.error('Error loading alerts:', error);
+        this.alerts = [];
+      }
+      
+      this.renderAlerts();
+    }
+    
+    renderAlerts() {
+      const container = document.getElementById('alerts-container');
+      if (!container) return;
+      
+      if (this.alerts.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-gray-500 py-8">
+            <i class="fas fa-check-circle text-4xl mb-4"></i>
+            <p>No hay alertas activas</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = this.alerts.map(alert => `
+        <div class="quality-alert-item ${alert.severity} ${alert.read ? 'read' : ''}" data-alert-id="${alert.id}">
+          <div class="quality-alert-header">
+            <div class="quality-alert-title">${alert.title}</div>
+            <div class="quality-alert-time">${new Date(alert.timestamp).toLocaleString()}</div>
+          </div>
+          <div class="quality-alert-body">${alert.message}</div>
+          <div class="quality-alert-actions">
+            <button class="quality-alert-action mark-read" onclick="qualityAlerts.markAsRead('${alert.id}')">
+              <i class="fas fa-eye"></i> Marcar Leído
+            </button>
+            <button class="quality-alert-action resolve" onclick="qualityAlerts.resolveAlert('${alert.id}')">
+              <i class="fas fa-check"></i> Resolver
+            </button>
+            <button class="quality-alert-action ignore" onclick="qualityAlerts.ignoreAlert('${alert.id}')">
+              <i class="fas fa-times"></i> Ignorar
+            </button>
+            <button class="quality-alert-action view" onclick="qualityAlerts.viewAlert('${alert.id}')">
+              <i class="fas fa-external-link-alt"></i> Ver Detalles
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    loadHistory() {
+      // Cargar historial desde localStorage
+      try {
+        const savedHistory = localStorage.getItem('quality-alerts-history');
+        this.history = savedHistory ? JSON.parse(savedHistory) : [];
+      } catch (error) {
+        console.error('Error loading history:', error);
+        this.history = [];
+      }
+      
+      this.renderHistory();
+    }
+    
+    renderHistory() {
+      const container = document.getElementById('alerts-history');
+      if (!container) return;
+      
+      if (this.history.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-gray-500 py-8">
+            <i class="fas fa-history text-4xl mb-4"></i>
+            <p>No hay historial de alertas</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = this.history.slice(0, 10).map(alert => `
+        <div class="quality-alerts-history-item">
+          <div class="quality-alerts-history-info">
+            <div class="quality-alerts-history-title">${alert.title}</div>
+            <div class="quality-alerts-history-details">
+              ${alert.category} • ${new Date(alert.timestamp).toLocaleString()}
+            </div>
+          </div>
+          <div class="quality-alerts-history-status ${alert.status}">
+            ${this.getStatusLabel(alert.status)}
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    getStatusLabel(status) {
+      const labels = {
+        resolved: 'Resuelta',
+        ignored: 'Ignorada',
+        expired: 'Expirada'
+      };
+      return labels[status] || status;
+    }
+    
+    updateStats() {
+      const stats = {
+        totalAlerts: this.alerts.length,
+        criticalAlerts: this.alerts.filter(a => a.severity === 'critical').length,
+        highAlerts: this.alerts.filter(a => a.severity === 'high').length,
+        mediumAlerts: this.alerts.filter(a => a.severity === 'medium').length,
+        lowAlerts: this.alerts.filter(a => a.severity === 'low').length,
+        unreadAlerts: this.alerts.filter(a => !a.read).length
+      };
+      
+      document.getElementById('total-alerts').textContent = stats.totalAlerts;
+      document.getElementById('critical-alerts').textContent = stats.criticalAlerts;
+      document.getElementById('high-alerts').textContent = stats.highAlerts;
+      document.getElementById('medium-alerts').textContent = stats.mediumAlerts;
+      document.getElementById('low-alerts').textContent = stats.lowAlerts;
+      document.getElementById('unread-alerts').textContent = stats.unreadAlerts;
+    }
+    
+    markAsRead(id) {
+      const alert = this.alerts.find(a => a.id === id);
+      if (alert) {
+        alert.read = true;
+        this.saveAlerts();
+        this.renderAlerts();
+        this.updateStats();
+      }
+    }
+    
+    markAllAsRead() {
+      this.alerts.forEach(alert => {
+        alert.read = true;
+      });
+      this.saveAlerts();
+      this.renderAlerts();
+      this.updateStats();
+    }
+    
+    resolveAlert(id) {
+      const alert = this.alerts.find(a => a.id === id);
+      if (alert) {
+        // Mover a historial
+        this.history.unshift({
+          ...alert,
+          status: 'resolved',
+          resolvedAt: new Date().toISOString()
+        });
+        
+        // Eliminar de alertas activas
+        this.alerts = this.alerts.filter(a => a.id !== id);
+        
+        this.saveAlerts();
+        this.saveHistory();
+        this.renderAlerts();
+        this.renderHistory();
+        this.updateStats();
+      }
+    }
+    
+    ignoreAlert(id) {
+      const alert = this.alerts.find(a => a.id === id);
+      if (alert) {
+        // Mover a historial
+        this.history.unshift({
+          ...alert,
+          status: 'ignored',
+          ignoredAt: new Date().toISOString()
+        });
+        
+        // Eliminar de alertas activas
+        this.alerts = this.alerts.filter(a => a.id !== id);
+        
+        this.saveAlerts();
+        this.saveHistory();
+        this.renderAlerts();
+        this.renderHistory();
+        this.updateStats();
+      }
+    }
+    
+    viewAlert(id) {
+      const alert = this.alerts.find(a => a.id === id);
+      if (alert) {
+        // Simular visualización de detalles
+        console.log('Viewing alert details:', alert);
+      }
+    }
+    
+    clearAlerts() {
+      if (confirm('¿Estás seguro de que quieres limpiar todas las alertas?')) {
+        this.alerts = [];
+        this.saveAlerts();
+        this.renderAlerts();
+        this.updateStats();
+      }
+    }
+    
+    refreshAlerts() {
+      // Simular verificación de nuevas alertas
+      this.checkForNewAlerts();
+    }
+    
+    applyFilters() {
+      const severity = document.getElementById('alert-severity').value;
+      const category = document.getElementById('alert-category').value;
+      const status = document.getElementById('alert-status').value;
+      const period = document.getElementById('alert-period').value;
+      const search = document.getElementById('alert-search').value;
+      
+      // Aplicar filtros (simplificado)
+      console.log('Applying filters:', { severity, category, status, period, search });
+    }
+    
+    startAlertCheck() {
+      // Verificar alertas cada 5 minutos
+      setInterval(() => {
+        this.checkForNewAlerts();
+      }, 300000);
+    }
+    
+    checkForNewAlerts() {
+      // Simular verificación de nuevas alertas
+      const random = Math.random();
+      if (random < 0.1) { // 10% de probabilidad
+        this.createRandomAlert();
+      }
+    }
+    
+    createRandomAlert() {
+      const severities = ['critical', 'high', 'medium', 'low'];
+      const categories = ['code', 'security', 'performance', 'accessibility', 'seo', 'tests'];
+      const titles = [
+        'Calidad de código baja',
+        'Vulnerabilidad de seguridad detectada',
+        'Rendimiento degradado',
+        'Problema de accesibilidad',
+        'SEO score bajo',
+        'Tests fallando'
+      ];
+      
+      const severity = severities[Math.floor(Math.random() * severities.length)];
+      const category = categories[Math.floor(Math.random() * categories.length)];
+      const title = titles[Math.floor(Math.random() * titles.length)];
+      
+      const alert = {
+        id: Date.now().toString(),
+        title,
+        message: `Se ha detectado un problema en la categoría ${category}`,
+        severity,
+        category,
+        timestamp: new Date().toISOString(),
+        read: false
+      };
+      
+      this.alerts.unshift(alert);
+      this.saveAlerts();
+      this.renderAlerts();
+      this.updateStats();
+    }
+    
+    openModal() {
+      document.getElementById('alerts-modal').classList.remove('hidden');
+    }
+    
+    closeModal() {
+      document.getElementById('alerts-modal').classList.add('hidden');
+    }
+    
+    saveAlertConfig() {
+      const config = {
+        qualityThreshold: document.getElementById('quality-threshold').value,
+        securityThreshold: document.getElementById('security-threshold').value,
+        performanceThreshold: document.getElementById('performance-threshold').value,
+        enableEmailAlerts: document.getElementById('enable-email-alerts').checked,
+        enableBrowserAlerts: document.getElementById('enable-browser-alerts').checked,
+        enableSlackAlerts: document.getElementById('enable-slack-alerts').checked,
+        enableWebhookAlerts: document.getElementById('enable-webhook-alerts').checked,
+        checkFrequency: document.getElementById('check-frequency').value,
+        alertsEmail: document.getElementById('alerts-email').value
+      };
+      
+      localStorage.setItem('quality-alerts-config', JSON.stringify(config));
+      this.closeModal();
+      console.log('Alert configuration saved');
+    }
+    
+    saveAlerts() {
+      localStorage.setItem('quality-alerts', JSON.stringify(this.alerts));
+    }
+    
+    saveHistory() {
+      localStorage.setItem('quality-alerts-history', JSON.stringify(this.history));
+    }
+  }
+  
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    const alertsElements = document.querySelectorAll('.quality-alerts');
+    alertsElements.forEach(element => {
+      window.qualityAlerts = new QualityAlerts(element);
+    });
+  });
+  
+  // Exponer globalmente
+  window.QualityAlerts = QualityAlerts;
+</script>

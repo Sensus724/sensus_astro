@@ -1,0 +1,107 @@
+---
+export interface Props {
+  variant?: 'default' | 'elevated' | 'outlined' | 'flat';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  hover?: boolean;
+  clickable?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  padding = 'md',
+  hover = false,
+  clickable = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+// Generar clases CSS basadas en props
+const baseClasses = 'card';
+const variantClasses = {
+  default: 'card-default',
+  elevated: 'card-elevated',
+  outlined: 'card-outlined',
+  flat: 'card-flat'
+};
+const paddingClasses = {
+  none: 'card-padding-none',
+  sm: 'card-padding-sm',
+  md: 'card-padding-md',
+  lg: 'card-padding-lg'
+};
+
+const classes = [
+  baseClasses,
+  variantClasses[variant],
+  paddingClasses[padding],
+  hover ? 'card-hover' : '',
+  clickable ? 'card-clickable' : '',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <slot />
+</div>
+
+<style>
+  .card {
+    @apply rounded-xl transition-all duration-200;
+  }
+
+  .card-default {
+    @apply bg-white border border-gray-200 shadow-sm;
+  }
+
+  .card-elevated {
+    @apply bg-white shadow-lg hover:shadow-xl;
+  }
+
+  .card-outlined {
+    @apply bg-white border-2 border-gray-300;
+  }
+
+  .card-flat {
+    @apply bg-gray-50 border border-gray-100;
+  }
+
+  .card-padding-none {
+    @apply p-0;
+  }
+
+  .card-padding-sm {
+    @apply p-3;
+  }
+
+  .card-padding-md {
+    @apply p-6;
+  }
+
+  .card-padding-lg {
+    @apply p-8;
+  }
+
+  .card-hover {
+    @apply hover:shadow-md hover:-translate-y-1;
+  }
+
+  .card-clickable {
+    @apply cursor-pointer hover:shadow-md hover:-translate-y-1 active:translate-y-0;
+  }
+
+  /* Estados de focus para accesibilidad */
+  .card-clickable:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+  }
+
+  /* Animaciones suaves */
+  .card {
+    @apply transform-gpu;
+  }
+
+  .card-hover:hover,
+  .card-clickable:hover {
+    @apply transition-all duration-300 ease-out;
+  }
+</style>

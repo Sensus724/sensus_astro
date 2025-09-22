@@ -1,0 +1,156 @@
+/**
+ * Sistema de Colores - Sensus
+ * Paleta de colores centralizada para mantener consistencia
+ */
+
+:root {
+  /* Colores Primarios - Azul */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Colores Secundarios - Púrpura */
+  --color-secondary-50: #faf5ff;
+  --color-secondary-100: #f3e8ff;
+  --color-secondary-200: #e9d5ff;
+  --color-secondary-300: #d8b4fe;
+  --color-secondary-400: #c084fc;
+  --color-secondary-500: #a855f7;
+  --color-secondary-600: #9333ea;
+  --color-secondary-700: #7c3aed;
+  --color-secondary-800: #6b21a8;
+  --color-secondary-900: #581c87;
+
+  /* Colores de Éxito - Verde */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+
+  /* Colores de Advertencia - Amarillo */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+
+  /* Colores de Error - Rojo */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+
+  /* Colores Neutros - Gris */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Colores Semánticos */
+  --color-background: var(--color-gray-50);
+  --color-surface: #ffffff;
+  --color-surface-secondary: var(--color-gray-100);
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-border: var(--color-gray-200);
+  --color-border-light: var(--color-gray-100);
+
+  /* Colores de Acción */
+  --color-action-primary: var(--color-primary-600);
+  --color-action-primary-hover: var(--color-primary-700);
+  --color-action-secondary: var(--color-gray-200);
+  --color-action-secondary-hover: var(--color-gray-300);
+
+  /* Colores de Estado */
+  --color-state-success: var(--color-success-500);
+  --color-state-warning: var(--color-warning-500);
+  --color-state-error: var(--color-error-500);
+  --color-state-info: var(--color-primary-500);
+
+  /* Gradientes */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+  --gradient-secondary: linear-gradient(135deg, var(--color-gray-100), var(--color-gray-200));
+  --gradient-success: linear-gradient(135deg, var(--color-success-500), var(--color-success-600));
+  --gradient-warning: linear-gradient(135deg, var(--color-warning-500), var(--color-warning-600));
+  --gradient-error: linear-gradient(135deg, var(--color-error-500), var(--color-error-600));
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Colores de Focus */
+  --color-focus: var(--color-primary-500);
+  --color-focus-ring: var(--color-primary-200);
+}
+
+/* Modo Oscuro */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--color-gray-900);
+    --color-surface: var(--color-gray-800);
+    --color-surface-secondary: var(--color-gray-700);
+    --color-text-primary: var(--color-gray-100);
+    --color-text-secondary: var(--color-gray-300);
+    --color-text-tertiary: var(--color-gray-400);
+    --color-border: var(--color-gray-700);
+    --color-border-light: var(--color-gray-600);
+  }
+}
+
+/* Clases de utilidad para colores */
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary { color: var(--color-text-tertiary); }
+
+.bg-primary { background-color: var(--color-action-primary); }
+.bg-secondary { background-color: var(--color-action-secondary); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-background { background-color: var(--color-background); }
+
+.border-primary { border-color: var(--color-border); }
+.border-light { border-color: var(--color-border-light); }
+
+/* Estados semánticos */
+.text-success { color: var(--color-state-success); }
+.text-warning { color: var(--color-state-warning); }
+.text-error { color: var(--color-state-error); }
+.text-info { color: var(--color-state-info); }
+
+.bg-success { background-color: var(--color-state-success); }
+.bg-warning { background-color: var(--color-state-warning); }
+.bg-error { background-color: var(--color-state-error); }
+.bg-info { background-color: var(--color-state-info); }

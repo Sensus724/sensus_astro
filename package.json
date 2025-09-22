@@ -9,7 +9,6 @@
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "npm run build && firebase deploy",
-    "deploy:full": "node scripts/deploy-complete.js",
     "deploy:hosting": "npm run build && firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore",
     "deploy:storage": "firebase deploy --only storage",
@@ -28,10 +27,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "css:analyze": "node scripts/analyze-css.js",
-    "css:clean": "node scripts/clean-css.js",
-    "css:optimize": "node scripts/optimize-css.js"
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@astrojs/check": "^0.8.0",

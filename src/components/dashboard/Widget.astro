@@ -1,0 +1,289 @@
+---
+export interface Props {
+  title: string;
+  type?: 'stat' | 'chart' | 'list' | 'action' | 'insight';
+  size?: 'small' | 'medium' | 'large';
+  class?: string;
+  loading?: boolean;
+  error?: string;
+}
+
+const {
+  title,
+  type = 'stat',
+  size = 'medium',
+  class: className = '',
+  loading = false,
+  error = '',
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'dashboard-widget',
+  `dashboard-widget--${type}`,
+  `dashboard-widget--${size}`,
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <div class="dashboard-widget-header">
+    <h3 class="dashboard-widget-title">{title}</h3>
+    <div class="dashboard-widget-actions">
+      <button class="dashboard-widget-action" id="widget-refresh">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+      <button class="dashboard-widget-action" id="widget-settings">
+        <i class="fas fa-cog"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-widget-content">
+    {loading && (
+      <div class="dashboard-widget-loading">
+        <div class="dashboard-widget-spinner"></div>
+        <span>Cargando...</span>
+      </div>
+    )}
+
+    {error && (
+      <div class="dashboard-widget-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{error}</span>
+        <button class="dashboard-widget-retry" id="widget-retry">
+          Reintentar
+        </button>
+      </div>
+    )}
+
+    {!loading && !error && (
+      <div class="dashboard-widget-body">
+        <slot />
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .dashboard-widget {
+    @apply bg-white rounded-xl shadow-lg overflow-hidden;
+    @apply transition-all duration-300 hover:shadow-xl;
+  }
+
+  /* Tamaños */
+  .dashboard-widget--small {
+    @apply p-4;
+  }
+
+  .dashboard-widget--medium {
+    @apply p-6;
+  }
+
+  .dashboard-widget--large {
+    @apply p-8;
+  }
+
+  /* Header */
+  .dashboard-widget-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .dashboard-widget-title {
+    @apply text-lg font-semibold text-gray-900;
+  }
+
+  .dashboard-widget-actions {
+    @apply flex items-center gap-2;
+  }
+
+  .dashboard-widget-action {
+    @apply p-2 text-gray-400 hover:text-gray-600;
+    @apply transition-colors duration-200 rounded-lg hover:bg-gray-100;
+  }
+
+  /* Contenido */
+  .dashboard-widget-content {
+    @apply relative;
+  }
+
+  .dashboard-widget-body {
+    @apply space-y-4;
+  }
+
+  /* Estados */
+  .dashboard-widget-loading {
+    @apply flex flex-col items-center justify-center py-8;
+    @apply text-gray-500;
+  }
+
+  .dashboard-widget-spinner {
+    @apply w-8 h-8 border-2 border-blue-600 border-t-transparent;
+    @apply rounded-full animate-spin mb-2;
+  }
+
+  .dashboard-widget-error {
+    @apply flex flex-col items-center justify-center py-8;
+    @apply text-red-500 text-center;
+  }
+
+  .dashboard-widget-error i {
+    @apply text-2xl mb-2;
+  }
+
+  .dashboard-widget-retry {
+    @apply mt-3 px-4 py-2 bg-red-600 text-white rounded-lg;
+    @apply hover:bg-red-700 transition-colors duration-200;
+  }
+
+  /* Tipos específicos */
+  .dashboard-widget--stat .dashboard-widget-body {
+    @apply text-center;
+  }
+
+  .dashboard-widget--chart .dashboard-widget-body {
+    @apply h-64 flex items-center justify-center;
+    @apply bg-gray-50 rounded-lg;
+  }
+
+  .dashboard-widget--list .dashboard-widget-body {
+    @apply space-y-3;
+  }
+
+  .dashboard-widget--action .dashboard-widget-body {
+    @apply flex flex-col items-center justify-center py-8;
+  }
+
+  .dashboard-widget--insight .dashboard-widget-body {
+    @apply bg-gradient-to-r from-blue-50 to-purple-50;
+    @apply rounded-lg p-4;
+  }
+
+  /* Modo oscuro */
+  [data-theme="dark"] .dashboard-widget {
+    @apply bg-gray-800 border border-gray-700;
+  }
+
+  [data-theme="dark"] .dashboard-widget-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .dashboard-widget-action {
+    @apply text-gray-400 hover:text-gray-200 hover:bg-gray-700;
+  }
+
+  [data-theme="dark"] .dashboard-widget-loading {
+    @apply text-gray-400;
+  }
+
+  [data-theme="dark"] .dashboard-widget--chart .dashboard-widget-body {
+    @apply bg-gray-700;
+  }
+
+  [data-theme="dark"] .dashboard-widget--insight .dashboard-widget-body {
+    @apply bg-gradient-to-r from-gray-700 to-gray-600;
+  }
+</style>
+
+<script>
+  class DashboardWidget {
+    constructor(element) {
+      this.element = element;
+      this.isLoading = false;
+      this.hasError = false;
+      
+      this.init();
+    }
+    
+    init() {
+      this.setupEventListeners();
+    }
+    
+    setupEventListeners() {
+      // Botón de actualizar
+      const refreshBtn = this.element.querySelector('#widget-refresh');
+      refreshBtn?.addEventListener('click', () => {
+        this.refresh();
+      });
+      
+      // Botón de configuración
+      const settingsBtn = this.element.querySelector('#widget-settings');
+      settingsBtn?.addEventListener('click', () => {
+        this.openSettings();
+      });
+      
+      // Botón de reintentar
+      const retryBtn = this.element.querySelector('#widget-retry');
+      retryBtn?.addEventListener('click', () => {
+        this.retry();
+      });
+    }
+    
+    async refresh() {
+      this.setLoading(true);
+      
+      try {
+        // Simular actualización
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Dispatch evento de actualización
+        this.element.dispatchEvent(new CustomEvent('widget:refresh', {
+          detail: { widget: this }
+        }));
+        
+      } catch (error) {
+        this.setError('Error al actualizar el widget');
+      } finally {
+        this.setLoading(false);
+      }
+    }
+    
+    openSettings() {
+      // Implementar configuración del widget
+      console.log('Abriendo configuración del widget...');
+    }
+    
+    retry() {
+      this.refresh();
+    }
+    
+    setLoading(loading) {
+      this.isLoading = loading;
+      
+      const loadingElement = this.element.querySelector('.dashboard-widget-loading');
+      const bodyElement = this.element.querySelector('.dashboard-widget-body');
+      
+      if (loading) {
+        loadingElement?.classList.remove('hidden');
+        bodyElement?.classList.add('hidden');
+      } else {
+        loadingElement?.classList.add('hidden');
+        bodyElement?.classList.remove('hidden');
+      }
+    }
+    
+    setError(error) {
+      this.hasError = !!error;
+      
+      const errorElement = this.element.querySelector('.dashboard-widget-error');
+      const bodyElement = this.element.querySelector('.dashboard-widget-body');
+      
+      if (error) {
+        errorElement?.classList.remove('hidden');
+        bodyElement?.classList.add('hidden');
+        errorElement.querySelector('span').textContent = error;
+      } else {
+        errorElement?.classList.add('hidden');
+        bodyElement?.classList.remove('hidden');
+      }
+    }
+  }
+  
+  // Inicializar widgets cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    const widgets = document.querySelectorAll('.dashboard-widget');
+    widgets.forEach(widget => {
+      new DashboardWidget(widget);
+    });
+  });
+</script>

@@ -1,0 +1,629 @@
+---
+import { disasterRecovery } from '../../utils/disasterRecovery';
+import { trackEvent } from '../../utils/userAnalytics';
+
+// Obtener datos de disaster recovery
+const plans = disasterRecovery.getDisasterRecoveryPlans();
+const failoverConfigs = disasterRecovery.getFailoverConfigs();
+const tests = disasterRecovery.getTests();
+const events = disasterRecovery.getEvents();
+const stats = disasterRecovery.getStats();
+
+// Calcular estadísticas adicionales
+const activePlans = plans.filter(plan => plan.enabled).length;
+const criticalPlans = plans.filter(plan => plan.priority === 'critical').length;
+const highPriorityPlans = plans.filter(plan => plan.priority === 'high').length;
+
+const recentTests = tests.slice(-5);
+const recentEvents = events.slice(-5);
+
+const activeFailoverConfigs = failoverConfigs.filter(config => config.enabled).length;
+const automaticFailovers = failoverConfigs.filter(config => config.trigger.type === 'automatic').length;
+
+// Funciones de manejo de eventos
+const handleRunTest = async (planId: string, testType: 'full' | 'partial' | 'tabletop' | 'simulation') => {
+  if (confirm(`¿Estás seguro de que quieres ejecutar un test ${testType} para este plan?`)) {
+    const test = await disasterRecovery.runDisasterRecoveryTest(planId, testType);
+    trackEvent('disaster_recovery', 'run_test', { planId, testType, testId: test.id });
+    
+    alert(`Test ${testType} iniciado para el plan. ID del test: ${test.id}`);
+    window.location.reload();
+  }
+};
+
+const handleExecutePlan = async (planId: string) => {
+  if (confirm('¿Estás seguro de que quieres ejecutar este plan de disaster recovery? Esta es una acción crítica.')) {
+    const success = await disasterRecovery.executeDisasterRecoveryPlan(planId);
+    trackEvent('disaster_recovery', 'execute_plan', { planId, success });
+    
+    if (success) {
+      alert('Plan de disaster recovery ejecutado exitosamente');
+    } else {
+      alert('Error al ejecutar el plan de disaster recovery');
+    }
+    window.location.reload();
+  }
+};
+
+const handleCreatePlan = async (event: Event) => {
+  event.preventDefault();
+  const form = event.target as HTMLFormElement;
+  const formData = new FormData(form);
+  
+  const plan = {
+    name: formData.get('name') as string,
+    description: formData.get('description') as string,
+    type: formData.get('type') as 'rto' | 'rpo' | 'failover' | 'backup' | 'replication',
+    priority: formData.get('priority') as 'critical' | 'high' | 'medium' | 'low',
+    rto: parseInt(formData.get('rto') as string),
+    rpo: parseInt(formData.get('rpo') as string),
+    components: (formData.get('components') as string).split(',').map(c => c.trim()).filter(c => c),
+    procedures: [], // Simplified for demo
+    dependencies: [],
+    enabled: true,
+    metadata: {},
+  };
+
+  await disasterRecovery.createDisasterRecoveryPlan(plan);
+  trackEvent('disaster_recovery', 'create_plan', { planName: plan.name });
+  
+  // Recargar página para mostrar nuevo plan
+  window.location.reload();
+};
+
+const handleCreateFailoverConfig = async (event: Event) => {
+  event.preventDefault();
+  const form = event.target as HTMLFormElement;
+  const formData = new FormData(form);
+  
+  const config = {
+    name: formData.get('name') as string,
+    source: {
+      type: formData.get('sourceType') as 'primary' | 'secondary' | 'standby',
+      location: formData.get('sourceLocation') as string,
+      endpoint: formData.get('sourceEndpoint') as string,
+    },
+    target: {
+      type: formData.get('targetType') as 'primary' | 'secondary' | 'standby',
+      location: formData.get('targetLocation') as string,
+      endpoint: formData.get('targetEndpoint') as string,
+    },
+    trigger: {
+      type: formData.get('triggerType') as 'manual' | 'automatic' | 'scheduled',
+      conditions: [], // Simplified for demo
+    },
+    healthCheck: {
+      interval: parseInt(formData.get('healthCheckInterval') as string),
+      timeout: parseInt(formData.get('healthCheckTimeout') as string),
+      retries: parseInt(formData.get('healthCheckRetries') as string),
+      endpoint: formData.get('healthCheckEndpoint') as string,
+    },
+    enabled: true,
+    metadata: {},
+  };
+
+  await disasterRecovery.createFailoverConfig(config);
+  trackEvent('disaster_recovery', 'create_failover_config', { configName: config.name });
+  
+  // Recargar página para mostrar nueva configuración
+  window.location.reload();
+};
+---
+
+<section class="disaster-recovery-dashboard p-6 bg-gray-800 text-white rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold mb-6 text-center text-red-400">Disaster Recovery</h2>
+
+  <!-- Métricas principales -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Planes Activos</h3>
+      <p class="text-3xl font-bold text-green-400">{activePlans}</p>
+      <p class="text-sm text-gray-400">{criticalPlans} críticos</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Tests Exitosos</h3>
+      <p class="text-3xl font-bold text-blue-400">{stats.passedTests}</p>
+      <p class="text-sm text-gray-400">Score promedio: {stats.averageTestScore.toFixed(1)}</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Failovers</h3>
+      <p class="text-3xl font-bold text-yellow-400">{stats.successfulFailovers}</p>
+      <p class="text-sm text-gray-400">Tiempo promedio: {stats.averageFailoverTime.toFixed(1)}min</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Configuraciones</h3>
+      <p class="text-3xl font-bold text-purple-400">{activeFailoverConfigs}</p>
+      <p class="text-sm text-gray-400">{automaticFailovers} automáticas</p>
+    </div>
+  </div>
+
+  <!-- Planes de Disaster Recovery -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Planes de Disaster Recovery</h3>
+    <div class="mb-4">
+      <p class="text-gray-300">
+        Total: <span class="text-white font-bold">{plans.length}</span> | 
+        Activos: <span class="text-green-400 font-bold">{activePlans}</span> | 
+        Críticos: <span class="text-red-400 font-bold">{criticalPlans}</span> | 
+        Alta Prioridad: <span class="text-yellow-400 font-bold">{highPriorityPlans}</span>
+      </p>
+    </div>
+    {plans.length > 0 ? (
+      <div class="space-y-3">
+        {plans.map(plan => (
+          <div class="p-4 bg-gray-600 rounded-md">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-lg font-semibold text-white">{plan.name}</h4>
+              <div class="flex items-center space-x-2">
+                <span class:list={[
+                  plan.priority === 'critical' ? 'text-red-400' : '',
+                  plan.priority === 'high' ? 'text-yellow-400' : '',
+                  plan.priority === 'medium' ? 'text-blue-400' : 'text-gray-400'
+                ]}>
+                  {plan.priority.toUpperCase()}
+                </span>
+                <span class:list={[
+                  plan.enabled ? 'text-green-400' : 'text-red-400'
+                ]}>
+                  {plan.enabled ? 'HABILITADO' : 'DESHABILITADO'}
+                </span>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400 mb-3">{plan.description}</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+              <div>
+                <p class="text-sm">
+                  <span class="text-gray-400">Tipo:</span> 
+                  <span class="text-white ml-2">{plan.type.toUpperCase()}</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">RTO:</span> 
+                  <span class="text-white ml-2">{plan.rto} minutos</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">RPO:</span> 
+                  <span class="text-white ml-2">{plan.rpo} minutos</span>
+                </p>
+              </div>
+              <div>
+                <p class="text-sm">
+                  <span class="text-gray-400">Componentes:</span> 
+                  <span class="text-white ml-2">{plan.components.join(', ')}</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">Procedimientos:</span> 
+                  <span class="text-white ml-2">{plan.procedures.length}</span>
+                </p>
+              </div>
+              <div>
+                <p class="text-sm">
+                  <span class="text-gray-400">Último Test:</span> 
+                  <span class="text-white ml-2">{plan.lastTested ? new Date(plan.lastTested).toLocaleDateString() : 'Nunca'}</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">Próximo Test:</span> 
+                  <span class="text-white ml-2">{plan.nextTest ? new Date(plan.nextTest).toLocaleDateString() : 'No programado'}</span>
+                </p>
+              </div>
+            </div>
+            <div class="flex space-x-2">
+              <button 
+                class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                onclick={() => handleRunTest(plan.id, 'simulation')}
+              >
+                Test Simulación
+              </button>
+              <button 
+                class="bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                onclick={() => handleRunTest(plan.id, 'partial')}
+              >
+                Test Parcial
+              </button>
+              <button 
+                class="bg-yellow-600 hover:bg-yellow-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                onclick={() => handleRunTest(plan.id, 'tabletop')}
+              >
+                Test Tabletop
+              </button>
+              <button 
+                class="bg-red-600 hover:bg-red-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                onclick={() => handleExecutePlan(plan.id)}
+              >
+                Ejecutar Plan
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay planes de disaster recovery configurados.</p>
+    )}
+  </div>
+
+  <!-- Configuraciones de Failover -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Configuraciones de Failover</h3>
+    {failoverConfigs.length > 0 ? (
+      <div class="space-y-3">
+        {failoverConfigs.map(config => (
+          <div class="p-4 bg-gray-600 rounded-md">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-lg font-semibold text-white">{config.name}</h4>
+              <span class:list={[
+                config.enabled ? 'text-green-400' : 'text-red-400'
+              ]}>
+                {config.enabled ? 'HABILITADO' : 'DESHABILITADO'}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+              <div>
+                <p class="text-sm">
+                  <span class="text-gray-400">Fuente:</span> 
+                  <span class="text-white ml-2">{config.source.endpoint}</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">Destino:</span> 
+                  <span class="text-white ml-2">{config.target.endpoint}</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">Trigger:</span> 
+                  <span class="text-white ml-2">{config.trigger.type}</span>
+                </p>
+              </div>
+              <div>
+                <p class="text-sm">
+                  <span class="text-gray-400">Health Check:</span> 
+                  <span class="text-white ml-2">{config.healthCheck.endpoint}</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">Intervalo:</span> 
+                  <span class="text-white ml-2">{config.healthCheck.interval}s</span>
+                </p>
+                <p class="text-sm">
+                  <span class="text-gray-400">Último Failover:</span> 
+                  <span class="text-white ml-2">{config.lastFailover ? new Date(config.lastFailover).toLocaleString() : 'Nunca'}</span>
+                </p>
+              </div>
+            </div>
+            <div class="text-sm text-gray-400">
+              <p class="font-semibold mb-1">Condiciones de Trigger:</p>
+              {config.trigger.conditions.map(condition => (
+                <p class="ml-4">• {condition.name}: {condition.type} {condition.operator} {condition.threshold}</p>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay configuraciones de failover.</p>
+    )}
+  </div>
+
+  <!-- Tests Recientes -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Tests Recientes</h3>
+    {recentTests.length > 0 ? (
+      <div class="space-y-3">
+        {recentTests.map(test => (
+          <div class="p-3 bg-gray-600 rounded-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-medium">{test.name}</span>
+              <div class="flex items-center space-x-2">
+                <span class:list={[
+                  test.status === 'completed' ? 'text-green-400' : '',
+                  test.status === 'failed' ? 'text-red-400' : '',
+                  test.status === 'running' ? 'text-yellow-400' : 'text-gray-400'
+                ]}>
+                  {test.status.toUpperCase()}
+                </span>
+                <span class="text-blue-400 font-bold">{test.score}/100</span>
+              </div>
+            </div>
+            <div class="text-sm text-gray-400">
+              <p>Tipo: {test.type} | Inicio: {new Date(test.startTime).toLocaleString()}</p>
+              <p>Resultados: {test.results.length} procedimientos | Issues: {test.issues.length}</p>
+              {test.recommendations.length > 0 && (
+                <p>Recomendaciones: {test.recommendations.join(', ')}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay tests recientes.</p>
+    )}
+  </div>
+
+  <!-- Eventos Recientes -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Eventos Recientes</h3>
+    {recentEvents.length > 0 ? (
+      <div class="space-y-3">
+        {recentEvents.map(event => (
+          <div class="p-3 bg-gray-600 rounded-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-medium">{event.title}</span>
+              <div class="flex items-center space-x-2">
+                <span class:list={[
+                  event.severity === 'critical' ? 'text-red-400' : '',
+                  event.severity === 'high' ? 'text-yellow-400' : '',
+                  event.severity === 'medium' ? 'text-blue-400' : 'text-gray-400'
+                ]}>
+                  {event.severity.toUpperCase()}
+                </span>
+                <span class:list={[
+                  event.status === 'resolved' ? 'text-green-400' : '',
+                  event.status === 'active' ? 'text-yellow-400' : 'text-gray-400'
+                ]}>
+                  {event.status.toUpperCase()}
+                </span>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400 mb-2">{event.description}</p>
+            <div class="text-sm text-gray-400">
+              <p>Inicio: {new Date(event.startTime).toLocaleString()}</p>
+              <p>Componentes: {event.affectedComponents.join(', ')}</p>
+              <p>Planes: {event.plans.length} | Procedimientos: {event.procedures.length}</p>
+              {event.resolution && (
+                <p class="text-green-400">Resolución: {event.resolution}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay eventos recientes.</p>
+    )}
+  </div>
+
+  <!-- Crear nuevo plan de disaster recovery -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Crear Nuevo Plan de Disaster Recovery</h3>
+    <form onsubmit={handleCreatePlan} class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Nombre</label>
+          <input 
+            type="text" 
+            name="name" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="Nombre del plan"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Tipo</label>
+          <select 
+            name="type" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+          >
+            <option value="rto">RTO (Recovery Time Objective)</option>
+            <option value="rpo">RPO (Recovery Point Objective)</option>
+            <option value="failover">Failover</option>
+            <option value="backup">Backup</option>
+            <option value="replication">Replication</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Prioridad</label>
+          <select 
+            name="priority" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+          >
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">RTO (minutos)</label>
+          <input 
+            type="number" 
+            name="rto" 
+            required
+            min="1"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="30"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">RPO (minutos)</label>
+          <input 
+            type="number" 
+            name="rpo" 
+            required
+            min="1"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="15"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Componentes (separados por comas)</label>
+          <input 
+            type="text" 
+            name="components" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="database,api,application"
+          />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
+        <textarea 
+          name="description" 
+          required
+          rows="3"
+          class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+          placeholder="Descripción detallada del plan de disaster recovery"
+        ></textarea>
+      </div>
+      <button 
+        type="submit" 
+        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition duration-300"
+      >
+        Crear Plan de Disaster Recovery
+      </button>
+    </form>
+  </div>
+
+  <!-- Crear nueva configuración de failover -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Crear Nueva Configuración de Failover</h3>
+    <form onsubmit={handleCreateFailoverConfig} class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Nombre</label>
+          <input 
+            type="text" 
+            name="name" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="Nombre de la configuración"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Tipo de Trigger</label>
+          <select 
+            name="triggerType" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+          >
+            <option value="manual">Manual</option>
+            <option value="automatic">Automatic</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Tipo de Fuente</label>
+          <select 
+            name="sourceType" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+          >
+            <option value="primary">Primary</option>
+            <option value="secondary">Secondary</option>
+            <option value="standby">Standby</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Ubicación de Fuente</label>
+          <input 
+            type="text" 
+            name="sourceLocation" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="us-east-1"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Endpoint de Fuente</label>
+          <input 
+            type="text" 
+            name="sourceEndpoint" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="primary-db.sensus.com"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Tipo de Destino</label>
+          <select 
+            name="targetType" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+          >
+            <option value="primary">Primary</option>
+            <option value="secondary">Secondary</option>
+            <option value="standby">Standby</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Ubicación de Destino</label>
+          <input 
+            type="text" 
+            name="targetLocation" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="us-west-2"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Endpoint de Destino</label>
+          <input 
+            type="text" 
+            name="targetEndpoint" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="secondary-db.sensus.com"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Intervalo de Health Check (segundos)</label>
+          <input 
+            type="number" 
+            name="healthCheckInterval" 
+            required
+            min="10"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="30"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Timeout de Health Check (segundos)</label>
+          <input 
+            type="number" 
+            name="healthCheckTimeout" 
+            required
+            min="5"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="10"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Reintentos de Health Check</label>
+          <input 
+            type="number" 
+            name="healthCheckRetries" 
+            required
+            min="1"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="3"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Endpoint de Health Check</label>
+          <input 
+            type="text" 
+            name="healthCheckEndpoint" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+            placeholder="/health"
+          />
+        </div>
+      </div>
+      <button 
+        type="submit" 
+        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition duration-300"
+      >
+        Crear Configuración de Failover
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Script para manejar eventos del cliente
+  document.addEventListener('DOMContentLoaded', () => {
+    // Auto-refresh cada 30 segundos para métricas en tiempo real
+    setInterval(() => {
+      // Solo recargar si no hay formularios activos
+      if (!document.activeElement || document.activeElement.tagName !== 'INPUT') {
+        window.location.reload();
+      }
+    }, 30000);
+  });
+</script>

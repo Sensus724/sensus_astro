@@ -5,23 +5,17 @@ import authMiddleware from '../middleware/auth.middleware';
 const router = Router();
 
 // Rutas públicas (sin autenticación)
-router.post('/create', userController.createUser);
+router.post('/register', userController.register);
+router.post('/login', userController.login);
 
-// Rutas que requieren autenticación
+// Rutas protegidas (requieren autenticación)
 router.use(authMiddleware.verifyToken);
+router.use(authMiddleware.verifyUserExists);
 
-// Rutas del usuario
+// Rutas del usuario autenticado
 router.get('/profile', userController.getProfile);
 router.put('/profile', userController.updateProfile);
-router.get('/stats', userController.getStats);
-router.get('/preferences', userController.getPreferences);
-router.put('/preferences', userController.updatePreferences);
-router.get('/privacy', userController.getPrivacySettings);
-router.put('/privacy', userController.updatePrivacySettings);
+router.put('/change-password', userController.changePassword);
 router.delete('/account', userController.deleteAccount);
-
-// Rutas de administración (requieren permisos de admin)
-router.get('/admin/users', authMiddleware.verifyAdmin, userController.getAllUsers);
-router.get('/admin/stats', authMiddleware.verifyAdmin, userController.getAdminStats);
 
 export default router;

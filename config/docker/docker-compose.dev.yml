@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Backend API Service (Development)
+  sensus-backend-dev:
+    build:
+      context: ../..
+      dockerfile: config/docker/Dockerfile.backend
+    container_name: sensus-backend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=http://localhost:4321
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=1000
+    volumes:
+      - ../../backend:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+    networks:
+      - sensus-dev-network
+    depends_on:
+      - redis-dev
+    command: ["npm", "run", "dev"]
+
+  # Redis Cache Service (Development)
+  redis-dev:
+    image: redis:7-alpine
+    container_name: sensus-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-dev-data:/data
+    networks:
+      - sensus-dev-network
+
+  # Frontend Development (Host)
+  # Note: Frontend runs on host for hot reload
+  # Use: npm run dev in the root directory
+
+networks:
+  sensus-dev-network:
+    driver: bridge
+
+volumes:
+  redis-dev-data:
+    driver: local

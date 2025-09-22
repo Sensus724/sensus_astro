@@ -1,0 +1,505 @@
+---
+export interface Props {
+  class?: string;
+}
+
+const {
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'offline-handler',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <!-- Banner de estado offline -->
+  <div class="offline-banner" id="offline-banner">
+    <div class="offline-banner-content">
+      <div class="offline-banner-icon">
+        <i class="fas fa-wifi"></i>
+      </div>
+      <div class="offline-banner-text">
+        <strong>Sin conexión</strong>
+        <span>Algunas funciones pueden estar limitadas</span>
+      </div>
+      <button class="offline-banner-retry" id="offline-retry-button">
+        <i class="fas fa-sync-alt"></i>
+        Reintentar
+      </button>
+    </div>
+  </div>
+
+  <!-- Banner de reconexión -->
+  <div class="reconnect-banner" id="reconnect-banner">
+    <div class="reconnect-banner-content">
+      <div class="reconnect-banner-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="reconnect-banner-text">
+        <strong>¡Conexión restaurada!</strong>
+        <span>Todas las funciones están disponibles</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de funcionalidad offline -->
+  <div class="offline-modal" id="offline-modal">
+    <div class="offline-modal-content">
+      <div class="offline-modal-header">
+        <div class="offline-modal-icon">
+          <i class="fas fa-cloud-slash"></i>
+        </div>
+        <h3 class="offline-modal-title">Modo Offline</h3>
+        <button class="offline-modal-close" id="offline-modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="offline-modal-body">
+        <p class="offline-modal-description">
+          Estás navegando sin conexión a internet. Algunas funciones están disponibles:
+        </p>
+        
+        <div class="offline-features">
+          <div class="offline-feature">
+            <i class="fas fa-check text-green-500"></i>
+            <span>Ver contenido guardado</span>
+          </div>
+          <div class="offline-feature">
+            <i class="fas fa-check text-green-500"></i>
+            <span>Escribir en el diario</span>
+          </div>
+          <div class="offline-feature">
+            <i class="fas fa-check text-green-500"></i>
+            <span>Leer recursos educativos</span>
+          </div>
+          <div class="offline-feature">
+            <i class="fas fa-times text-red-500"></i>
+            <span>Sincronizar datos</span>
+          </div>
+          <div class="offline-feature">
+            <i class="fas fa-times text-red-500"></i>
+            <span>Realizar evaluaciones</span>
+          </div>
+        </div>
+        
+        <div class="offline-tips">
+          <h4>Consejos para modo offline:</h4>
+          <ul>
+            <li>Los datos se sincronizarán cuando recuperes la conexión</li>
+            <li>Puedes seguir escribiendo en tu diario</li>
+            <li>Revisa contenido educativo guardado</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="offline-modal-footer">
+        <button class="offline-modal-button" id="offline-modal-understand">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .offline-handler {
+    @apply relative;
+  }
+
+  /* Banner de estado offline */
+  .offline-banner {
+    @apply fixed top-0 left-0 right-0 z-50 transform -translate-y-full;
+    @apply bg-red-600 text-white transition-transform duration-300 ease-out;
+  }
+
+  .offline-banner.show {
+    @apply translate-y-0;
+  }
+
+  .offline-banner-content {
+    @apply flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto;
+  }
+
+  .offline-banner-icon {
+    @apply w-6 h-6 flex items-center justify-center;
+  }
+
+  .offline-banner-text {
+    @apply flex-1;
+  }
+
+  .offline-banner-text strong {
+    @apply block text-sm font-semibold;
+  }
+
+  .offline-banner-text span {
+    @apply block text-xs opacity-90;
+  }
+
+  .offline-banner-retry {
+    @apply bg-red-700 hover:bg-red-800 text-white px-3 py-1.5 rounded-lg;
+    @apply text-sm font-medium transition-colors duration-200;
+    @apply flex items-center gap-1;
+  }
+
+  /* Banner de reconexión */
+  .reconnect-banner {
+    @apply fixed top-0 left-0 right-0 z-50 transform -translate-y-full;
+    @apply bg-green-600 text-white transition-transform duration-300 ease-out;
+  }
+
+  .reconnect-banner.show {
+    @apply translate-y-0;
+  }
+
+  .reconnect-banner-content {
+    @apply flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto;
+  }
+
+  .reconnect-banner-icon {
+    @apply w-6 h-6 flex items-center justify-center;
+  }
+
+  .reconnect-banner-text {
+    @apply flex-1;
+  }
+
+  .reconnect-banner-text strong {
+    @apply block text-sm font-semibold;
+  }
+
+  .reconnect-banner-text span {
+    @apply block text-xs opacity-90;
+  }
+
+  /* Modal de funcionalidad offline */
+  .offline-modal {
+    @apply fixed inset-0 z-50 hidden;
+  }
+
+  .offline-modal.open {
+    @apply block;
+  }
+
+  .offline-modal-content {
+    @apply absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm;
+    @apply flex items-center justify-center p-4;
+  }
+
+  .offline-modal-content > div {
+    @apply bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden;
+  }
+
+  .offline-modal-header {
+    @apply flex items-center gap-3 p-6 border-b border-gray-200;
+  }
+
+  .offline-modal-icon {
+    @apply w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center;
+    @apply text-red-600;
+  }
+
+  .offline-modal-title {
+    @apply text-lg font-semibold text-gray-900 flex-1;
+  }
+
+  .offline-modal-close {
+    @apply p-2 text-gray-400 hover:text-gray-600;
+    @apply transition-colors duration-200;
+  }
+
+  .offline-modal-body {
+    @apply p-6 space-y-4;
+  }
+
+  .offline-modal-description {
+    @apply text-gray-600 leading-relaxed;
+  }
+
+  .offline-features {
+    @apply space-y-2;
+  }
+
+  .offline-feature {
+    @apply flex items-center gap-3 text-sm;
+  }
+
+  .offline-tips {
+    @apply bg-gray-50 rounded-lg p-4;
+  }
+
+  .offline-tips h4 {
+    @apply font-semibold text-gray-900 mb-2;
+  }
+
+  .offline-tips ul {
+    @apply space-y-1 text-sm text-gray-600;
+  }
+
+  .offline-tips li {
+    @apply flex items-start gap-2;
+  }
+
+  .offline-tips li::before {
+    content: '•';
+    @apply text-blue-500 font-bold;
+  }
+
+  .offline-modal-footer {
+    @apply p-6 border-t border-gray-200 flex justify-end;
+  }
+
+  .offline-modal-button {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-lg font-medium;
+    @apply hover:bg-blue-700 transition-colors duration-200;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .offline-banner-content,
+    .reconnect-banner-content {
+      @apply px-3 py-2;
+    }
+    
+    .offline-modal-content {
+      @apply p-2;
+    }
+    
+    .offline-modal-header,
+    .offline-modal-body,
+    .offline-modal-footer {
+      @apply p-4;
+    }
+  }
+
+  /* Animaciones */
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+
+  .offline-banner.show {
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .reconnect-banner.show {
+    animation: slideDown 0.3s ease-out;
+  }
+</style>
+
+<script>
+  class OfflineHandler {
+    constructor() {
+      this.isOnline = navigator.onLine;
+      this.offlineModalShown = false;
+      
+      this.init();
+    }
+    
+    init() {
+      // Escuchar cambios de conectividad
+      window.addEventListener('online', () => this.handleOnline());
+      window.addEventListener('offline', () => this.handleOffline());
+      
+      // Configurar botones
+      this.setupButtons();
+      
+      // Verificar estado inicial
+      if (!this.isOnline) {
+        this.handleOffline();
+      }
+    }
+    
+    setupButtons() {
+      const retryButton = document.getElementById('offline-retry-button');
+      const modalCloseButton = document.getElementById('offline-modal-close');
+      const understandButton = document.getElementById('offline-modal-understand');
+      
+      if (retryButton) {
+        retryButton.addEventListener('click', () => this.retryConnection());
+      }
+      
+      if (modalCloseButton) {
+        modalCloseButton.addEventListener('click', () => this.hideOfflineModal());
+      }
+      
+      if (understandButton) {
+        understandButton.addEventListener('click', () => this.hideOfflineModal());
+      }
+    }
+    
+    handleOnline() {
+      console.log('OfflineHandler: Connection restored');
+      this.isOnline = true;
+      this.hideOfflineBanner();
+      this.showReconnectBanner();
+      
+      // Sincronizar datos pendientes
+      this.syncPendingData();
+    }
+    
+    handleOffline() {
+      console.log('OfflineHandler: Connection lost');
+      this.isOnline = false;
+      this.showOfflineBanner();
+      
+      // Mostrar modal de funcionalidad offline después de un delay
+      if (!this.offlineModalShown) {
+        setTimeout(() => {
+          this.showOfflineModal();
+        }, 2000);
+      }
+    }
+    
+    showOfflineBanner() {
+      const banner = document.getElementById('offline-banner');
+      if (banner) {
+        banner.classList.add('show');
+      }
+    }
+    
+    hideOfflineBanner() {
+      const banner = document.getElementById('offline-banner');
+      if (banner) {
+        banner.classList.remove('show');
+      }
+    }
+    
+    showReconnectBanner() {
+      const banner = document.getElementById('reconnect-banner');
+      if (banner) {
+        banner.classList.add('show');
+        
+        // Auto-hide después de 3 segundos
+        setTimeout(() => {
+          this.hideReconnectBanner();
+        }, 3000);
+      }
+    }
+    
+    hideReconnectBanner() {
+      const banner = document.getElementById('reconnect-banner');
+      if (banner) {
+        banner.classList.remove('show');
+      }
+    }
+    
+    showOfflineModal() {
+      const modal = document.getElementById('offline-modal');
+      if (modal) {
+        modal.classList.add('open');
+        this.offlineModalShown = true;
+      }
+    }
+    
+    hideOfflineModal() {
+      const modal = document.getElementById('offline-modal');
+      if (modal) {
+        modal.classList.remove('open');
+      }
+    }
+    
+    async retryConnection() {
+      const retryButton = document.getElementById('offline-retry-button');
+      if (retryButton) {
+        retryButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reintentando...';
+        retryButton.disabled = true;
+      }
+      
+      try {
+        // Intentar hacer una request simple
+        const response = await fetch('/health', { 
+          method: 'HEAD',
+          cache: 'no-cache'
+        });
+        
+        if (response.ok) {
+          this.handleOnline();
+        } else {
+          throw new Error('Connection failed');
+        }
+      } catch (error) {
+        console.log('OfflineHandler: Retry failed', error);
+        
+        // Restaurar botón
+        if (retryButton) {
+          retryButton.innerHTML = '<i class="fas fa-sync-alt"></i> Reintentar';
+          retryButton.disabled = false;
+        }
+      }
+    }
+    
+    async syncPendingData() {
+      try {
+        // Sincronizar datos del diario pendientes
+        const pendingEntries = this.getPendingDiaryEntries();
+        if (pendingEntries.length > 0) {
+          console.log('OfflineHandler: Syncing pending diary entries', pendingEntries.length);
+          await this.syncDiaryEntries(pendingEntries);
+        }
+        
+        // Sincronizar otras datos pendientes
+        const pendingData = this.getPendingData();
+        if (pendingData.length > 0) {
+          console.log('OfflineHandler: Syncing pending data', pendingData.length);
+          await this.syncData(pendingData);
+        }
+        
+      } catch (error) {
+        console.error('OfflineHandler: Sync error', error);
+      }
+    }
+    
+    getPendingDiaryEntries() {
+      try {
+        const pending = localStorage.getItem('pendingDiaryEntries');
+        return pending ? JSON.parse(pending) : [];
+      } catch (error) {
+        console.error('OfflineHandler: Error getting pending entries', error);
+        return [];
+      }
+    }
+    
+    getPendingData() {
+      try {
+        const pending = localStorage.getItem('pendingData');
+        return pending ? JSON.parse(pending) : [];
+      } catch (error) {
+        console.error('OfflineHandler: Error getting pending data', error);
+        return [];
+      }
+    }
+    
+    async syncDiaryEntries(entries) {
+      // Implementar sincronización de entradas del diario
+      console.log('OfflineHandler: Syncing diary entries', entries);
+    }
+    
+    async syncData(data) {
+      // Implementar sincronización de otros datos
+      console.log('OfflineHandler: Syncing data', data);
+    }
+  }
+  
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    new OfflineHandler();
+  });
+</script>

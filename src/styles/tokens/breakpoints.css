@@ -1,0 +1,274 @@
+/**
+ * Sistema de Breakpoints - Sensus
+ * Breakpoints responsive para diseño adaptativo
+ */
+
+:root {
+  /* Breakpoints base */
+  --breakpoint-xs: 0px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Breakpoints semánticos */
+  --breakpoint-mobile: var(--breakpoint-sm);
+  --breakpoint-tablet: var(--breakpoint-md);
+  --breakpoint-desktop: var(--breakpoint-lg);
+  --breakpoint-wide: var(--breakpoint-xl);
+
+  /* Contenedores */
+  --container-xs: 100%;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+
+  /* Espaciado de contenedores */
+  --container-padding-xs: 1rem;    /* 16px */
+  --container-padding-sm: 1.5rem;  /* 24px */
+  --container-padding-md: 2rem;    /* 32px */
+  --container-padding-lg: 2.5rem;  /* 40px */
+  --container-padding-xl: 3rem;    /* 48px */
+}
+
+/* Media queries */
+@media (min-width: 640px) {
+  :root {
+    --container-padding: var(--container-padding-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --container-padding: var(--container-padding-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --container-padding: var(--container-padding-lg);
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --container-padding: var(--container-padding-xl);
+  }
+}
+
+/* Clases de utilidad para breakpoints */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding-xs);
+  padding-right: var(--container-padding-xs);
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: var(--container-sm);
+    padding-left: var(--container-padding-sm);
+    padding-right: var(--container-padding-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-md);
+    padding-left: var(--container-padding-md);
+    padding-right: var(--container-padding-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-lg);
+    padding-left: var(--container-padding-lg);
+    padding-right: var(--container-padding-lg);
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: var(--container-xl);
+    padding-left: var(--container-padding-xl);
+    padding-right: var(--container-padding-xl);
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: var(--container-2xl);
+  }
+}
+
+/* Contenedores específicos */
+.container-xs {
+  max-width: var(--container-xs);
+}
+
+.container-sm {
+  max-width: var(--container-sm);
+}
+
+.container-md {
+  max-width: var(--container-md);
+}
+
+.container-lg {
+  max-width: var(--container-lg);
+}
+
+.container-xl {
+  max-width: var(--container-xl);
+}
+
+.container-2xl {
+  max-width: var(--container-2xl);
+}
+
+/* Grid responsive */
+.grid-responsive {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-8);
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-responsive {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-10);
+  }
+}
+
+/* Flex responsive */
+.flex-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .flex-responsive {
+    flex-direction: row;
+    gap: var(--space-6);
+  }
+}
+
+/* Espaciado responsive */
+.space-responsive {
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .space-responsive {
+    margin-bottom: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .space-responsive {
+    margin-bottom: var(--space-8);
+  }
+}
+
+/* Tipografía responsive */
+.text-responsive-xs {
+  font-size: var(--font-size-sm);
+}
+
+@media (min-width: 768px) {
+  .text-responsive-xs {
+    font-size: var(--font-size-base);
+  }
+}
+
+.text-responsive-sm {
+  font-size: var(--font-size-base);
+}
+
+@media (min-width: 768px) {
+  .text-responsive-sm {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.text-responsive-md {
+  font-size: var(--font-size-lg);
+}
+
+@media (min-width: 768px) {
+  .text-responsive-md {
+    font-size: var(--font-size-xl);
+  }
+}
+
+.text-responsive-lg {
+  font-size: var(--font-size-xl);
+}
+
+@media (min-width: 768px) {
+  .text-responsive-lg {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+.text-responsive-xl {
+  font-size: var(--font-size-2xl);
+}
+
+@media (min-width: 768px) {
+  .text-responsive-xl {
+    font-size: var(--font-size-3xl);
+  }
+}
+
+/* Utilidades de visibilidad */
+.hidden-xs { display: none; }
+.hidden-sm { display: none; }
+.hidden-md { display: none; }
+.hidden-lg { display: none; }
+.hidden-xl { display: none; }
+
+@media (min-width: 640px) {
+  .hidden-xs { display: block; }
+  .visible-xs { display: none; }
+}
+
+@media (min-width: 768px) {
+  .hidden-sm { display: block; }
+  .visible-sm { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .hidden-md { display: block; }
+  .visible-md { display: none; }
+}
+
+@media (min-width: 1280px) {
+  .hidden-lg { display: block; }
+  .visible-lg { display: none; }
+}
+
+@media (min-width: 1536px) {
+  .hidden-xl { display: block; }
+  .visible-xl { display: none; }
+}

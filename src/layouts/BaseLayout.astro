@@ -1,4 +1,8 @@
 ---
+import PWAInstaller from '../components/PWAInstaller.astro';
+import OfflineHandler from '../components/OfflineHandler.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+
 export interface Props {
   title: string
   description?: string
@@ -93,6 +97,18 @@ const {
     <link rel="apple-touch-icon" href="/assets/images/Logo.jpeg">
     <meta name="theme-color" content={themeColor}>
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sensus">
+    <meta name="application-name" content="Sensus">
+    <meta name="msapplication-TileColor" content={themeColor}>
+    <meta name="msapplication-tap-highlight" content="no">
+    
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -186,10 +202,7 @@ const {
             
                     <!-- Botones de autenticación y toggle de tema -->
                     <div class="auth-buttons">
-                        <button class="theme-toggle" aria-label="Cambiar tema" aria-pressed="false">
-                            <i class="fas fa-sun toggle-icon sun"></i>
-                            <i class="fas fa-moon toggle-icon moon"></i>
-                        </button>
+                        <ThemeToggle size="medium" variant="default" />
                         <button class="btn-cta btn-outline" id="login-btn">Iniciar sesión</button>
                         <button class="btn-cta" id="register-btn">Registrarse</button>
                     </div>
@@ -237,10 +250,7 @@ const {
                 <div class="menu-auth-buttons">
                     <div class="mobile-theme-toggle">
                         <span class="theme-label">Tema:</span>
-                        <button class="theme-toggle mobile" aria-label="Cambiar tema" aria-pressed="false">
-                            <i class="fas fa-sun toggle-icon sun"></i>
-                            <i class="fas fa-moon toggle-icon moon"></i>
-                        </button>
+                        <ThemeToggle size="small" variant="minimal" />
                     </div>
                     <button class="btn-cta btn-outline" id="mobile-login-btn">
                         <i class="fas fa-sign-in-alt"></i>
@@ -256,6 +266,10 @@ const {
     <main>
         <slot />
     </main>
+
+    <!-- PWA Components -->
+    <PWAInstaller />
+    <OfflineHandler />
 
     <!-- Modal de Autenticación -->
     <div id="auth-modal" class="auth-modal">
@@ -570,13 +584,20 @@ const {
             </button>
 
 
-        <!-- Scripts - Sistema de carga optimizado -->
-        <script is:inline src="/js/load-existing-files.js"></script>
+    <!-- Scripts - Sistema modular optimizado -->
+    <script is:inline src="/js/load-existing-files.js"></script>
     
     <!-- Firebase - Sistema Completo -->
     <script is:inline src="/js/firebase-init.js"></script>
     <script is:inline src="/js/modules/firebase-services.js"></script>
-    <script is:inline src="/js/modules/auth-enhanced.js"></script>
+    
+    <!-- Core App -->
+    <script type="module" src="/js/core/app.js"></script>
+    
+    <!-- Modules -->
+    <script type="module" src="/js/modules/auth.js"></script>
+    <script type="module" src="/js/modules/theme.js"></script>
+    <script type="module" src="/js/modules/pwa.js"></script>
     
     <!-- Scripts Core -->
     <script is:inline src="/js/base/core.js"></script>
@@ -681,41 +702,25 @@ const {
         }
         
         // ===== SISTEMA DE TEMAS =====
-        const themeButtons = document.querySelectorAll('.theme-toggle');
-        let currentTheme = localStorage.getItem('sensus_theme') || 'light';
+        // El sistema de temas ahora se maneja automáticamente por el componente ThemeToggle
+        // Solo mantenemos la funcionalidad básica para compatibilidad
         
-        // Aplicar tema inicial
-        function applyTheme(theme) {
-          document.documentElement.setAttribute('data-theme', theme);
-          currentTheme = theme;
-          localStorage.setItem('sensus_theme', theme);
+        // Escuchar cambios de tema desde el componente
+        window.addEventListener('themechange', (event) => {
+          console.log('Tema cambiado:', event.detail.theme);
           
-          // Actualizar botones
-          themeButtons.forEach(button => {
-            const sunIcon = button.querySelector('.sun');
-            const moonIcon = button.querySelector('.moon');
-            
-            if (theme === 'dark') {
-              if (sunIcon) sunIcon.style.display = 'none';
-              if (moonIcon) moonIcon.style.display = 'inline-block';
-              button.setAttribute('aria-pressed', 'true');
-            } else {
-              if (sunIcon) sunIcon.style.display = 'inline-block';
-              if (moonIcon) moonIcon.style.display = 'none';
-              button.setAttribute('aria-pressed', 'false');
-            }
-          });
-        }
-        
-        // Aplicar tema guardado
-        applyTheme(currentTheme);
-        
-        // Event listeners para botones de tema
-        themeButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            applyTheme(newTheme);
-          });
+          // Actualizar meta theme-color
+          const themeColor = event.detail.theme === 'dark' ? '#1f2937' : '#2563eb';
+          const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute('content', themeColor);
+          }
+          
+          // Actualizar meta msapplication-TileColor
+          const metaTileColor = document.querySelector('meta[name="msapplication-TileColor"]');
+          if (metaTileColor) {
+            metaTileColor.setAttribute('content', themeColor);
+          }
         });
         
         // ===== NAVEGACIÓN DEL FOOTER =====
@@ -976,6 +981,36 @@ const {
       window.switchAuthTab = switchAuthTab;
       window.showAuthMessage = showAuthMessage;
       window.showAuthLoading = showAuthLoading;
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script is:inline>
+      // Registrar Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            console.log('Service Worker registrado exitosamente:', registration.scope);
+            
+            // Verificar actualizaciones
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Nueva versión disponible
+                    console.log('Nueva versión de la PWA disponible');
+                    // Aquí podrías mostrar una notificación al usuario
+                  }
+                });
+              }
+            });
+            
+          } catch (error) {
+            console.error('Error al registrar Service Worker:', error);
+          }
+        });
+      }
     </script>
 </body>
 </html>

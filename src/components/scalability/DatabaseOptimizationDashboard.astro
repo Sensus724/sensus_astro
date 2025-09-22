@@ -1,0 +1,427 @@
+---
+import { databaseOptimization } from '../../utils/databaseOptimization';
+import { trackEvent } from '../../utils/userAnalytics';
+
+// Obtener datos de optimización de base de datos
+const connections = databaseOptimization.getConnections();
+const queryAnalyses = databaseOptimization.getQueryAnalyses();
+const slowQueries = databaseOptimization.getSlowQueries();
+const indexRecommendations = databaseOptimization.getIndexRecommendations();
+const optimizations = databaseOptimization.getOptimizations();
+const stats = databaseOptimization.getStats();
+const partitionStrategies = databaseOptimization.getPartitionStrategies();
+
+// Calcular estadísticas
+const totalConnections = connections.reduce((sum, conn) => sum + conn.maxConnections, 0);
+const activeConnections = connections.reduce((sum, conn) => sum + conn.currentConnections, 0);
+const connectionUtilization = totalConnections > 0 ? (activeConnections / totalConnections) * 100 : 0;
+
+const pendingRecommendations = indexRecommendations.filter(rec => rec.status === 'pending').length;
+const appliedRecommendations = indexRecommendations.filter(rec => rec.status === 'applied').length;
+
+const pendingOptimizations = optimizations.filter(opt => opt.status === 'pending').length;
+const appliedOptimizations = optimizations.filter(opt => opt.status === 'applied').length;
+
+// Funciones de manejo de eventos
+const handleApplyIndexRecommendation = async (recommendationId: string) => {
+  const success = await databaseOptimization.applyIndexRecommendation(recommendationId);
+  trackEvent('database_optimization', 'apply_index_recommendation', { recommendationId, success });
+  
+  if (success) {
+    alert('Recomendación de índice aplicada exitosamente');
+    window.location.reload();
+  } else {
+    alert('Error al aplicar la recomendación de índice');
+  }
+};
+
+const handleApplyOptimization = async (optimizationId: string) => {
+  const success = await databaseOptimization.applyOptimization(optimizationId);
+  trackEvent('database_optimization', 'apply_optimization', { optimizationId, success });
+  
+  if (success) {
+    alert('Optimización aplicada exitosamente');
+    window.location.reload();
+  } else {
+    alert('Error al aplicar la optimización');
+  }
+};
+
+const handleOptimizeConnectionPool = async (connectionId: string) => {
+  const newMaxConnections = parseInt(prompt('Nuevo número máximo de conexiones:') || '100');
+  if (newMaxConnections > 0) {
+    const success = await databaseOptimization.optimizeConnectionPool(connectionId, newMaxConnections);
+    trackEvent('database_optimization', 'optimize_connection_pool', { connectionId, newMaxConnections, success });
+    
+    if (success) {
+      alert('Pool de conexiones optimizado exitosamente');
+      window.location.reload();
+    } else {
+      alert('Error al optimizar el pool de conexiones');
+    }
+  }
+};
+
+const handleRunMaintenanceTask = async (taskType: 'vacuum' | 'analyze' | 'reindex') => {
+  if (confirm(`¿Estás seguro de que quieres ejecutar la tarea de mantenimiento: ${taskType}?`)) {
+    const success = await databaseOptimization.runMaintenanceTask(taskType);
+    trackEvent('database_optimization', 'run_maintenance_task', { taskType, success });
+    
+    if (success) {
+      alert(`Tarea de mantenimiento ${taskType} completada exitosamente`);
+    } else {
+      alert(`Error al ejecutar la tarea de mantenimiento ${taskType}`);
+    }
+  }
+};
+
+const handleCreatePartitionStrategy = async (event: Event) => {
+  event.preventDefault();
+  const form = event.target as HTMLFormElement;
+  const formData = new FormData(form);
+  
+  const strategy = {
+    table: formData.get('table') as string,
+    partitionKey: formData.get('partitionKey') as string,
+    partitionType: formData.get('partitionType') as 'range' | 'hash' | 'list',
+    partitions: JSON.parse(formData.get('partitions') as string),
+    enabled: true,
+    metadata: {},
+  };
+
+  await databaseOptimization.createPartitionStrategy(strategy);
+  trackEvent('database_optimization', 'create_partition_strategy', { table: strategy.table });
+  
+  // Recargar página para mostrar nueva estrategia
+  window.location.reload();
+};
+---
+
+<section class="database-optimization-dashboard p-6 bg-gray-800 text-white rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold mb-6 text-center text-green-400">Optimización de Base de Datos</h2>
+
+  <!-- Métricas principales -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Consultas Totales</h3>
+      <p class="text-3xl font-bold text-blue-400">{stats.totalQueries.toLocaleString()}</p>
+      <p class="text-sm text-gray-400">{stats.slowQueries} lentas</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Tiempo Promedio</h3>
+      <p class="text-3xl font-bold text-yellow-400">{stats.averageQueryTime.toFixed(0)}ms</p>
+      <p class="text-sm text-gray-400">Por consulta</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Conexiones</h3>
+      <p class="text-3xl font-bold text-green-400">{activeConnections}/{totalConnections}</p>
+      <p class="text-sm text-gray-400">{connectionUtilization.toFixed(1)}% utilización</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Hit Rate de Caché</h3>
+      <p class="text-3xl font-bold text-purple-400">{stats.cacheHitRate.toFixed(1)}%</p>
+      <p class="text-sm text-gray-400">Base de datos</p>
+    </div>
+  </div>
+
+  <!-- Conexiones de base de datos -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Conexiones de Base de Datos</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {connections.map(connection => (
+        <div class="p-4 bg-gray-600 rounded-md">
+          <h4 class="text-lg font-semibold mb-2 text-white">{connection.id}</h4>
+          <div class="space-y-2">
+            <p class="text-sm">
+              <span class="text-gray-400">Host:</span> 
+              <span class="text-white ml-2">{connection.host}:{connection.port}</span>
+            </p>
+            <p class="text-sm">
+              <span class="text-gray-400">Database:</span> 
+              <span class="text-white ml-2">{connection.database}</span>
+            </p>
+            <p class="text-sm">
+              <span class="text-gray-400">Conexiones:</span> 
+              <span class="text-white ml-2">{connection.currentConnections}/{connection.maxConnections}</span>
+            </p>
+            <p class="text-sm">
+              <span class="text-gray-400">Estado:</span> 
+              <span class:list={[
+                connection.status === 'active' ? 'text-green-400' : '',
+                connection.status === 'idle' ? 'text-yellow-400' : 'text-red-400'
+              ]} class="ml-2">
+                {connection.status.toUpperCase()}
+              </span>
+            </p>
+            <div class="mt-3">
+              <button 
+                class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                onclick={() => handleOptimizeConnectionPool(connection.id)}
+              >
+                Optimizar Pool
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Consultas lentas -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Consultas Lentas</h3>
+    {slowQueries.length > 0 ? (
+      <div class="space-y-3">
+        {slowQueries.slice(0, 5).map(query => (
+          <div class="p-3 bg-gray-600 rounded-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-red-400 font-semibold">{query.executionTime}ms</span>
+              <span class="text-gray-400 text-sm">Frecuencia: {query.frequency}</span>
+            </div>
+            <p class="text-sm text-gray-300 font-mono bg-gray-800 p-2 rounded">
+              {query.query.length > 100 ? query.query.substring(0, 100) + '...' : query.query}
+            </p>
+            <div class="mt-2 text-xs text-gray-400">
+              <span>Filas examinadas: {query.rowsExamined}</span> | 
+              <span class="ml-2">Filas devueltas: {query.rowsReturned}</span> | 
+              <span class="ml-2">Índice: {query.indexUsed || 'Ninguno'}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay consultas lentas detectadas.</p>
+    )}
+  </div>
+
+  <!-- Recomendaciones de índices -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Recomendaciones de Índices</h3>
+    <div class="mb-4">
+      <p class="text-gray-300">
+        Recomendaciones pendientes: <span class="text-yellow-400 font-bold">{pendingRecommendations}</span> | 
+        Recomendaciones aplicadas: <span class="text-green-400 font-bold">{appliedRecommendations}</span>
+      </p>
+    </div>
+    {indexRecommendations.length > 0 ? (
+      <div class="space-y-3">
+        {indexRecommendations.map(recommendation => (
+          <div class="flex items-center justify-between p-3 bg-gray-600 rounded-md">
+            <div class="flex-1">
+              <p class="font-medium">{recommendation.table} ({recommendation.columns.join(', ')})</p>
+              <p class="text-sm text-gray-400">{recommendation.reason}</p>
+              <p class="text-sm text-gray-400">
+                Prioridad: {recommendation.priority} | Impacto estimado: {recommendation.estimatedImpact}%
+              </p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class:list={[
+                recommendation.status === 'applied' ? 'text-green-400' : '',
+                recommendation.status === 'failed' ? 'text-red-400' : 'text-yellow-400'
+              ]}>
+                {recommendation.status.toUpperCase()}
+              </span>
+              {recommendation.status === 'pending' && (
+                <button 
+                  class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                  onclick={() => handleApplyIndexRecommendation(recommendation.id)}
+                >
+                  Aplicar
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay recomendaciones de índices disponibles.</p>
+    )}
+  </div>
+
+  <!-- Optimizaciones -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Optimizaciones de Base de Datos</h3>
+    <div class="mb-4">
+      <p class="text-gray-300">
+        Optimizaciones pendientes: <span class="text-yellow-400 font-bold">{pendingOptimizations}</span> | 
+        Optimizaciones aplicadas: <span class="text-green-400 font-bold">{appliedOptimizations}</span>
+      </p>
+    </div>
+    {optimizations.length > 0 ? (
+      <div class="space-y-3">
+        {optimizations.map(optimization => (
+          <div class="flex items-center justify-between p-3 bg-gray-600 rounded-md">
+            <div class="flex-1">
+              <p class="font-medium">{optimization.description}</p>
+              <p class="text-sm text-gray-400">
+                Tipo: {optimization.type} | Impacto: {optimization.impact} | Ganancia: {optimization.performanceGain}% | Tiempo estimado: {optimization.estimatedTime}min
+              </p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class:list={[
+                optimization.status === 'applied' ? 'text-green-400' : '',
+                optimization.status === 'failed' ? 'text-red-400' : 'text-yellow-400'
+              ]}>
+                {optimization.status.toUpperCase()}
+              </span>
+              {optimization.status === 'pending' && (
+                <button 
+                  class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                  onclick={() => handleApplyOptimization(optimization.id)}
+                >
+                  Aplicar
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay optimizaciones disponibles.</p>
+    )}
+  </div>
+
+  <!-- Estrategias de particionado -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Estrategias de Particionado</h3>
+    {partitionStrategies.length > 0 ? (
+      <div class="space-y-4">
+        {partitionStrategies.map(strategy => (
+          <div class="p-4 bg-gray-600 rounded-md">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-lg font-semibold text-white">{strategy.table}</h4>
+              <span class:list={[
+                strategy.enabled ? 'text-green-400' : 'text-red-400'
+              ]}>
+                {strategy.enabled ? 'Habilitado' : 'Deshabilitado'}
+              </span>
+            </div>
+            <div class="space-y-2">
+              <p class="text-sm">
+                <span class="text-gray-400">Clave de partición:</span> 
+                <span class="text-white ml-2">{strategy.partitionKey}</span>
+              </p>
+              <p class="text-sm">
+                <span class="text-gray-400">Tipo:</span> 
+                <span class="text-white ml-2">{strategy.partitionType}</span>
+              </p>
+              <div class="mt-3">
+                <h5 class="text-sm font-semibold text-gray-300 mb-2">Particiones:</h5>
+                <div class="space-y-1">
+                  {strategy.partitions.map(partition => (
+                    <div class="text-xs text-gray-400 bg-gray-800 p-2 rounded">
+                      <span class="font-medium">{partition.name}</span> - 
+                      {partition.condition} - 
+                      {partition.size}MB - 
+                      {partition.rowCount} filas
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay estrategias de particionado configuradas.</p>
+    )}
+  </div>
+
+  <!-- Tareas de mantenimiento -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Tareas de Mantenimiento</h3>
+    <p class="text-gray-300 mb-4">
+      Ejecuta tareas de mantenimiento para optimizar el rendimiento de la base de datos.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <button 
+        class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        onclick={() => handleRunMaintenanceTask('vacuum')}
+      >
+        VACUUM
+      </button>
+      <button 
+        class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        onclick={() => handleRunMaintenanceTask('analyze')}
+      >
+        ANALYZE
+      </button>
+      <button 
+        class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        onclick={() => handleRunMaintenanceTask('reindex')}
+      >
+        REINDEX
+      </button>
+    </div>
+  </div>
+
+  <!-- Crear nueva estrategia de particionado -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Crear Nueva Estrategia de Particionado</h3>
+    <form onsubmit={handleCreatePartitionStrategy} class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Tabla</label>
+          <input 
+            type="text" 
+            name="table" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
+            placeholder="nombre_tabla"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Clave de Partición</label>
+          <input 
+            type="text" 
+            name="partitionKey" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
+            placeholder="created_at"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Tipo de Partición</label>
+          <select 
+            name="partitionType" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
+          >
+            <option value="range">Range</option>
+            <option value="hash">Hash</option>
+            <option value="list">List</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Particiones (JSON)</label>
+          <textarea 
+            name="partitions" 
+            required
+            rows="4"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
+            placeholder='[{"name": "partition_2024", "condition": "created_at >= '\''2024-01-01'\''", "size": 1024, "rowCount": 10000}]'
+          ></textarea>
+        </div>
+      </div>
+      <button 
+        type="submit" 
+        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded transition duration-300"
+      >
+        Crear Estrategia de Particionado
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Script para manejar eventos del cliente
+  document.addEventListener('DOMContentLoaded', () => {
+    // Auto-refresh cada 30 segundos para métricas en tiempo real
+    setInterval(() => {
+      // Solo recargar si no hay formularios activos
+      if (!document.activeElement || document.activeElement.tagName !== 'INPUT') {
+        window.location.reload();
+      }
+    }, 30000);
+  });
+</script>

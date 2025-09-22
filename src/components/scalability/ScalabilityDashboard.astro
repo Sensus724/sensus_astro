@@ -1,0 +1,449 @@
+---
+import { scalability } from '../../utils/scalability';
+import { trackEvent } from '../../utils/userAnalytics';
+
+// Obtener datos de escalabilidad
+const performanceMetrics = scalability.getPerformanceMetrics();
+const resourceUsage = scalability.getResourceUsage();
+const scalingRules = scalability.getScalingRules();
+const scalingEvents = scalability.getScalingEvents();
+const cacheStrategies = scalability.getCacheStrategies();
+const loadBalancers = scalability.getLoadBalancers();
+const databaseOptimizations = scalability.getDatabaseOptimizations();
+const performanceOptimizations = scalability.getPerformanceOptimizations();
+const config = scalability.getConfig();
+
+// Obtener métricas más recientes
+const latestMetrics = performanceMetrics.slice(-10);
+const latestResources = resourceUsage.slice(-10);
+const recentEvents = scalingEvents.slice(-5);
+
+// Calcular estadísticas
+const avgResponseTime = latestMetrics.length > 0 
+  ? latestMetrics.reduce((sum, m) => sum + m.value, 0) / latestMetrics.length 
+  : 0;
+
+const avgCpuUsage = latestResources
+  .filter(r => r.type === 'cpu')
+  .reduce((sum, r) => sum + r.utilization, 0) / Math.max(latestResources.filter(r => r.type === 'cpu').length, 1);
+
+const avgMemoryUsage = latestResources
+  .filter(r => r.type === 'memory')
+  .reduce((sum, r) => sum + r.utilization, 0) / Math.max(latestResources.filter(r => r.type === 'memory').length, 1);
+
+const totalCacheHitRate = cacheStrategies.length > 0
+  ? cacheStrategies.reduce((sum, s) => sum + s.hitRate, 0) / cacheStrategies.length
+  : 0;
+
+const pendingOptimizations = [...databaseOptimizations, ...performanceOptimizations]
+  .filter(opt => opt.status === 'pending').length;
+
+const appliedOptimizations = [...databaseOptimizations, ...performanceOptimizations]
+  .filter(opt => opt.status === 'applied').length;
+
+// Funciones de manejo de eventos
+const handleCreateScalingRule = async (event: Event) => {
+  event.preventDefault();
+  const form = event.target as HTMLFormElement;
+  const formData = new FormData(form);
+  
+  const rule = {
+    name: formData.get('name') as string,
+    description: formData.get('description') as string,
+    metric: formData.get('metric') as string,
+    threshold: parseFloat(formData.get('threshold') as string),
+    action: formData.get('action') as 'scale_up' | 'scale_down' | 'alert',
+    cooldown: parseInt(formData.get('cooldown') as string),
+    enabled: true,
+    metadata: {},
+  };
+
+  await scalability.createScalingRule(rule);
+  trackEvent('scalability_action', 'create_scaling_rule', { ruleName: rule.name });
+  
+  // Recargar página para mostrar nueva regla
+  window.location.reload();
+};
+
+const handleApplyOptimization = async (optimizationId: string, type: 'database' | 'performance') => {
+  let success = false;
+  if (type === 'database') {
+    success = await scalability.applyDatabaseOptimization(optimizationId);
+  } else {
+    success = await scalability.applyPerformanceOptimization(optimizationId);
+  }
+  
+  trackEvent('scalability_action', 'apply_optimization', { 
+    optimizationId, 
+    type, 
+    success 
+  });
+  
+  if (success) {
+    // Recargar página para mostrar cambios
+    window.location.reload();
+  } else {
+    alert('Error al aplicar la optimización');
+  }
+};
+
+const handleToggleScalingRule = async (ruleId: string, enabled: boolean) => {
+  const rules = scalability.getScalingRules();
+  const rule = rules.find(r => r.id === ruleId);
+  if (rule) {
+    rule.enabled = enabled;
+    rule.updatedAt = new Date().toISOString();
+    trackEvent('scalability_action', 'toggle_scaling_rule', { 
+      ruleId, 
+      enabled 
+    });
+  }
+};
+
+const handleOptimizeCache = async () => {
+  await scalability.optimizeCache();
+  trackEvent('scalability_action', 'optimize_cache');
+  window.location.reload();
+};
+---
+
+<section class="scalability-dashboard p-6 bg-gray-800 text-white rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold mb-6 text-center text-orange-400">Escalabilidad y Performance</h2>
+
+  <!-- Métricas principales -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Tiempo de Respuesta</h3>
+      <p class="text-3xl font-bold text-green-400">{avgResponseTime.toFixed(0)}ms</p>
+      <p class="text-sm text-gray-400">Promedio</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Uso de CPU</h3>
+      <p class="text-3xl font-bold" class:list={[
+        avgCpuUsage > 80 ? 'text-red-400' : '',
+        avgCpuUsage > 60 ? 'text-yellow-400' : 'text-green-400'
+      ]}>
+        {avgCpuUsage.toFixed(1)}%
+      </p>
+      <p class="text-sm text-gray-400">Promedio</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Uso de Memoria</h3>
+      <p class="text-3xl font-bold" class:list={[
+        avgMemoryUsage > 80 ? 'text-red-400' : '',
+        avgMemoryUsage > 60 ? 'text-yellow-400' : 'text-green-400'
+      ]}>
+        {avgMemoryUsage.toFixed(1)}%
+      </p>
+      <p class="text-sm text-gray-400">Promedio</p>
+    </div>
+    <div class="bg-gray-700 p-4 rounded-md shadow-md text-center">
+      <h3 class="text-lg font-semibold mb-2 text-blue-300">Cache Hit Rate</h3>
+      <p class="text-3xl font-bold text-purple-400">{(totalCacheHitRate * 100).toFixed(1)}%</p>
+      <p class="text-sm text-gray-400">Promedio</p>
+    </div>
+  </div>
+
+  <!-- Configuración de escalado automático -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Configuración de Escalado Automático</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h4 class="text-lg font-semibold mb-2 text-white">Estado Actual</h4>
+        <div class="space-y-2">
+          <p class="flex justify-between">
+            <span>Escalado Automático:</span>
+            <span class:list={[
+              config.autoScaling.enableAutoScaling ? 'text-green-400' : 'text-red-400'
+            ]}>
+              {config.autoScaling.enableAutoScaling ? 'Habilitado' : 'Deshabilitado'}
+            </span>
+          </p>
+          <p class="flex justify-between">
+            <span>Instancias Mínimas:</span>
+            <span class="text-white">{config.autoScaling.minInstances}</span>
+          </p>
+          <p class="flex justify-between">
+            <span>Instancias Máximas:</span>
+            <span class="text-white">{config.autoScaling.maxInstances}</span>
+          </p>
+          <p class="flex justify-between">
+            <span>Utilización Objetivo:</span>
+            <span class="text-white">{config.autoScaling.targetUtilization}%</span>
+          </p>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-lg font-semibold mb-2 text-white">Reglas de Escalado</h4>
+        <div class="space-y-2 max-h-40 overflow-y-auto">
+          {scalingRules.map(rule => (
+            <div class="flex items-center justify-between p-2 bg-gray-600 rounded">
+              <div class="flex-1">
+                <p class="text-sm font-medium">{rule.name}</p>
+                <p class="text-xs text-gray-400">{rule.metric} {rule.action === 'scale_up' ? '>' : '<'} {rule.threshold}</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    class="sr-only peer" 
+                    checked={rule.enabled}
+                    onchange={(e) => handleToggleScalingRule(rule.id, (e.target as HTMLInputElement).checked)}
+                  />
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Eventos de escalado recientes -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Eventos de Escalado Recientes</h3>
+    {recentEvents.length > 0 ? (
+      <div class="space-y-3">
+        {recentEvents.map(event => (
+          <div class="flex items-center justify-between p-3 bg-gray-600 rounded-md">
+            <div class="flex-1">
+              <p class="font-medium">{event.action.replace('_', ' ').toUpperCase()}</p>
+              <p class="text-sm text-gray-400">{event.reason}</p>
+              <p class="text-xs text-gray-500">{new Date(event.timestamp).toLocaleString()}</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class:list={[
+                event.status === 'completed' ? 'text-green-400' : '',
+                event.status === 'failed' ? 'text-red-400' : '',
+                event.status === 'in_progress' ? 'text-yellow-400' : 'text-gray-400'
+              ]}>
+                {event.status.toUpperCase()}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay eventos de escalado recientes.</p>
+    )}
+  </div>
+
+  <!-- Estrategias de caché -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Estrategias de Caché</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {cacheStrategies.map(strategy => (
+        <div class="p-4 bg-gray-600 rounded-md">
+          <h4 class="text-lg font-semibold mb-2 text-white">{strategy.name}</h4>
+          <div class="space-y-2">
+            <p class="text-sm">
+              <span class="text-gray-400">Tipo:</span> 
+              <span class="text-white ml-2">{strategy.type.toUpperCase()}</span>
+            </p>
+            <p class="text-sm">
+              <span class="text-gray-400">TTL:</span> 
+              <span class="text-white ml-2">{strategy.ttl}s</span>
+            </p>
+            <p class="text-sm">
+              <span class="text-gray-400">Hit Rate:</span> 
+              <span class="text-green-400 ml-2">{(strategy.hitRate * 100).toFixed(1)}%</span>
+            </p>
+            <p class="text-sm">
+              <span class="text-gray-400">Estado:</span> 
+              <span class:list={[
+                strategy.enabled ? 'text-green-400' : 'text-red-400'
+              ]} class="ml-2">
+                {strategy.enabled ? 'Habilitado' : 'Deshabilitado'}
+              </span>
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="mt-4">
+      <button 
+        class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        onclick={handleOptimizeCache}
+      >
+        Optimizar Caché
+      </button>
+    </div>
+  </div>
+
+  <!-- Optimizaciones de base de datos -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Optimizaciones de Base de Datos</h3>
+    <div class="mb-4">
+      <p class="text-gray-300">
+        Optimizaciones pendientes: <span class="text-yellow-400 font-bold">{pendingOptimizations}</span> | 
+        Optimizaciones aplicadas: <span class="text-green-400 font-bold">{appliedOptimizations}</span>
+      </p>
+    </div>
+    {databaseOptimizations.length > 0 ? (
+      <div class="space-y-3">
+        {databaseOptimizations.map(optimization => (
+          <div class="flex items-center justify-between p-3 bg-gray-600 rounded-md">
+            <div class="flex-1">
+              <p class="font-medium">{optimization.description}</p>
+              <p class="text-sm text-gray-400">
+                Tipo: {optimization.type} | Impacto: {optimization.impact} | Ganancia: {optimization.performanceGain}%
+              </p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class:list={[
+                optimization.status === 'applied' ? 'text-green-400' : '',
+                optimization.status === 'failed' ? 'text-red-400' : 'text-yellow-400'
+              ]}>
+                {optimization.status.toUpperCase()}
+              </span>
+              {optimization.status === 'pending' && (
+                <button 
+                  class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                  onclick={() => handleApplyOptimization(optimization.id, 'database')}
+                >
+                  Aplicar
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay optimizaciones de base de datos disponibles.</p>
+    )}
+  </div>
+
+  <!-- Optimizaciones de rendimiento -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Optimizaciones de Rendimiento</h3>
+    {performanceOptimizations.length > 0 ? (
+      <div class="space-y-3">
+        {performanceOptimizations.map(optimization => (
+          <div class="flex items-center justify-between p-3 bg-gray-600 rounded-md">
+            <div class="flex-1">
+              <p class="font-medium">{optimization.description}</p>
+              <p class="text-sm text-gray-400">
+                Tipo: {optimization.type} | Impacto: {optimization.impact} | Ganancia: {optimization.performanceGain}%
+              </p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class:list={[
+                optimization.status === 'applied' ? 'text-green-400' : '',
+                optimization.status === 'failed' ? 'text-red-400' : 'text-yellow-400'
+              ]}>
+                {optimization.status.toUpperCase()}
+              </span>
+              {optimization.status === 'pending' && (
+                <button 
+                  class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded transition duration-300"
+                  onclick={() => handleApplyOptimization(optimization.id, 'performance')}
+                >
+                  Aplicar
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-400">No hay optimizaciones de rendimiento disponibles.</p>
+    )}
+  </div>
+
+  <!-- Crear nueva regla de escalado -->
+  <div class="bg-gray-700 p-6 rounded-md shadow-md">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Crear Nueva Regla de Escalado</h3>
+    <form onsubmit={handleCreateScalingRule} class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Nombre</label>
+          <input 
+            type="text" 
+            name="name" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            placeholder="Nombre de la regla"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
+          <input 
+            type="text" 
+            name="description" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            placeholder="Descripción de la regla"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Métrica</label>
+          <select 
+            name="metric" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            <option value="cpu_utilization">CPU Utilization</option>
+            <option value="memory_utilization">Memory Utilization</option>
+            <option value="response_time">Response Time</option>
+            <option value="throughput">Throughput</option>
+            <option value="error_rate">Error Rate</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Umbral</label>
+          <input 
+            type="number" 
+            name="threshold" 
+            required
+            step="0.1"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            placeholder="Valor del umbral"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Acción</label>
+          <select 
+            name="action" 
+            required
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            <option value="scale_up">Scale Up</option>
+            <option value="scale_down">Scale Down</option>
+            <option value="alert">Alert</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Cooldown (minutos)</label>
+          <input 
+            type="number" 
+            name="cooldown" 
+            required
+            min="1"
+            class="w-full p-3 rounded-md bg-gray-600 text-white border border-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            placeholder="Tiempo de cooldown"
+          />
+        </div>
+      </div>
+      <button 
+        type="submit" 
+        class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded transition duration-300"
+      >
+        Crear Regla de Escalado
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Script para manejar eventos del cliente
+  document.addEventListener('DOMContentLoaded', () => {
+    // Auto-refresh cada 30 segundos para métricas en tiempo real
+    setInterval(() => {
+      // Solo recargar si no hay formularios activos
+      if (!document.activeElement || document.activeElement.tagName !== 'INPUT') {
+        window.location.reload();
+      }
+    }, 30000);
+  });
+</script>

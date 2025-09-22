@@ -1,0 +1,910 @@
+---
+export interface Props {
+  class?: string;
+  showAdvanced?: boolean;
+  showNotifications?: boolean;
+  showThresholds?: boolean;
+}
+
+const {
+  class: className = '',
+  showAdvanced = true,
+  showNotifications = true,
+  showThresholds = true,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'quality-config',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <!-- Header de configuración -->
+  <div class="quality-config-header">
+    <h2 class="quality-config-title">
+      <i class="fas fa-cog"></i>
+      Configuración de Calidad
+    </h2>
+    
+    <div class="quality-config-controls">
+      <button class="quality-config-btn" id="save-config">
+        <i class="fas fa-save"></i>
+        Guardar
+      </button>
+      <button class="quality-config-btn" id="reset-config">
+        <i class="fas fa-undo"></i>
+        Restablecer
+      </button>
+      <button class="quality-config-btn" id="export-config">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Configuración general -->
+  <div class="quality-config-section">
+    <h3 class="quality-config-section-title">Configuración General</h3>
+    <div class="quality-config-grid">
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-quality-checks" checked>
+          <span class="quality-config-checkbox"></span>
+          Habilitar verificaciones de calidad
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-auto-analysis" checked>
+          <span class="quality-config-checkbox"></span>
+          Análisis automático
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-continuous-monitoring" checked>
+          <span class="quality-config-checkbox"></span>
+          Monitoreo continuo
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-quality-gates" checked>
+          <span class="quality-config-checkbox"></span>
+          Puertas de calidad
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuración de herramientas -->
+  <div class="quality-config-section">
+    <h3 class="quality-config-section-title">Herramientas de Calidad</h3>
+    <div class="quality-config-grid">
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-eslint" checked>
+          <span class="quality-config-checkbox"></span>
+          ESLint
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-prettier" checked>
+          <span class="quality-config-checkbox"></span>
+          Prettier
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-typescript" checked>
+          <span class="quality-config-checkbox"></span>
+          TypeScript
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-accessibility" checked>
+          <span class="quality-config-checkbox"></span>
+          Accesibilidad
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-security" checked>
+          <span class="quality-config-checkbox"></span>
+          Seguridad
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-performance" checked>
+          <span class="quality-config-checkbox"></span>
+          Rendimiento
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-seo" checked>
+          <span class="quality-config-checkbox"></span>
+          SEO
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-tests" checked>
+          <span class="quality-config-checkbox"></span>
+          Tests
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuración de umbrales -->
+  {showThresholds && (
+    <div class="quality-config-section">
+      <h3 class="quality-config-section-title">Umbrales de Calidad</h3>
+      <div class="quality-config-grid">
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Cobertura de código</span>
+            <div class="quality-config-input-group">
+              <input type="range" id="coverage-threshold" min="0" max="100" value="80" class="quality-config-range">
+              <span class="quality-config-value" id="coverage-threshold-value">80%</span>
+            </div>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Calidad de código</span>
+            <div class="quality-config-input-group">
+              <input type="range" id="code-quality-threshold" min="0" max="100" value="85" class="quality-config-range">
+              <span class="quality-config-value" id="code-quality-threshold-value">85%</span>
+            </div>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Seguridad</span>
+            <div class="quality-config-input-group">
+              <input type="range" id="security-threshold" min="0" max="100" value="90" class="quality-config-range">
+              <span class="quality-config-value" id="security-threshold-value">90%</span>
+            </div>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Accesibilidad</span>
+            <div class="quality-config-input-group">
+              <input type="range" id="accessibility-threshold" min="0" max="100" value="95" class="quality-config-range">
+              <span class="quality-config-value" id="accessibility-threshold-value">95%</span>
+            </div>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Rendimiento</span>
+            <div class="quality-config-input-group">
+              <input type="range" id="performance-threshold" min="0" max="100" value="80" class="quality-config-range">
+              <span class="quality-config-value" id="performance-threshold-value">80%</span>
+            </div>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">SEO</span>
+            <div class="quality-config-input-group">
+              <input type="range" id="seo-threshold" min="0" max="100" value="85" class="quality-config-range">
+              <span class="quality-config-value" id="seo-threshold-value">85%</span>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Configuración de notificaciones -->
+  {showNotifications && (
+    <div class="quality-config-section">
+      <h3 class="quality-config-section-title">Notificaciones</h3>
+      <div class="quality-config-grid">
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <input type="checkbox" id="enable-quality-notifications" checked>
+            <span class="quality-config-checkbox"></span>
+            Notificaciones de calidad
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <input type="checkbox" id="enable-error-notifications" checked>
+            <span class="quality-config-checkbox"></span>
+            Notificaciones de errores
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <input type="checkbox" id="enable-warning-notifications" checked>
+            <span class="quality-config-checkbox"></span>
+            Notificaciones de advertencias
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <input type="checkbox" id="enable-success-notifications" checked>
+            <span class="quality-config-checkbox"></span>
+            Notificaciones de éxito
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Frecuencia de notificaciones</span>
+            <select id="notification-frequency" class="quality-config-select">
+              <option value="immediate">Inmediata</option>
+              <option value="hourly">Cada hora</option>
+              <option value="daily">Diaria</option>
+              <option value="weekly">Semanal</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Canal de notificaciones</span>
+            <select id="notification-channel" class="quality-config-select">
+              <option value="browser">Navegador</option>
+              <option value="email">Email</option>
+              <option value="slack">Slack</option>
+              <option value="discord">Discord</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Configuración avanzada -->
+  {showAdvanced && (
+    <div class="quality-config-section">
+      <h3 class="quality-config-section-title">Configuración Avanzada</h3>
+      <div class="quality-config-grid">
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Intervalo de análisis (minutos)</span>
+            <input type="number" id="analysis-interval" min="1" max="1440" value="60" class="quality-config-input">
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Tiempo de espera (segundos)</span>
+            <input type="number" id="timeout" min="1" max="300" value="30" class="quality-config-input">
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Nivel de detalle</span>
+            <select id="detail-level" class="quality-config-select">
+              <option value="basic">Básico</option>
+              <option value="standard" selected>Estándar</option>
+              <option value="detailed">Detallado</option>
+              <option value="comprehensive">Exhaustivo</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Modo de análisis</span>
+            <select id="analysis-mode" class="quality-config-select">
+              <option value="fast">Rápido</option>
+              <option value="balanced" selected>Equilibrado</option>
+              <option value="thorough">Exhaustivo</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Archivos a excluir</span>
+            <textarea id="exclude-files" class="quality-config-textarea" placeholder="node_modules/&#10;dist/&#10;.git/&#10;*.min.js"></textarea>
+          </label>
+        </div>
+        
+        <div class="quality-config-item">
+          <label class="quality-config-label">
+            <span class="quality-config-label-text">Reglas personalizadas</span>
+            <textarea id="custom-rules" class="quality-config-textarea" placeholder='{"rules": {"no-console": "error", "no-debugger": "error"}}'></textarea>
+          </label>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Configuración de integración -->
+  <div class="quality-config-section">
+    <h3 class="quality-config-section-title">Integración</h3>
+    <div class="quality-config-grid">
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-git-hooks" checked>
+          <span class="quality-config-checkbox"></span>
+          Git hooks
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-ci-cd" checked>
+          <span class="quality-config-checkbox"></span>
+          CI/CD
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-webhook" checked>
+          <span class="quality-config-checkbox"></span>
+          Webhook
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <span class="quality-config-label-text">URL del webhook</span>
+          <input type="url" id="webhook-url" class="quality-config-input" placeholder="https://hooks.slack.com/services/...">
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <span class="quality-config-label-text">Token de API</span>
+          <input type="password" id="api-token" class="quality-config-input" placeholder="Ingresa tu token de API">
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <span class="quality-config-label-text">Organización</span>
+          <input type="text" id="organization" class="quality-config-input" placeholder="Nombre de la organización">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuración de reportes -->
+  <div class="quality-config-section">
+    <h3 class="quality-config-section-title">Reportes</h3>
+    <div class="quality-config-grid">
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-daily-reports" checked>
+          <span class="quality-config-checkbox"></span>
+          Reportes diarios
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-weekly-reports" checked>
+          <span class="quality-config-checkbox"></span>
+          Reportes semanales
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <input type="checkbox" id="enable-monthly-reports" checked>
+          <span class="quality-config-checkbox"></span>
+          Reportes mensuales
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <span class="quality-config-label-text">Formato de reporte</span>
+          <select id="report-format" class="quality-config-select">
+            <option value="json">JSON</option>
+            <option value="html" selected>HTML</option>
+            <option value="pdf">PDF</option>
+            <option value="csv">CSV</option>
+          </select>
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <span class="quality-config-label-text">Destino del reporte</span>
+          <select id="report-destination" class="quality-config-select">
+            <option value="local">Local</option>
+            <option value="email">Email</option>
+            <option value="slack">Slack</option>
+            <option value="webhook">Webhook</option>
+          </select>
+        </label>
+      </div>
+      
+      <div class="quality-config-item">
+        <label class="quality-config-label">
+          <span class="quality-config-label-text">Email del reporte</span>
+          <input type="email" id="report-email" class="quality-config-input" placeholder="reportes@empresa.com">
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .quality-config {
+    @apply bg-white rounded-xl shadow-lg p-6 space-y-6;
+  }
+
+  /* Header */
+  .quality-config-header {
+    @apply flex items-center justify-between pb-4 border-b border-gray-200;
+  }
+
+  .quality-config-title {
+    @apply text-2xl font-bold text-gray-900 flex items-center gap-3;
+  }
+
+  .quality-config-controls {
+    @apply flex gap-2;
+  }
+
+  .quality-config-btn {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg;
+    @apply hover:bg-blue-700 transition-colors duration-200;
+    @apply flex items-center gap-2 text-sm font-medium;
+  }
+
+  /* Secciones */
+  .quality-config-section {
+    @apply space-y-4;
+  }
+
+  .quality-config-section-title {
+    @apply text-lg font-semibold text-gray-900;
+  }
+
+  .quality-config-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+
+  .quality-config-item {
+    @apply space-y-2;
+  }
+
+  .quality-config-label {
+    @apply flex flex-col gap-2;
+  }
+
+  .quality-config-label-text {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  /* Checkboxes */
+  .quality-config-label input[type="checkbox"] {
+    @apply sr-only;
+  }
+
+  .quality-config-checkbox {
+    @apply w-5 h-5 border-2 border-gray-300 rounded;
+    @apply flex items-center justify-center;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-config-label input[type="checkbox"]:checked + .quality-config-checkbox {
+    @apply bg-blue-600 border-blue-600;
+  }
+
+  .quality-config-label input[type="checkbox"]:checked + .quality-config-checkbox::after {
+    content: '✓';
+    @apply text-white text-sm font-bold;
+  }
+
+  /* Inputs */
+  .quality-config-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-colors duration-200;
+  }
+
+  .quality-config-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-colors duration-200;
+    @apply resize-vertical min-h-20;
+  }
+
+  .quality-config-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-colors duration-200;
+  }
+
+  /* Range inputs */
+  .quality-config-range {
+    @apply w-full h-2 bg-gray-200 rounded-lg appearance-none;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+
+  .quality-config-range::-webkit-slider-thumb {
+    @apply appearance-none w-5 h-5 bg-blue-600 rounded-full;
+    @apply cursor-pointer;
+  }
+
+  .quality-config-range::-moz-range-thumb {
+    @apply w-5 h-5 bg-blue-600 rounded-full;
+    @apply cursor-pointer border-0;
+  }
+
+  .quality-config-input-group {
+    @apply flex items-center gap-3;
+  }
+
+  .quality-config-value {
+    @apply text-sm font-medium text-gray-900 min-w-12;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .quality-config-header {
+      @apply flex-col items-start gap-4;
+    }
+    
+    .quality-config-controls {
+      @apply w-full justify-center;
+    }
+    
+    .quality-config-grid {
+      @apply grid-cols-1 gap-3;
+    }
+  }
+
+  /* Modo oscuro */
+  [data-theme="dark"] .quality-config {
+    @apply bg-gray-800 border border-gray-700;
+  }
+
+  [data-theme="dark"] .quality-config-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-config-section-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-config-label-text {
+    @apply text-gray-300;
+  }
+
+  [data-theme="dark"] .quality-config-checkbox {
+    @apply border-gray-600;
+  }
+
+  [data-theme="dark"] .quality-config-label input[type="checkbox"]:checked + .quality-config-checkbox {
+    @apply bg-blue-600 border-blue-600;
+  }
+
+  [data-theme="dark"] .quality-config-input {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-config-textarea {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-config-select {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .quality-config-range {
+    @apply bg-gray-600;
+  }
+
+  [data-theme="dark"] .quality-config-value {
+    @apply text-gray-100;
+  }
+</style>
+
+<script>
+  class QualityConfig {
+    constructor(element) {
+      this.element = element;
+      this.config = this.loadConfig();
+      
+      this.init();
+    }
+    
+    init() {
+      this.setupEventListeners();
+      this.loadConfigValues();
+    }
+    
+    setupEventListeners() {
+      // Botones de control
+      document.getElementById('save-config')?.addEventListener('click', () => {
+        this.saveConfig();
+      });
+      
+      document.getElementById('reset-config')?.addEventListener('click', () => {
+        this.resetConfig();
+      });
+      
+      document.getElementById('export-config')?.addEventListener('click', () => {
+        this.exportConfig();
+      });
+      
+      // Actualizar valores de range
+      document.querySelectorAll('.quality-config-range').forEach(range => {
+        range.addEventListener('input', (e) => {
+          const valueElement = document.getElementById(`${e.target.id}-value`);
+          if (valueElement) {
+            valueElement.textContent = `${e.target.value}%`;
+          }
+        });
+      });
+      
+      // Guardar cambios automáticamente
+      document.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('change', () => {
+          this.saveConfig();
+        });
+      });
+    }
+    
+    loadConfig() {
+      const defaultConfig = {
+        general: {
+          enableQualityChecks: true,
+          enableAutoAnalysis: true,
+          enableContinuousMonitoring: true,
+          enableQualityGates: true,
+        },
+        tools: {
+          enableEslint: true,
+          enablePrettier: true,
+          enableTypescript: true,
+          enableAccessibility: true,
+          enableSecurity: true,
+          enablePerformance: true,
+          enableSeo: true,
+          enableTests: true,
+        },
+        thresholds: {
+          coverage: 80,
+          codeQuality: 85,
+          security: 90,
+          accessibility: 95,
+          performance: 80,
+          seo: 85,
+        },
+        notifications: {
+          enableQualityNotifications: true,
+          enableErrorNotifications: true,
+          enableWarningNotifications: true,
+          enableSuccessNotifications: true,
+          frequency: 'daily',
+          channel: 'browser',
+        },
+        advanced: {
+          analysisInterval: 60,
+          timeout: 30,
+          detailLevel: 'standard',
+          analysisMode: 'balanced',
+          excludeFiles: 'node_modules/\ndist/\n.git/\n*.min.js',
+          customRules: '{"rules": {"no-console": "error", "no-debugger": "error"}}',
+        },
+        integration: {
+          enableGitHooks: true,
+          enableCiCd: true,
+          enableWebhook: true,
+          webhookUrl: '',
+          apiToken: '',
+          organization: '',
+        },
+        reports: {
+          enableDailyReports: true,
+          enableWeeklyReports: true,
+          enableMonthlyReports: true,
+          format: 'html',
+          destination: 'local',
+          email: '',
+        },
+      };
+      
+      try {
+        const savedConfig = localStorage.getItem('quality-config');
+        return savedConfig ? { ...defaultConfig, ...JSON.parse(savedConfig) } : defaultConfig;
+      } catch (error) {
+        console.error('Error loading quality config:', error);
+        return defaultConfig;
+      }
+    }
+    
+    loadConfigValues() {
+      // Cargar valores de configuración general
+      document.getElementById('enable-quality-checks').checked = this.config.general.enableQualityChecks;
+      document.getElementById('enable-auto-analysis').checked = this.config.general.enableAutoAnalysis;
+      document.getElementById('enable-continuous-monitoring').checked = this.config.general.enableContinuousMonitoring;
+      document.getElementById('enable-quality-gates').checked = this.config.general.enableQualityGates;
+      
+      // Cargar valores de herramientas
+      document.getElementById('enable-eslint').checked = this.config.tools.enableEslint;
+      document.getElementById('enable-prettier').checked = this.config.tools.enablePrettier;
+      document.getElementById('enable-typescript').checked = this.config.tools.enableTypescript;
+      document.getElementById('enable-accessibility').checked = this.config.tools.enableAccessibility;
+      document.getElementById('enable-security').checked = this.config.tools.enableSecurity;
+      document.getElementById('enable-performance').checked = this.config.tools.enablePerformance;
+      document.getElementById('enable-seo').checked = this.config.tools.enableSeo;
+      document.getElementById('enable-tests').checked = this.config.tools.enableTests;
+      
+      // Cargar valores de umbrales
+      document.getElementById('coverage-threshold').value = this.config.thresholds.coverage;
+      document.getElementById('coverage-threshold-value').textContent = `${this.config.thresholds.coverage}%`;
+      document.getElementById('code-quality-threshold').value = this.config.thresholds.codeQuality;
+      document.getElementById('code-quality-threshold-value').textContent = `${this.config.thresholds.codeQuality}%`;
+      document.getElementById('security-threshold').value = this.config.thresholds.security;
+      document.getElementById('security-threshold-value').textContent = `${this.config.thresholds.security}%`;
+      document.getElementById('accessibility-threshold').value = this.config.thresholds.accessibility;
+      document.getElementById('accessibility-threshold-value').textContent = `${this.config.thresholds.accessibility}%`;
+      document.getElementById('performance-threshold').value = this.config.thresholds.performance;
+      document.getElementById('performance-threshold-value').textContent = `${this.config.thresholds.performance}%`;
+      document.getElementById('seo-threshold').value = this.config.thresholds.seo;
+      document.getElementById('seo-threshold-value').textContent = `${this.config.thresholds.seo}%`;
+      
+      // Cargar valores de notificaciones
+      document.getElementById('enable-quality-notifications').checked = this.config.notifications.enableQualityNotifications;
+      document.getElementById('enable-error-notifications').checked = this.config.notifications.enableErrorNotifications;
+      document.getElementById('enable-warning-notifications').checked = this.config.notifications.enableWarningNotifications;
+      document.getElementById('enable-success-notifications').checked = this.config.notifications.enableSuccessNotifications;
+      document.getElementById('notification-frequency').value = this.config.notifications.frequency;
+      document.getElementById('notification-channel').value = this.config.notifications.channel;
+      
+      // Cargar valores avanzados
+      document.getElementById('analysis-interval').value = this.config.advanced.analysisInterval;
+      document.getElementById('timeout').value = this.config.advanced.timeout;
+      document.getElementById('detail-level').value = this.config.advanced.detailLevel;
+      document.getElementById('analysis-mode').value = this.config.advanced.analysisMode;
+      document.getElementById('exclude-files').value = this.config.advanced.excludeFiles;
+      document.getElementById('custom-rules').value = this.config.advanced.customRules;
+      
+      // Cargar valores de integración
+      document.getElementById('enable-git-hooks').checked = this.config.integration.enableGitHooks;
+      document.getElementById('enable-ci-cd').checked = this.config.integration.enableCiCd;
+      document.getElementById('enable-webhook').checked = this.config.integration.enableWebhook;
+      document.getElementById('webhook-url').value = this.config.integration.webhookUrl;
+      document.getElementById('api-token').value = this.config.integration.apiToken;
+      document.getElementById('organization').value = this.config.integration.organization;
+      
+      // Cargar valores de reportes
+      document.getElementById('enable-daily-reports').checked = this.config.reports.enableDailyReports;
+      document.getElementById('enable-weekly-reports').checked = this.config.reports.enableWeeklyReports;
+      document.getElementById('enable-monthly-reports').checked = this.config.reports.enableMonthlyReports;
+      document.getElementById('report-format').value = this.config.reports.format;
+      document.getElementById('report-destination').value = this.config.reports.destination;
+      document.getElementById('report-email').value = this.config.reports.email;
+    }
+    
+    saveConfig() {
+      try {
+        // Recopilar valores del formulario
+        this.config.general.enableQualityChecks = document.getElementById('enable-quality-checks').checked;
+        this.config.general.enableAutoAnalysis = document.getElementById('enable-auto-analysis').checked;
+        this.config.general.enableContinuousMonitoring = document.getElementById('enable-continuous-monitoring').checked;
+        this.config.general.enableQualityGates = document.getElementById('enable-quality-gates').checked;
+        
+        this.config.tools.enableEslint = document.getElementById('enable-eslint').checked;
+        this.config.tools.enablePrettier = document.getElementById('enable-prettier').checked;
+        this.config.tools.enableTypescript = document.getElementById('enable-typescript').checked;
+        this.config.tools.enableAccessibility = document.getElementById('enable-accessibility').checked;
+        this.config.tools.enableSecurity = document.getElementById('enable-security').checked;
+        this.config.tools.enablePerformance = document.getElementById('enable-performance').checked;
+        this.config.tools.enableSeo = document.getElementById('enable-seo').checked;
+        this.config.tools.enableTests = document.getElementById('enable-tests').checked;
+        
+        this.config.thresholds.coverage = parseInt(document.getElementById('coverage-threshold').value);
+        this.config.thresholds.codeQuality = parseInt(document.getElementById('code-quality-threshold').value);
+        this.config.thresholds.security = parseInt(document.getElementById('security-threshold').value);
+        this.config.thresholds.accessibility = parseInt(document.getElementById('accessibility-threshold').value);
+        this.config.thresholds.performance = parseInt(document.getElementById('performance-threshold').value);
+        this.config.thresholds.seo = parseInt(document.getElementById('seo-threshold').value);
+        
+        this.config.notifications.enableQualityNotifications = document.getElementById('enable-quality-notifications').checked;
+        this.config.notifications.enableErrorNotifications = document.getElementById('enable-error-notifications').checked;
+        this.config.notifications.enableWarningNotifications = document.getElementById('enable-warning-notifications').checked;
+        this.config.notifications.enableSuccessNotifications = document.getElementById('enable-success-notifications').checked;
+        this.config.notifications.frequency = document.getElementById('notification-frequency').value;
+        this.config.notifications.channel = document.getElementById('notification-channel').value;
+        
+        this.config.advanced.analysisInterval = parseInt(document.getElementById('analysis-interval').value);
+        this.config.advanced.timeout = parseInt(document.getElementById('timeout').value);
+        this.config.advanced.detailLevel = document.getElementById('detail-level').value;
+        this.config.advanced.analysisMode = document.getElementById('analysis-mode').value;
+        this.config.advanced.excludeFiles = document.getElementById('exclude-files').value;
+        this.config.advanced.customRules = document.getElementById('custom-rules').value;
+        
+        this.config.integration.enableGitHooks = document.getElementById('enable-git-hooks').checked;
+        this.config.integration.enableCiCd = document.getElementById('enable-ci-cd').checked;
+        this.config.integration.enableWebhook = document.getElementById('enable-webhook').checked;
+        this.config.integration.webhookUrl = document.getElementById('webhook-url').value;
+        this.config.integration.apiToken = document.getElementById('api-token').value;
+        this.config.integration.organization = document.getElementById('organization').value;
+        
+        this.config.reports.enableDailyReports = document.getElementById('enable-daily-reports').checked;
+        this.config.reports.enableWeeklyReports = document.getElementById('enable-weekly-reports').checked;
+        this.config.reports.enableMonthlyReports = document.getElementById('enable-monthly-reports').checked;
+        this.config.reports.format = document.getElementById('report-format').value;
+        this.config.reports.destination = document.getElementById('report-destination').value;
+        this.config.reports.email = document.getElementById('report-email').value;
+        
+        // Guardar en localStorage
+        localStorage.setItem('quality-config', JSON.stringify(this.config));
+        
+        console.log('Quality configuration saved');
+        
+      } catch (error) {
+        console.error('Error saving quality config:', error);
+      }
+    }
+    
+    resetConfig() {
+      if (confirm('¿Estás seguro de que quieres restablecer la configuración?')) {
+        localStorage.removeItem('quality-config');
+        this.config = this.loadConfig();
+        this.loadConfigValues();
+        console.log('Quality configuration reset');
+      }
+    }
+    
+    exportConfig() {
+      const blob = new Blob([JSON.stringify(this.config, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `quality-config-${new Date().toISOString()}.json`;
+      a.click();
+      
+      URL.revokeObjectURL(url);
+    }
+    
+    getConfig() {
+      return this.config;
+    }
+  }
+  
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    const configElements = document.querySelectorAll('.quality-config');
+    configElements.forEach(element => {
+      new QualityConfig(element);
+    });
+  });
+  
+  // Exponer globalmente
+  window.QualityConfig = QualityConfig;
+</script>

@@ -1,34 +1,212 @@
 import { Request, Response } from 'express';
-import userService from '../services/user.service';
 import { logger } from '../utils/logger.util';
-import { CreateUserRequest, UpdateUserRequest } from '../models/user.model';
+import FirebaseService from '../services/firebase.service';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 class UserController {
-  // Crear nuevo usuario
-  async createUser(req: Request, res: Response): Promise<void> {
+  // Registrar nuevo usuario
+  async register(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
+      const { email, password, firstName, lastName, birthDate } = req.body;
+
+      // Validación básica
+      if (!email || !password || !firstName || !lastName) {
+        res.status(400).json({
+          success: false,
+          error: 'Campos requeridos faltantes',
+          message: 'Email, contraseña, nombre y apellido son obligatorios'
+        });
         return;
       }
 
-      const data: CreateUserRequest = req.body;
-      const user = await userService.createUser(userId, data);
-      const response = userService.formatUserResponse(user);
+      // Validar formato de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        res.status(400).json({
+          success: false,
+          error: 'Email inválido',
+          message: 'El formato del email no es válido'
+        });
+        return;
+      }
 
-      logger.info(`Usuario creado: ${userId}`);
+      // Validar contraseña
+      if (password.length < 8) {
+        res.status(400).json({
+          success: false,
+          error: 'Contraseña débil',
+          message: 'La contraseña debe tener al menos 8 caracteres'
+        });
+        return;
+      }
+
+      const db = FirebaseService.getFirestore();
+      
+      // Verificar si el usuario ya existe
+      const existingUser = await db.collection('users').where('email', '==', email).get();
+      if (!existingUser.empty) {
+        res.status(409).json({
+          success: false,
+          error: 'Usuario ya existe',
+          message: 'Ya existe un usuario con este email'
+        });
+        return;
+      }
+
+      // Hash de la contraseña
+      const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '12');
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Crear usuario
+      const userData = {
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        birthDate: birthDate || null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        isActive: true,
+        lastLogin: null,
+        preferences: {
+          theme: 'light',
+          notifications: true,
+          language: 'es'
+        }
+      };
+
+      const userRef = await db.collection('users').add(userData);
+      const userId = userRef.id;
+
+      // Generar JWT token
+      const token = jwt.sign(
+        { userId, email },
+        process.env.JWT_SECRET || 'fallback-secret',
+        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      );
+
+      logger.info(`Nuevo usuario registrado: ${userId} - ${email}`);
+
       res.status(201).json({
         success: true,
-        data: response,
-        message: 'Usuario creado exitosamente'
+        data: {
+          user: {
+            id: userId,
+            email,
+            firstName,
+            lastName,
+            birthDate,
+            createdAt: userData.createdAt,
+            preferences: userData.preferences
+          },
+          token
+        },
+        message: 'Usuario registrado exitosamente'
       });
+
     } catch (error) {
-      logger.error('Error creando usuario:', error);
+      logger.error('Error registrando usuario:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudo registrar el usuario'
+      });
+    }
+  }
+
+  // Iniciar sesión
+  async login(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        res.status(400).json({
+          success: false,
+          error: 'Credenciales requeridas',
+          message: 'Email y contraseña son obligatorios'
+        });
+        return;
+      }
+
+      const db = FirebaseService.getFirestore();
+      
+      // Buscar usuario por email
+      const userSnapshot = await db.collection('users').where('email', '==', email).get();
+      
+      if (userSnapshot.empty) {
+        res.status(401).json({
+          success: false,
+          error: 'Credenciales inválidas',
+          message: 'Email o contraseña incorrectos'
+        });
+        return;
+      }
+
+      const userDoc = userSnapshot.docs[0];
+      const userData = userDoc.data();
+      const userId = userDoc.id;
+
+      // Verificar si el usuario está activo
+      if (!userData.isActive) {
+        res.status(401).json({
+          success: false,
+          error: 'Cuenta desactivada',
+          message: 'Tu cuenta ha sido desactivada'
+        });
+        return;
+      }
+
+      // Verificar contraseña
+      const isPasswordValid = await bcrypt.compare(password, userData.password);
+      if (!isPasswordValid) {
+        res.status(401).json({
+          success: false,
+          error: 'Credenciales inválidas',
+          message: 'Email o contraseña incorrectos'
+        });
+        return;
+      }
+
+      // Actualizar último login
+      await db.collection('users').doc(userId).update({
+        lastLogin: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      // Generar JWT token
+      const token = jwt.sign(
+        { userId, email },
+        process.env.JWT_SECRET || 'fallback-secret',
+        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      );
+
+      logger.info(`Usuario inició sesión: ${userId} - ${email}`);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          user: {
+            id: userId,
+            email: userData.email,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            birthDate: userData.birthDate,
+            createdAt: userData.createdAt,
+            lastLogin: new Date().toISOString(),
+            preferences: userData.preferences
+          },
+          token
+        },
+        message: 'Inicio de sesión exitoso'
+      });
+
+    } catch (error) {
+      logger.error('Error en inicio de sesión:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor',
+        message: 'No se pudo iniciar sesión'
       });
     }
   }
@@ -37,34 +215,38 @@ class UserController {
   async getProfile(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
 
-      const user = await userService.getUserById(userId);
-      if (!user) {
+      const db = FirebaseService.getFirestore();
+      const userDoc = await db.collection('users').doc(userId).get();
+
+      if (!userDoc.exists) {
         res.status(404).json({
           success: false,
           error: 'Usuario no encontrado',
-          message: 'El perfil de usuario no existe'
+          message: 'El usuario no existe'
         });
         return;
       }
 
-      const response = userService.formatUserResponse(user);
+      const userData = userDoc.data();
+      
+      // Remover datos sensibles
+      const { password, ...safeUserData } = userData;
 
       res.status(200).json({
         success: true,
-        data: response,
-        message: 'Perfil obtenido exitosamente'
+        data: {
+          id: userId,
+          ...safeUserData
+        }
       });
+
     } catch (error) {
       logger.error('Error obteniendo perfil:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudo obtener el perfil'
       });
     }
   }
@@ -73,268 +255,187 @@ class UserController {
   async updateProfile(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      const { firstName, lastName, birthDate, preferences } = req.body;
 
-      const data: UpdateUserRequest = req.body;
-      const updatedUser = await userService.updateUser(userId, data);
+      const updateData: any = {
+        updatedAt: new Date().toISOString()
+      };
 
-      if (!updatedUser) {
-        res.status(404).json({
-          success: false,
-          error: 'Usuario no encontrado',
-          message: 'El perfil de usuario no existe'
-        });
-        return;
-      }
+      if (firstName) updateData.firstName = firstName;
+      if (lastName) updateData.lastName = lastName;
+      if (birthDate) updateData.birthDate = birthDate;
+      if (preferences) updateData.preferences = { ...preferences };
 
-      const response = userService.formatUserResponse(updatedUser);
+      const db = FirebaseService.getFirestore();
+      await db.collection('users').doc(userId).update(updateData);
 
-      logger.info(`Perfil actualizado: ${userId}`);
+      logger.info(`Perfil actualizado para usuario: ${userId}`);
+
       res.status(200).json({
         success: true,
-        data: response,
+        data: updateData,
         message: 'Perfil actualizado exitosamente'
       });
+
     } catch (error) {
       logger.error('Error actualizando perfil:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudo actualizar el perfil'
       });
     }
   }
 
-  // Obtener estadísticas del usuario
-  async getStats(req: Request, res: Response): Promise<void> {
+  // Cambiar contraseña
+  async changePassword(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      const { currentPassword, newPassword } = req.body;
 
-      const stats = await userService.getUserStats(userId);
-
-      res.status(200).json({
-        success: true,
-        data: stats,
-        message: 'Estadísticas obtenidas exitosamente'
-      });
-    } catch (error) {
-      logger.error('Error obteniendo estadísticas:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Obtener preferencias del usuario
-  async getPreferences(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
-
-      const preferences = await userService.getUserPreferences(userId);
-
-      res.status(200).json({
-        success: true,
-        data: preferences,
-        message: 'Preferencias obtenidas exitosamente'
-      });
-    } catch (error) {
-      logger.error('Error obteniendo preferencias:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Actualizar preferencias del usuario
-  async updatePreferences(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
-
-      const preferences = req.body;
-      const success = await userService.updateUserPreferences(userId, preferences);
-
-      if (!success) {
-        res.status(404).json({
+      if (!currentPassword || !newPassword) {
+        res.status(400).json({
           success: false,
-          error: 'Usuario no encontrado',
-          message: 'El perfil de usuario no existe'
+          error: 'Contraseñas requeridas',
+          message: 'Contraseña actual y nueva contraseña son obligatorias'
         });
         return;
       }
 
-      logger.info(`Preferencias actualizadas: ${userId}`);
-      res.status(200).json({
-        success: true,
-        message: 'Preferencias actualizadas exitosamente'
-      });
-    } catch (error) {
-      logger.error('Error actualizando preferencias:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Obtener configuración de privacidad
-  async getPrivacySettings(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
-
-      const user = await userService.getUserById(userId);
-      if (!user) {
-        res.status(404).json({
+      if (newPassword.length < 8) {
+        res.status(400).json({
           success: false,
-          error: 'Usuario no encontrado',
-          message: 'El perfil de usuario no existe'
+          error: 'Contraseña débil',
+          message: 'La nueva contraseña debe tener al menos 8 caracteres'
         });
         return;
       }
 
-      res.status(200).json({
-        success: true,
-        data: user.privacy,
-        message: 'Configuración de privacidad obtenida exitosamente'
-      });
-    } catch (error) {
-      logger.error('Error obteniendo configuración de privacidad:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
+      const db = FirebaseService.getFirestore();
+      const userDoc = await db.collection('users').doc(userId).get();
 
-  // Actualizar configuración de privacidad
-  async updatePrivacySettings(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
-
-      const privacySettings = req.body;
-      const success = await userService.updateUser(userId, { privacy: privacySettings });
-
-      if (!success) {
+      if (!userDoc.exists) {
         res.status(404).json({
           success: false,
           error: 'Usuario no encontrado',
-          message: 'El perfil de usuario no existe'
+          message: 'El usuario no existe'
         });
         return;
       }
 
-      logger.info(`Configuración de privacidad actualizada: ${userId}`);
+      const userData = userDoc.data();
+      
+      // Verificar contraseña actual
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userData.password);
+      if (!isCurrentPasswordValid) {
+        res.status(401).json({
+          success: false,
+          error: 'Contraseña actual incorrecta',
+          message: 'La contraseña actual no es correcta'
+        });
+        return;
+      }
+
+      // Hash de la nueva contraseña
+      const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '12');
+      const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+      // Actualizar contraseña
+      await db.collection('users').doc(userId).update({
+        password: hashedNewPassword,
+        updatedAt: new Date().toISOString()
+      });
+
+      logger.info(`Contraseña cambiada para usuario: ${userId}`);
+
       res.status(200).json({
         success: true,
-        message: 'Configuración de privacidad actualizada exitosamente'
+        message: 'Contraseña cambiada exitosamente'
       });
+
     } catch (error) {
-      logger.error('Error actualizando configuración de privacidad:', error);
+      logger.error('Error cambiando contraseña:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudo cambiar la contraseña'
       });
     }
   }
 
-  // Eliminar cuenta de usuario
+  // Eliminar cuenta
   async deleteAccount(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.uid;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      const { password } = req.body;
 
-      const success = await userService.deleteUser(userId);
-
-      if (!success) {
-        res.status(404).json({
+      if (!password) {
+        res.status(400).json({
           success: false,
-          error: 'Usuario no encontrado',
-          message: 'El perfil de usuario no existe'
+          error: 'Contraseña requerida',
+          message: 'Debes confirmar tu contraseña para eliminar la cuenta'
         });
         return;
       }
 
-      logger.info(`Cuenta eliminada: ${userId}`);
+      const db = FirebaseService.getFirestore();
+      const userDoc = await db.collection('users').doc(userId).get();
+
+      if (!userDoc.exists) {
+        res.status(404).json({
+          success: false,
+          error: 'Usuario no encontrado',
+          message: 'El usuario no existe'
+        });
+        return;
+      }
+
+      const userData = userDoc.data();
+      
+      // Verificar contraseña
+      const isPasswordValid = await bcrypt.compare(password, userData.password);
+      if (!isPasswordValid) {
+        res.status(401).json({
+          success: false,
+          error: 'Contraseña incorrecta',
+          message: 'La contraseña no es correcta'
+        });
+        return;
+      }
+
+      // Eliminar datos del usuario (soft delete)
+      await db.collection('users').doc(userId).update({
+        isActive: false,
+        deletedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      // Eliminar datos relacionados
+      const batch = db.batch();
+      
+      // Eliminar entradas del diario
+      const diarySnapshot = await db.collection('diary_entries').where('userId', '==', userId).get();
+      diarySnapshot.docs.forEach(doc => batch.delete(doc.ref));
+      
+      // Eliminar evaluaciones
+      const evaluationsSnapshot = await db.collection('evaluations').where('userId', '==', userId).get();
+      evaluationsSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+      
+      await batch.commit();
+
+      logger.info(`Cuenta eliminada para usuario: ${userId}`);
+
       res.status(200).json({
         success: true,
         message: 'Cuenta eliminada exitosamente'
       });
+
     } catch (error) {
       logger.error('Error eliminando cuenta:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Obtener todos los usuarios (admin)
-  async getAllUsers(req: Request, res: Response): Promise<void> {
-    try {
-      // Esta funcionalidad requeriría implementación adicional
-      res.status(501).json({
-        success: false,
-        error: 'No implementado',
-        message: 'Esta funcionalidad no está implementada aún'
-      });
-    } catch (error) {
-      logger.error('Error obteniendo usuarios:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
-    }
-  }
-
-  // Obtener estadísticas de administración
-  async getAdminStats(req: Request, res: Response): Promise<void> {
-    try {
-      // Esta funcionalidad requeriría implementación adicional
-      res.status(501).json({
-        success: false,
-        error: 'No implementado',
-        message: 'Esta funcionalidad no está implementada aún'
-      });
-    } catch (error) {
-      logger.error('Error obteniendo estadísticas de admin:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        message: 'No se pudo eliminar la cuenta'
       });
     }
   }

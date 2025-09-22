@@ -1,0 +1,929 @@
+---
+// Página de analytics para Sensus
+---
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AnalyticsDashboard from '../components/analytics/AnalyticsDashboard.astro';
+
+const pageTitle = 'Analytics y Business Intelligence';
+const pageDescription = 'Dashboard de analytics y métricas de negocio para Sensus';
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <main class="analytics-page">
+    <div class="page-header">
+      <h1>Analytics y Business Intelligence</h1>
+      <p>Dashboard completo de analytics y métricas de negocio</p>
+    </div>
+
+    <div class="analytics-content">
+      <div class="analytics-tabs">
+        <button class="tab-button active" data-tab="analytics">Analytics</button>
+        <button class="tab-button" data-tab="business">Métricas de Negocio</button>
+        <button class="tab-button" data-tab="reports">Reportes</button>
+      </div>
+
+      <div class="tab-content">
+        <div class="tab-panel active" id="analytics-panel">
+          <AnalyticsDashboard />
+        </div>
+
+        <div class="tab-panel" id="business-panel">
+          <div class="business-dashboard">
+            <div class="dashboard-header">
+              <h2>Dashboard de Métricas de Negocio</h2>
+              <div class="dashboard-controls">
+                <button id="refresh-business-btn" class="btn btn-primary">Actualizar</button>
+                <button id="export-business-btn" class="btn btn-secondary">Exportar</button>
+                <button id="business-settings-btn" class="btn btn-outline">Configuración</button>
+              </div>
+            </div>
+
+            <div class="dashboard-grid">
+              <!-- KPIs de negocio -->
+              <div class="metric-card kpi-card">
+                <h3>KPIs de Negocio</h3>
+                <div class="kpi-grid">
+                  <div class="kpi-item">
+                    <span class="kpi-label">Ingresos Totales</span>
+                    <span class="kpi-value" id="total-revenue">$0</span>
+                    <span class="kpi-change positive" id="revenue-growth">+0%</span>
+                  </div>
+                  <div class="kpi-item">
+                    <span class="kpi-label">MRR</span>
+                    <span class="kpi-value" id="mrr">$0</span>
+                    <span class="kpi-change positive" id="mrr-growth">+0%</span>
+                  </div>
+                  <div class="kpi-item">
+                    <span class="kpi-label">CAC</span>
+                    <span class="kpi-value" id="cac">$0</span>
+                    <span class="kpi-change negative" id="cac-change">+0%</span>
+                  </div>
+                  <div class="kpi-item">
+                    <span class="kpi-label">LTV</span>
+                    <span class="kpi-value" id="ltv">$0</span>
+                    <span class="kpi-change positive" id="ltv-growth">+0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gráfico de ingresos -->
+              <div class="metric-card chart-card">
+                <h3>Ingresos Mensuales</h3>
+                <canvas id="revenue-chart" width="400" height="200"></canvas>
+              </div>
+
+              <!-- Gráfico de usuarios -->
+              <div class="metric-card chart-card">
+                <h3>Crecimiento de Usuarios</h3>
+                <canvas id="users-growth-chart" width="400" height="200"></canvas>
+              </div>
+
+              <!-- Métricas de retención -->
+              <div class="metric-card">
+                <h3>Métricas de Retención</h3>
+                <div class="retention-metrics">
+                  <div class="retention-item">
+                    <span class="retention-label">Retención Día 1</span>
+                    <span class="retention-value" id="retention-day1">0%</span>
+                  </div>
+                  <div class="retention-item">
+                    <span class="retention-label">Retención Día 7</span>
+                    <span class="retention-value" id="retention-day7">0%</span>
+                  </div>
+                  <div class="retention-item">
+                    <span class="retention-label">Retención Día 30</span>
+                    <span class="retention-value" id="retention-day30">0%</span>
+                  </div>
+                  <div class="retention-item">
+                    <span class="retention-label">Retención Día 90</span>
+                    <span class="retention-value" id="retention-day90">0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Métricas de conversión -->
+              <div class="metric-card">
+                <h3>Métricas de Conversión</h3>
+                <div class="conversion-metrics">
+                  <div class="conversion-item">
+                    <span class="conversion-label">Tasa de Conversión</span>
+                    <span class="conversion-value" id="conversion-rate">0%</span>
+                  </div>
+                  <div class="conversion-item">
+                    <span class="conversion-label">Costo por Adquisición</span>
+                    <span class="conversion-value" id="cpa">$0</span>
+                  </div>
+                  <div class="conversion-item">
+                    <span class="conversion-label">Ingresos por Conversión</span>
+                    <span class="conversion-value" id="rpc">$0</span>
+                  </div>
+                  <div class="conversion-item">
+                    <span class="conversion-label">Tiempo Promedio</span>
+                    <span class="conversion-value" id="avg-time">0 min</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Métricas de satisfacción -->
+              <div class="metric-card">
+                <h3>Métricas de Satisfacción</h3>
+                <div class="satisfaction-metrics">
+                  <div class="satisfaction-item">
+                    <span class="satisfaction-label">Satisfacción del Cliente</span>
+                    <span class="satisfaction-value" id="customer-satisfaction">0.0</span>
+                  </div>
+                  <div class="satisfaction-item">
+                    <span class="satisfaction-label">NPS</span>
+                    <span class="satisfaction-value" id="nps">0</span>
+                  </div>
+                  <div class="satisfaction-item">
+                    <span class="satisfaction-label">CES</span>
+                    <span class="satisfaction-value" id="ces">0.0</span>
+                  </div>
+                  <div class="satisfaction-item">
+                    <span class="satisfaction-label">Tickets de Soporte</span>
+                    <span class="satisfaction-value" id="support-tickets">0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Métricas de rendimiento -->
+              <div class="metric-card">
+                <h3>Métricas de Rendimiento</h3>
+                <div class="performance-metrics">
+                  <div class="performance-item">
+                    <span class="performance-label">Tiempo de Carga</span>
+                    <span class="performance-value" id="load-time">0s</span>
+                  </div>
+                  <div class="performance-item">
+                    <span class="performance-label">Tasa de Error</span>
+                    <span class="performance-value" id="error-rate">0%</span>
+                  </div>
+                  <div class="performance-item">
+                    <span class="performance-label">Uptime</span>
+                    <span class="performance-value" id="uptime">0%</span>
+                  </div>
+                  <div class="performance-item">
+                    <span class="performance-label">Throughput</span>
+                    <span class="performance-value" id="throughput">0 req/s</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Métricas de costos -->
+              <div class="metric-card">
+                <h3>Métricas de Costos</h3>
+                <div class="cost-metrics">
+                  <div class="cost-item">
+                    <span class="cost-label">Costo Total</span>
+                    <span class="cost-value" id="total-cost">$0</span>
+                  </div>
+                  <div class="cost-item">
+                    <span class="cost-label">Costo por Usuario</span>
+                    <span class="cost-value" id="cost-per-user">$0</span>
+                  </div>
+                  <div class="cost-item">
+                    <span class="cost-label">Costo por Sesión</span>
+                    <span class="cost-value" id="cost-per-session">$0</span>
+                  </div>
+                  <div class="cost-item">
+                    <span class="cost-label">Eficiencia de Costos</span>
+                    <span class="cost-value" id="cost-efficiency">0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Configuración de métricas de negocio -->
+              <div class="metric-card">
+                <h3>Configuración de Métricas</h3>
+                <div class="business-config">
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-revenue-tracking" checked>
+                      Tracking de Ingresos
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-user-metrics" checked>
+                      Métricas de Usuario
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-conversion-tracking" checked>
+                      Tracking de Conversión
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-satisfaction-tracking" checked>
+                      Tracking de Satisfacción
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-performance-monitoring" checked>
+                      Monitoreo de Rendimiento
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-cost-tracking" checked>
+                      Tracking de Costos
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="reports-panel">
+          <div class="reports-dashboard">
+            <div class="dashboard-header">
+              <h2>Dashboard de Reportes</h2>
+              <div class="dashboard-controls">
+                <button id="refresh-reports-btn" class="btn btn-primary">Actualizar</button>
+                <button id="generate-report-btn" class="btn btn-secondary">Generar Reporte</button>
+                <button id="report-settings-btn" class="btn btn-outline">Configuración</button>
+              </div>
+            </div>
+
+            <div class="dashboard-grid">
+              <!-- Reportes disponibles -->
+              <div class="metric-card">
+                <h3>Reportes Disponibles</h3>
+                <div class="reports-list" id="available-reports">
+                  <div class="report-item">
+                    <span class="report-name">Reporte Ejecutivo</span>
+                    <span class="report-frequency">Mensual</span>
+                    <span class="report-status">Activo</span>
+                  </div>
+                  <div class="report-item">
+                    <span class="report-name">Reporte de Usuarios</span>
+                    <span class="report-frequency">Semanal</span>
+                    <span class="report-status">Activo</span>
+                  </div>
+                  <div class="report-item">
+                    <span class="report-name">Reporte de Ingresos</span>
+                    <span class="report-frequency">Mensual</span>
+                    <span class="report-status">Activo</span>
+                  </div>
+                  <div class="report-item">
+                    <span class="report-name">Reporte de Rendimiento</span>
+                    <span class="report-frequency">Diario</span>
+                    <span class="report-status">Activo</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reportes recientes -->
+              <div class="metric-card">
+                <h3>Reportes Recientes</h3>
+                <div class="recent-reports" id="recent-reports">
+                  <div class="recent-report-item">
+                    <span class="report-title">Reporte Ejecutivo - Enero 2024</span>
+                    <span class="report-date">2024-01-31</span>
+                    <span class="report-size">2.5 MB</span>
+                  </div>
+                  <div class="recent-report-item">
+                    <span class="report-title">Reporte de Usuarios - Semana 4</span>
+                    <span class="report-date">2024-01-28</span>
+                    <span class="report-size">1.2 MB</span>
+                  </div>
+                  <div class="recent-report-item">
+                    <span class="report-title">Reporte de Ingresos - Enero 2024</span>
+                    <span class="report-date">2024-01-31</span>
+                    <span class="report-size">3.1 MB</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Configuración de reportes -->
+              <div class="metric-card">
+                <h3>Configuración de Reportes</h3>
+                <div class="reports-config">
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-automated-reports" checked>
+                      Reportes Automáticos
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="include-charts" checked>
+                      Incluir Gráficos
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="include-detailed-metrics" checked>
+                      Métricas Detalladas
+                    </label>
+                  </div>
+                  <div class="config-item">
+                    <label>
+                      <input type="checkbox" id="enable-email-reports" checked>
+                      Envío por Email
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  class AnalyticsPage {
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      this.setupTabSwitching();
+      this.setupBusinessControls();
+      this.setupReportsControls();
+    }
+
+    private setupTabSwitching(): void {
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabPanels = document.querySelectorAll('.tab-panel');
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const tabName = button.dataset.tab;
+
+          // Remover clase active de todos los botones y paneles
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabPanels.forEach(panel => panel.classList.remove('active'));
+
+          // Agregar clase active al botón y panel seleccionados
+          button.classList.add('active');
+          document.getElementById(`${tabName}-panel`)?.classList.add('active');
+        });
+      });
+    }
+
+    private setupBusinessControls(): void {
+      // Botón de actualizar
+      document.getElementById('refresh-business-btn')?.addEventListener('click', () => {
+        this.updateBusinessDashboard();
+      });
+
+      // Botón de exportar
+      document.getElementById('export-business-btn')?.addEventListener('click', () => {
+        this.exportBusinessData();
+      });
+
+      // Botón de configuración
+      document.getElementById('business-settings-btn')?.addEventListener('click', () => {
+        this.openBusinessSettings();
+      });
+
+      // Configuración de métricas de negocio
+      document.getElementById('enable-revenue-tracking')?.addEventListener('change', (e) => {
+        this.toggleRevenueTracking((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-user-metrics')?.addEventListener('change', (e) => {
+        this.toggleUserMetrics((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-conversion-tracking')?.addEventListener('change', (e) => {
+        this.toggleConversionTracking((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-satisfaction-tracking')?.addEventListener('change', (e) => {
+        this.toggleSatisfactionTracking((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-performance-monitoring')?.addEventListener('change', (e) => {
+        this.togglePerformanceMonitoring((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-cost-tracking')?.addEventListener('change', (e) => {
+        this.toggleCostTracking((e.target as HTMLInputElement).checked);
+      });
+    }
+
+    private setupReportsControls(): void {
+      // Botón de actualizar
+      document.getElementById('refresh-reports-btn')?.addEventListener('click', () => {
+        this.updateReportsDashboard();
+      });
+
+      // Botón de generar reporte
+      document.getElementById('generate-report-btn')?.addEventListener('click', () => {
+        this.generateReport();
+      });
+
+      // Botón de configuración
+      document.getElementById('report-settings-btn')?.addEventListener('click', () => {
+        this.openReportSettings();
+      });
+
+      // Configuración de reportes
+      document.getElementById('enable-automated-reports')?.addEventListener('change', (e) => {
+        this.toggleAutomatedReports((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('include-charts')?.addEventListener('change', (e) => {
+        this.toggleIncludeCharts((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('include-detailed-metrics')?.addEventListener('change', (e) => {
+        this.toggleDetailedMetrics((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-email-reports')?.addEventListener('change', (e) => {
+        this.toggleEmailReports((e.target as HTMLInputElement).checked);
+      });
+    }
+
+    private async updateBusinessDashboard(): Promise<void> {
+      try {
+        // Simular actualización de métricas de negocio
+        const totalRevenue = Math.floor(Math.random() * 100000) + 50000;
+        const mrr = Math.floor(Math.random() * 50000) + 25000;
+        const cac = Math.floor(Math.random() * 100) + 25;
+        const ltv = Math.floor(Math.random() * 1000) + 500;
+
+        this.updateElement('total-revenue', `$${totalRevenue.toLocaleString()}`);
+        this.updateElement('mrr', `$${mrr.toLocaleString()}`);
+        this.updateElement('cac', `$${cac}`);
+        this.updateElement('ltv', `$${ltv}`);
+
+        // Actualizar cambios
+        this.updateElement('revenue-growth', `+${Math.floor(Math.random() * 25)}%`);
+        this.updateElement('mrr-growth', `+${Math.floor(Math.random() * 20)}%`);
+        this.updateElement('cac-change', `${Math.random() > 0.5 ? '+' : '-'}${Math.floor(Math.random() * 10)}%`);
+        this.updateElement('ltv-growth', `+${Math.floor(Math.random() * 15)}%`);
+
+        // Actualizar métricas de retención
+        this.updateElement('retention-day1', `${Math.floor(Math.random() * 20) + 70}%`);
+        this.updateElement('retention-day7', `${Math.floor(Math.random() * 15) + 50}%`);
+        this.updateElement('retention-day30', `${Math.floor(Math.random() * 10) + 30}%`);
+        this.updateElement('retention-day90', `${Math.floor(Math.random() * 5) + 15}%`);
+
+        // Actualizar métricas de conversión
+        this.updateElement('conversion-rate', `${(Math.random() * 10).toFixed(1)}%`);
+        this.updateElement('cpa', `$${Math.floor(Math.random() * 50) + 25}`);
+        this.updateElement('rpc', `$${Math.floor(Math.random() * 200) + 100}`);
+        this.updateElement('avg-time', `${Math.floor(Math.random() * 30) + 5} min`);
+
+        // Actualizar métricas de satisfacción
+        this.updateElement('customer-satisfaction', `${(Math.random() * 2 + 3).toFixed(1)}`);
+        this.updateElement('nps', `${Math.floor(Math.random() * 60) - 20}`);
+        this.updateElement('ces', `${(Math.random() * 3 + 1).toFixed(1)}`);
+        this.updateElement('support-tickets', `${Math.floor(Math.random() * 200) + 100}`);
+
+        // Actualizar métricas de rendimiento
+        this.updateElement('load-time', `${(Math.random() * 2 + 0.5).toFixed(1)}s`);
+        this.updateElement('error-rate', `${(Math.random() * 5).toFixed(1)}%`);
+        this.updateElement('uptime', `${(Math.random() * 5 + 95).toFixed(1)}%`);
+        this.updateElement('throughput', `${Math.floor(Math.random() * 1000) + 500} req/s`);
+
+        // Actualizar métricas de costos
+        this.updateElement('total-cost', `$${Math.floor(Math.random() * 50000) + 25000}`);
+        this.updateElement('cost-per-user', `$${(Math.random() * 10 + 5).toFixed(1)}`);
+        this.updateElement('cost-per-session', `$${(Math.random() * 2 + 0.5).toFixed(1)}`);
+        this.updateElement('cost-efficiency', `${Math.floor(Math.random() * 40) + 60}%`);
+
+        console.log('Business dashboard updated');
+      } catch (error) {
+        console.error('Error updating business dashboard:', error);
+      }
+    }
+
+    private async exportBusinessData(): Promise<void> {
+      try {
+        const data = {
+          timestamp: new Date().toISOString(),
+          businessMetrics: {
+            totalRevenue: document.getElementById('total-revenue')?.textContent,
+            mrr: document.getElementById('mrr')?.textContent,
+            cac: document.getElementById('cac')?.textContent,
+            ltv: document.getElementById('ltv')?.textContent,
+          },
+          retention: {
+            day1: document.getElementById('retention-day1')?.textContent,
+            day7: document.getElementById('retention-day7')?.textContent,
+            day30: document.getElementById('retention-day30')?.textContent,
+            day90: document.getElementById('retention-day90')?.textContent,
+          },
+          conversion: {
+            rate: document.getElementById('conversion-rate')?.textContent,
+            cpa: document.getElementById('cpa')?.textContent,
+            rpc: document.getElementById('rpc')?.textContent,
+            avgTime: document.getElementById('avg-time')?.textContent,
+          },
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `business-data-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error exporting business data:', error);
+      }
+    }
+
+    private async updateReportsDashboard(): Promise<void> {
+      try {
+        console.log('Reports dashboard updated');
+      } catch (error) {
+        console.error('Error updating reports dashboard:', error);
+      }
+    }
+
+    private async generateReport(): Promise<void> {
+      try {
+        console.log('Generating report...');
+        // Simular generación de reporte
+        setTimeout(() => {
+          console.log('Report generated successfully');
+        }, 2000);
+      } catch (error) {
+        console.error('Error generating report:', error);
+      }
+    }
+
+    private openBusinessSettings(): void {
+      console.log('Opening business settings...');
+    }
+
+    private openReportSettings(): void {
+      console.log('Opening report settings...');
+    }
+
+    private toggleRevenueTracking(enabled: boolean): void {
+      console.log('Revenue tracking toggled:', enabled);
+    }
+
+    private toggleUserMetrics(enabled: boolean): void {
+      console.log('User metrics toggled:', enabled);
+    }
+
+    private toggleConversionTracking(enabled: boolean): void {
+      console.log('Conversion tracking toggled:', enabled);
+    }
+
+    private toggleSatisfactionTracking(enabled: boolean): void {
+      console.log('Satisfaction tracking toggled:', enabled);
+    }
+
+    private togglePerformanceMonitoring(enabled: boolean): void {
+      console.log('Performance monitoring toggled:', enabled);
+    }
+
+    private toggleCostTracking(enabled: boolean): void {
+      console.log('Cost tracking toggled:', enabled);
+    }
+
+    private toggleAutomatedReports(enabled: boolean): void {
+      console.log('Automated reports toggled:', enabled);
+    }
+
+    private toggleIncludeCharts(enabled: boolean): void {
+      console.log('Include charts toggled:', enabled);
+    }
+
+    private toggleDetailedMetrics(enabled: boolean): void {
+      console.log('Detailed metrics toggled:', enabled);
+    }
+
+    private toggleEmailReports(enabled: boolean): void {
+      console.log('Email reports toggled:', enabled);
+    }
+
+    private updateElement(id: string, value: string): void {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+      }
+    }
+  }
+
+  // Inicializar página cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    new AnalyticsPage();
+  });
+</script>
+
+<style>
+  .analytics-page {
+    min-height: 100vh;
+    background: var(--color-background);
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .page-header h1 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .page-header p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+  }
+
+  .analytics-content {
+    padding: 2rem 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .analytics-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .tab-button {
+    padding: 1rem 2rem;
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .tab-button:hover {
+    color: var(--color-text-primary);
+  }
+
+  .tab-button.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+
+  .tab-content {
+    position: relative;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .business-dashboard,
+  .reports-dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-controls {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .metric-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .metric-card h3 {
+    margin: 0 0 1rem 0;
+    color: var(--color-text-primary);
+  }
+
+  .kpi-card {
+    grid-column: span 2;
+  }
+
+  .chart-card {
+    grid-column: span 2;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .kpi-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: var(--color-surface-secondary);
+    border-radius: var(--border-radius);
+  }
+
+  .kpi-label {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .kpi-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+  }
+
+  .kpi-change.positive {
+    background: var(--color-success);
+    color: white;
+  }
+
+  .kpi-change.negative {
+    background: var(--color-error);
+    color: white;
+  }
+
+  .retention-metrics,
+  .conversion-metrics,
+  .satisfaction-metrics,
+  .performance-metrics,
+  .cost-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .retention-item,
+  .conversion-item,
+  .satisfaction-item,
+  .performance-item,
+  .cost-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--color-surface-secondary);
+    border-radius: var(--border-radius);
+  }
+
+  .retention-label,
+  .conversion-label,
+  .satisfaction-label,
+  .performance-label,
+  .cost-label {
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .retention-value,
+  .conversion-value,
+  .satisfaction-value,
+  .performance-value,
+  .cost-value {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+
+  .reports-list,
+  .recent-reports {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .report-item,
+  .recent-report-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--color-surface-secondary);
+    border-radius: var(--border-radius);
+  }
+
+  .report-name,
+  .report-title {
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .report-frequency,
+  .report-date {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  .report-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    background: var(--color-success);
+    color: white;
+  }
+
+  .report-size {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  .business-config,
+  .reports-config {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .config-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .config-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--color-text-primary);
+  }
+
+  .config-item input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+    }
+
+    .analytics-content {
+      padding: 1rem 0.5rem;
+    }
+
+    .analytics-tabs {
+      flex-direction: column;
+    }
+
+    .tab-button {
+      padding: 0.75rem 1rem;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .kpi-card,
+    .chart-card {
+      grid-column: span 1;
+    }
+
+    .kpi-grid,
+    .business-config,
+    .reports-config {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

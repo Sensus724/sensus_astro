@@ -1,0 +1,129 @@
+---
+export interface Props {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  loading?: boolean;
+  href?: string;
+  target?: string;
+  class?: string;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  loading = false,
+  href,
+  target,
+  class: className = '',
+  type = 'button',
+  ...rest
+} = Astro.props;
+
+// Generar clases CSS basadas en props
+const baseClasses = 'btn';
+const variantClasses = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  outline: 'btn-outline',
+  ghost: 'btn-ghost',
+  danger: 'btn-danger'
+};
+const sizeClasses = {
+  sm: 'btn-sm',
+  md: 'btn-md',
+  lg: 'btn-lg'
+};
+
+const classes = [
+  baseClasses,
+  variantClasses[variant],
+  sizeClasses[size],
+  disabled || loading ? 'btn-disabled' : '',
+  loading ? 'btn-loading' : '',
+  className
+].filter(Boolean).join(' ');
+
+// Determinar si es un enlace o botón
+const isLink = href !== undefined;
+const Tag = isLink ? 'a' : 'button';
+const tagProps = isLink 
+  ? { href, target, role: 'button' }
+  : { type, disabled: disabled || loading };
+---
+
+<Tag class={classes} {...tagProps} {...rest}>
+  {loading && (
+    <span class="btn-spinner" aria-hidden="true">
+      <i class="fas fa-spinner fa-spin"></i>
+    </span>
+  )}
+  <span class="btn-content">
+    <slot />
+  </span>
+</Tag>
+
+<style>
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+  }
+
+  .btn-outline {
+    @apply border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500;
+  }
+
+  .btn-ghost {
+    @apply text-gray-700 hover:bg-gray-100 focus:ring-gray-500;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .btn-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .btn-loading {
+    @apply cursor-wait;
+  }
+
+  .btn-spinner {
+    @apply animate-spin;
+  }
+
+  .btn-content {
+    @apply flex items-center gap-2;
+  }
+
+  /* Estados de hover y focus mejorados */
+  .btn:not(.btn-disabled):hover {
+    @apply transform scale-105;
+  }
+
+  .btn:not(.btn-disabled):active {
+    @apply transform scale-95;
+  }
+</style>

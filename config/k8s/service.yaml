@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensus-app-service
+  namespace: sensus
+  labels:
+    app: sensus
+    component: app
+    environment: production
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: sensus
+    component: app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensus-redis-service
+  namespace: sensus
+  labels:
+    app: sensus
+    component: redis
+    environment: production
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: sensus
+    component: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensus-monitoring-service
+  namespace: sensus
+  labels:
+    app: sensus
+    component: monitoring
+    environment: production
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: prometheus
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: grafana
+  selector:
+    app: sensus
+    component: monitoring

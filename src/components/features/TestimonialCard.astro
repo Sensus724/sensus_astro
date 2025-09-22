@@ -1,0 +1,195 @@
+---
+export interface Props {
+  name: string;
+  role?: string;
+  age?: number;
+  image?: string;
+  quote: string;
+  stats?: Array<{
+    label: string;
+    value: string;
+    icon?: string;
+  }>;
+  rating?: number;
+  class?: string;
+}
+
+const {
+  name,
+  role,
+  age,
+  image,
+  quote,
+  stats = [],
+  rating = 5,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'testimonial-card',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <div class="testimonial-content">
+    <!-- Avatar -->
+    <div class="testimonial-avatar">
+      {image ? (
+        <img 
+          src={image} 
+          alt={name}
+          class="avatar-image"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+        />
+      ) : null}
+      <div class="avatar-fallback" style={image ? 'display: none;' : ''}>
+        <i class="fas fa-user"></i>
+      </div>
+    </div>
+
+    <!-- Contenido del testimonio -->
+    <div class="testimonial-text">
+      <blockquote class="testimonial-quote">
+        "{quote}"
+      </blockquote>
+      
+      <!-- Información del autor -->
+      <div class="testimonial-author">
+        <div class="author-name">{name}</div>
+        {role && <div class="author-role">{role}</div>}
+        {age && <div class="author-age">{age} años</div>}
+      </div>
+
+      <!-- Rating -->
+      {rating > 0 && (
+        <div class="testimonial-rating">
+          {Array.from({ length: 5 }, (_, i) => (
+            <i 
+              class={`fas fa-star ${i < rating ? 'star-filled' : 'star-empty'}`}
+              key={i}
+            ></i>
+          ))}
+        </div>
+      )}
+
+      <!-- Estadísticas -->
+      {stats.length > 0 && (
+        <div class="testimonial-stats">
+          {stats.map((stat, index) => (
+            <div class="stat-chip" key={index}>
+              {stat.icon && <i class={`fas ${stat.icon}`}></i>}
+              <span class="stat-label">{stat.label}</span>
+              <span class="stat-value">{stat.value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  .testimonial-card {
+    @apply bg-white rounded-xl shadow-lg p-6 border border-gray-100;
+    @apply hover:shadow-xl transition-all duration-300;
+  }
+
+  .testimonial-content {
+    @apply flex flex-col md:flex-row gap-6;
+  }
+
+  .testimonial-avatar {
+    @apply flex-shrink-0;
+  }
+
+  .avatar-image {
+    @apply w-16 h-16 rounded-full object-cover border-4 border-white shadow-md;
+  }
+
+  .avatar-fallback {
+    @apply w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600;
+    @apply flex items-center justify-center text-white text-xl;
+  }
+
+  .testimonial-text {
+    @apply flex-1 space-y-4;
+  }
+
+  .testimonial-quote {
+    @apply text-lg text-gray-700 leading-relaxed italic;
+    @apply before:content-['"'] after:content-['"'];
+    @apply before:text-blue-500 after:text-blue-500 before:text-2xl after:text-2xl;
+  }
+
+  .testimonial-author {
+    @apply space-y-1;
+  }
+
+  .author-name {
+    @apply font-semibold text-gray-900 text-lg;
+  }
+
+  .author-role {
+    @apply text-gray-600 text-sm;
+  }
+
+  .author-age {
+    @apply text-gray-500 text-sm;
+  }
+
+  .testimonial-rating {
+    @apply flex gap-1;
+  }
+
+  .star-filled {
+    @apply text-yellow-400;
+  }
+
+  .star-empty {
+    @apply text-gray-300;
+  }
+
+  .testimonial-stats {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .stat-chip {
+    @apply bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm;
+    @apply flex items-center gap-1;
+  }
+
+  .stat-chip i {
+    @apply text-blue-500;
+  }
+
+  .stat-label {
+    @apply font-medium;
+  }
+
+  .stat-value {
+    @apply font-bold;
+  }
+
+  /* Animaciones */
+  .testimonial-card {
+    @apply transform hover:-translate-y-1;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .testimonial-content {
+      @apply flex-col text-center;
+    }
+    
+    .testimonial-stats {
+      @apply justify-center;
+    }
+  }
+
+  /* Estados de focus para accesibilidad */
+  .testimonial-card:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+  }
+</style>

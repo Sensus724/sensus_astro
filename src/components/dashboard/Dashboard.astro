@@ -1,0 +1,876 @@
+---
+export interface Props {
+  class?: string;
+  showWelcome?: boolean;
+  showStats?: boolean;
+  showRecentActivity?: boolean;
+  showQuickActions?: boolean;
+  showInsights?: boolean;
+  showGoals?: boolean;
+}
+
+const {
+  class: className = '',
+  showWelcome = true,
+  showStats = true,
+  showRecentActivity = true,
+  showQuickActions = true,
+  showInsights = true,
+  showGoals = true,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'dashboard',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <!-- Header del Dashboard -->
+  {showWelcome && (
+    <div class="dashboard-header">
+      <div class="dashboard-welcome">
+        <h1 class="dashboard-title">
+          <span class="dashboard-greeting" id="dashboard-greeting">¡Hola!</span>
+          <span class="dashboard-name" id="dashboard-name">Usuario</span>
+        </h1>
+        <p class="dashboard-subtitle" id="dashboard-subtitle">
+          ¿Cómo te sientes hoy?
+        </p>
+      </div>
+      
+      <div class="dashboard-date">
+        <div class="dashboard-date-info">
+          <span class="dashboard-date-day" id="dashboard-date-day">Lunes</span>
+          <span class="dashboard-date-date" id="dashboard-date-date">15 de Enero</span>
+        </div>
+        <div class="dashboard-weather" id="dashboard-weather">
+          <i class="fas fa-sun"></i>
+          <span>22°C</span>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Estadísticas principales -->
+  {showStats && (
+    <div class="dashboard-stats">
+      <div class="dashboard-stat-card">
+        <div class="dashboard-stat-icon">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div class="dashboard-stat-content">
+          <div class="dashboard-stat-value" id="streak-value">5</div>
+          <div class="dashboard-stat-label">Días de racha</div>
+          <div class="dashboard-stat-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+2 esta semana</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-stat-card">
+        <div class="dashboard-stat-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="dashboard-stat-content">
+          <div class="dashboard-stat-value" id="mood-value">7.5</div>
+          <div class="dashboard-stat-label">Estado de ánimo</div>
+          <div class="dashboard-stat-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+0.5 vs ayer</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-stat-card">
+        <div class="dashboard-stat-icon">
+          <i class="fas fa-book-open"></i>
+        </div>
+        <div class="dashboard-stat-content">
+          <div class="dashboard-stat-value" id="entries-value">15</div>
+          <div class="dashboard-stat-label">Entradas del diario</div>
+          <div class="dashboard-stat-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+3 esta semana</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-stat-card">
+        <div class="dashboard-stat-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="dashboard-stat-content">
+          <div class="dashboard-stat-value" id="progress-value">78%</div>
+          <div class="dashboard-stat-label">Progreso semanal</div>
+          <div class="dashboard-stat-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+12% vs semana pasada</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Acciones rápidas -->
+  {showQuickActions && (
+    <div class="dashboard-quick-actions">
+      <h2 class="dashboard-section-title">Acciones Rápidas</h2>
+      <div class="dashboard-actions-grid">
+        <button class="dashboard-action-btn primary" id="quick-diary">
+          <i class="fas fa-pen"></i>
+          <span>Escribir en el Diario</span>
+        </button>
+        
+        <button class="dashboard-action-btn secondary" id="quick-evaluation">
+          <i class="fas fa-clipboard-check"></i>
+          <span>Evaluación Rápida</span>
+        </button>
+        
+        <button class="dashboard-action-btn tertiary" id="quick-breathing">
+          <i class="fas fa-wind"></i>
+          <span>Ejercicio de Respiración</span>
+        </button>
+        
+        <button class="dashboard-action-btn quaternary" id="quick-meditation">
+          <i class="fas fa-leaf"></i>
+          <span>Meditación</span>
+        </button>
+      </div>
+    </div>
+  )}
+
+  <!-- Contenido principal del dashboard -->
+  <div class="dashboard-main">
+    <div class="dashboard-main-left">
+      <!-- Actividad reciente -->
+      {showRecentActivity && (
+        <div class="dashboard-recent-activity">
+          <h2 class="dashboard-section-title">Actividad Reciente</h2>
+          <div class="dashboard-activity-list" id="recent-activity-list">
+            <!-- Las actividades se cargarán dinámicamente -->
+          </div>
+        </div>
+      )}
+
+      <!-- Metas y objetivos -->
+      {showGoals && (
+        <div class="dashboard-goals">
+          <h2 class="dashboard-section-title">Metas de la Semana</h2>
+          <div class="dashboard-goals-list" id="goals-list">
+            <!-- Las metas se cargarán dinámicamente -->
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div class="dashboard-main-right">
+      <!-- Insights y análisis -->
+      {showInsights && (
+        <div class="dashboard-insights">
+          <h2 class="dashboard-section-title">Insights</h2>
+          <div class="dashboard-insights-list" id="insights-list">
+            <!-- Los insights se cargarán dinámicamente -->
+          </div>
+        </div>
+      )}
+
+      <!-- Recordatorios -->
+      <div class="dashboard-reminders">
+        <h2 class="dashboard-section-title">Recordatorios</h2>
+        <div class="dashboard-reminders-list" id="reminders-list">
+          <!-- Los recordatorios se cargarán dinámicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Widgets adicionales -->
+  <div class="dashboard-widgets">
+    <div class="dashboard-widget">
+      <h3 class="dashboard-widget-title">Estado de Ánimo Semanal</h3>
+      <div class="dashboard-mood-chart" id="mood-chart">
+        <!-- Gráfico de estado de ánimo -->
+      </div>
+    </div>
+    
+    <div class="dashboard-widget">
+      <h3 class="dashboard-widget-title">Progreso Mensual</h3>
+      <div class="dashboard-progress-chart" id="progress-chart">
+        <!-- Gráfico de progreso -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .dashboard {
+    @apply space-y-6;
+  }
+
+  /* Header del Dashboard */
+  .dashboard-header {
+    @apply flex items-center justify-between p-6 bg-gradient-to-r from-blue-600 to-purple-600;
+    @apply rounded-xl text-white;
+  }
+
+  .dashboard-welcome {
+    @apply flex-1;
+  }
+
+  .dashboard-title {
+    @apply text-3xl font-bold mb-2;
+  }
+
+  .dashboard-greeting {
+    @apply block text-blue-100;
+  }
+
+  .dashboard-name {
+    @apply block;
+  }
+
+  .dashboard-subtitle {
+    @apply text-blue-100 text-lg;
+  }
+
+  .dashboard-date {
+    @apply text-right;
+  }
+
+  .dashboard-date-info {
+    @apply mb-2;
+  }
+
+  .dashboard-date-day {
+    @apply block text-lg font-semibold;
+  }
+
+  .dashboard-date-date {
+    @apply block text-blue-100;
+  }
+
+  .dashboard-weather {
+    @apply flex items-center gap-2 text-blue-100;
+  }
+
+  /* Estadísticas */
+  .dashboard-stats {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+  }
+
+  .dashboard-stat-card {
+    @apply bg-white rounded-xl shadow-lg p-6 flex items-center gap-4;
+    @apply hover:shadow-xl transition-shadow duration-300;
+  }
+
+  .dashboard-stat-icon {
+    @apply w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600;
+    @apply rounded-xl flex items-center justify-center text-white text-xl;
+  }
+
+  .dashboard-stat-content {
+    @apply flex-1;
+  }
+
+  .dashboard-stat-value {
+    @apply text-2xl font-bold text-gray-900 mb-1;
+  }
+
+  .dashboard-stat-label {
+    @apply text-gray-600 text-sm mb-2;
+  }
+
+  .dashboard-stat-change {
+    @apply flex items-center gap-1 text-xs font-medium;
+  }
+
+  .dashboard-stat-change.positive {
+    @apply text-green-600;
+  }
+
+  .dashboard-stat-change.negative {
+    @apply text-red-600;
+  }
+
+  .dashboard-stat-change.neutral {
+    @apply text-gray-500;
+  }
+
+  /* Acciones rápidas */
+  .dashboard-quick-actions {
+    @apply space-y-4;
+  }
+
+  .dashboard-section-title {
+    @apply text-xl font-semibold text-gray-900 mb-4;
+  }
+
+  .dashboard-actions-grid {
+    @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+  }
+
+  .dashboard-action-btn {
+    @apply flex flex-col items-center gap-3 p-6 rounded-xl;
+    @apply transition-all duration-300 hover:scale-105;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .dashboard-action-btn.primary {
+    @apply bg-gradient-to-br from-blue-600 to-blue-700 text-white;
+    @apply hover:from-blue-700 hover:to-blue-800 focus:ring-blue-500;
+  }
+
+  .dashboard-action-btn.secondary {
+    @apply bg-gradient-to-br from-green-600 to-green-700 text-white;
+    @apply hover:from-green-700 hover:to-green-800 focus:ring-green-500;
+  }
+
+  .dashboard-action-btn.tertiary {
+    @apply bg-gradient-to-br from-purple-600 to-purple-700 text-white;
+    @apply hover:from-purple-700 hover:to-purple-800 focus:ring-purple-500;
+  }
+
+  .dashboard-action-btn.quaternary {
+    @apply bg-gradient-to-br from-orange-600 to-orange-700 text-white;
+    @apply hover:from-orange-700 hover:to-orange-800 focus:ring-orange-500;
+  }
+
+  .dashboard-action-btn i {
+    @apply text-2xl;
+  }
+
+  .dashboard-action-btn span {
+    @apply font-medium text-center;
+  }
+
+  /* Contenido principal */
+  .dashboard-main {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
+  }
+
+  .dashboard-main-left {
+    @apply lg:col-span-2 space-y-6;
+  }
+
+  .dashboard-main-right {
+    @apply space-y-6;
+  }
+
+  /* Actividad reciente */
+  .dashboard-recent-activity {
+    @apply bg-white rounded-xl shadow-lg p-6;
+  }
+
+  .dashboard-activity-list {
+    @apply space-y-4;
+  }
+
+  .dashboard-activity-item {
+    @apply flex items-center gap-4 p-4 bg-gray-50 rounded-lg;
+  }
+
+  .dashboard-activity-icon {
+    @apply w-10 h-10 bg-blue-100 text-blue-600 rounded-lg;
+    @apply flex items-center justify-center;
+  }
+
+  .dashboard-activity-content {
+    @apply flex-1;
+  }
+
+  .dashboard-activity-title {
+    @apply font-medium text-gray-900 mb-1;
+  }
+
+  .dashboard-activity-time {
+    @apply text-sm text-gray-500;
+  }
+
+  /* Metas */
+  .dashboard-goals {
+    @apply bg-white rounded-xl shadow-lg p-6;
+  }
+
+  .dashboard-goals-list {
+    @apply space-y-4;
+  }
+
+  .dashboard-goal-item {
+    @apply p-4 border border-gray-200 rounded-lg;
+  }
+
+  .dashboard-goal-header {
+    @apply flex items-center justify-between mb-2;
+  }
+
+  .dashboard-goal-title {
+    @apply font-medium text-gray-900;
+  }
+
+  .dashboard-goal-progress {
+    @apply text-sm text-gray-500;
+  }
+
+  .dashboard-goal-bar {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+
+  .dashboard-goal-progress-bar {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full;
+    @apply transition-all duration-300;
+  }
+
+  /* Insights */
+  .dashboard-insights {
+    @apply bg-white rounded-xl shadow-lg p-6;
+  }
+
+  .dashboard-insights-list {
+    @apply space-y-4;
+  }
+
+  .dashboard-insight-item {
+    @apply p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg;
+  }
+
+  .dashboard-insight-title {
+    @apply font-medium text-gray-900 mb-2;
+  }
+
+  .dashboard-insight-description {
+    @apply text-sm text-gray-600;
+  }
+
+  /* Recordatorios */
+  .dashboard-reminders {
+    @apply bg-white rounded-xl shadow-lg p-6;
+  }
+
+  .dashboard-reminders-list {
+    @apply space-y-3;
+  }
+
+  .dashboard-reminder-item {
+    @apply flex items-center gap-3 p-3 bg-yellow-50 rounded-lg;
+  }
+
+  .dashboard-reminder-icon {
+    @apply w-8 h-8 bg-yellow-100 text-yellow-600 rounded-lg;
+    @apply flex items-center justify-center;
+  }
+
+  .dashboard-reminder-content {
+    @apply flex-1;
+  }
+
+  .dashboard-reminder-title {
+    @apply font-medium text-gray-900 text-sm;
+  }
+
+  .dashboard-reminder-time {
+    @apply text-xs text-gray-500;
+  }
+
+  /* Widgets */
+  .dashboard-widgets {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  .dashboard-widget {
+    @apply bg-white rounded-xl shadow-lg p-6;
+  }
+
+  .dashboard-widget-title {
+    @apply text-lg font-semibold text-gray-900 mb-4;
+  }
+
+  .dashboard-mood-chart,
+  .dashboard-progress-chart {
+    @apply h-64 bg-gray-50 rounded-lg flex items-center justify-center;
+    @apply text-gray-500;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dashboard-header {
+      @apply flex-col items-start gap-4 p-4;
+    }
+    
+    .dashboard-date {
+      @apply text-left;
+    }
+    
+    .dashboard-stats {
+      @apply grid-cols-2 gap-3;
+    }
+    
+    .dashboard-stat-card {
+      @apply p-4;
+    }
+    
+    .dashboard-actions-grid {
+      @apply grid-cols-2 gap-3;
+    }
+    
+    .dashboard-action-btn {
+      @apply p-4;
+    }
+    
+    .dashboard-main {
+      @apply grid-cols-1 gap-4;
+    }
+  }
+
+  /* Modo oscuro */
+  [data-theme="dark"] .dashboard-stat-card,
+  [data-theme="dark"] .dashboard-recent-activity,
+  [data-theme="dark"] .dashboard-goals,
+  [data-theme="dark"] .dashboard-insights,
+  [data-theme="dark"] .dashboard-reminders,
+  [data-theme="dark"] .dashboard-widget {
+    @apply bg-gray-800 border border-gray-700;
+  }
+
+  [data-theme="dark"] .dashboard-section-title,
+  [data-theme="dark"] .dashboard-widget-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .dashboard-stat-value {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .dashboard-stat-label {
+    @apply text-gray-400;
+  }
+
+  [data-theme="dark"] .dashboard-activity-item {
+    @apply bg-gray-700;
+  }
+
+  [data-theme="dark"] .dashboard-activity-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .dashboard-activity-time {
+    @apply text-gray-400;
+  }
+
+  [data-theme="dark"] .dashboard-goal-item {
+    @apply border-gray-600;
+  }
+
+  [data-theme="dark"] .dashboard-goal-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .dashboard-insight-item {
+    @apply bg-gradient-to-r from-gray-700 to-gray-600;
+  }
+
+  [data-theme="dark"] .dashboard-insight-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .dashboard-insight-description {
+    @apply text-gray-300;
+  }
+
+  [data-theme="dark"] .dashboard-reminder-item {
+    @apply bg-yellow-900;
+  }
+
+  [data-theme="dark"] .dashboard-reminder-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .dashboard-mood-chart,
+  [data-theme="dark"] .dashboard-progress-chart {
+    @apply bg-gray-700;
+  }
+</style>
+
+<script>
+  class Dashboard {
+    constructor() {
+      this.user = null;
+      this.activities = [];
+      this.goals = [];
+      this.insights = [];
+      this.reminders = [];
+      
+      this.init();
+    }
+    
+    async init() {
+      await this.loadUserData();
+      this.setupEventListeners();
+      this.updateDashboard();
+      this.loadMockData();
+    }
+    
+    async loadUserData() {
+      try {
+        // Simular carga de datos del usuario
+        this.user = {
+          name: 'Juan Pérez',
+          email: 'juan@ejemplo.com',
+          streak: 5,
+          mood: 7.5,
+          entries: 15,
+          progress: 78,
+        };
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    }
+    
+    loadMockData() {
+      // Actividades recientes
+      this.activities = [
+        {
+          id: 1,
+          type: 'diary',
+          title: 'Entrada del diario',
+          time: 'Hace 2 horas',
+          icon: 'fas fa-book-open',
+        },
+        {
+          id: 2,
+          type: 'evaluation',
+          title: 'Evaluación GAD-7',
+          time: 'Ayer',
+          icon: 'fas fa-clipboard-check',
+        },
+        {
+          id: 3,
+          type: 'breathing',
+          title: 'Ejercicio de respiración',
+          time: 'Hace 3 días',
+          icon: 'fas fa-wind',
+        },
+      ];
+      
+      // Metas de la semana
+      this.goals = [
+        {
+          id: 1,
+          title: 'Escribir en el diario 5 días',
+          progress: 80,
+          current: 4,
+          target: 5,
+        },
+        {
+          id: 2,
+          title: 'Completar 3 evaluaciones',
+          progress: 67,
+          current: 2,
+          target: 3,
+        },
+        {
+          id: 3,
+          title: 'Meditar 10 minutos diarios',
+          progress: 40,
+          current: 2,
+          target: 5,
+        },
+      ];
+      
+      // Insights
+      this.insights = [
+        {
+          id: 1,
+          title: 'Tu estado de ánimo ha mejorado',
+          description: 'Has mantenido un promedio de 7.5 esta semana, un aumento del 15% respecto a la semana pasada.',
+        },
+        {
+          id: 2,
+          title: 'Consistencia en el diario',
+          description: 'Has escrito en tu diario 4 días consecutivos. ¡Excelente trabajo!',
+        },
+      ];
+      
+      // Recordatorios
+      this.reminders = [
+        {
+          id: 1,
+          title: 'Evaluación semanal',
+          time: 'En 2 horas',
+          icon: 'fas fa-clock',
+        },
+        {
+          id: 2,
+          title: 'Ejercicio de respiración',
+          time: 'Mañana a las 9:00 AM',
+          icon: 'fas fa-wind',
+        },
+      ];
+      
+      this.updateDashboard();
+    }
+    
+    updateDashboard() {
+      this.updateWelcome();
+      this.updateStats();
+      this.updateRecentActivity();
+      this.updateGoals();
+      this.updateInsights();
+      this.updateReminders();
+      this.updateDate();
+    }
+    
+    updateWelcome() {
+      if (!this.user) return;
+      
+      const greeting = this.getGreeting();
+      document.getElementById('dashboard-greeting').textContent = greeting;
+      document.getElementById('dashboard-name').textContent = this.user.name;
+      
+      const subtitles = [
+        '¿Cómo te sientes hoy?',
+        '¡Es un gran día para cuidar tu bienestar!',
+        'Tu salud mental es importante',
+        'Pequeños pasos, grandes cambios',
+      ];
+      
+      const randomSubtitle = subtitles[Math.floor(Math.random() * subtitles.length)];
+      document.getElementById('dashboard-subtitle').textContent = randomSubtitle;
+    }
+    
+    getGreeting() {
+      const hour = new Date().getHours();
+      
+      if (hour < 12) return '¡Buenos días!';
+      if (hour < 18) return '¡Buenas tardes!';
+      return '¡Buenas noches!';
+    }
+    
+    updateStats() {
+      if (!this.user) return;
+      
+      document.getElementById('streak-value').textContent = this.user.streak;
+      document.getElementById('mood-value').textContent = this.user.mood;
+      document.getElementById('entries-value').textContent = this.user.entries;
+      document.getElementById('progress-value').textContent = `${this.user.progress}%`;
+    }
+    
+    updateRecentActivity() {
+      const container = document.getElementById('recent-activity-list');
+      if (!container) return;
+      
+      container.innerHTML = this.activities.map(activity => `
+        <div class="dashboard-activity-item">
+          <div class="dashboard-activity-icon">
+            <i class="${activity.icon}"></i>
+          </div>
+          <div class="dashboard-activity-content">
+            <div class="dashboard-activity-title">${activity.title}</div>
+            <div class="dashboard-activity-time">${activity.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    updateGoals() {
+      const container = document.getElementById('goals-list');
+      if (!container) return;
+      
+      container.innerHTML = this.goals.map(goal => `
+        <div class="dashboard-goal-item">
+          <div class="dashboard-goal-header">
+            <div class="dashboard-goal-title">${goal.title}</div>
+            <div class="dashboard-goal-progress">${goal.current}/${goal.target}</div>
+          </div>
+          <div class="dashboard-goal-bar">
+            <div class="dashboard-goal-progress-bar" style="width: ${goal.progress}%"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    updateInsights() {
+      const container = document.getElementById('insights-list');
+      if (!container) return;
+      
+      container.innerHTML = this.insights.map(insight => `
+        <div class="dashboard-insight-item">
+          <div class="dashboard-insight-title">${insight.title}</div>
+          <div class="dashboard-insight-description">${insight.description}</div>
+        </div>
+      `).join('');
+    }
+    
+    updateReminders() {
+      const container = document.getElementById('reminders-list');
+      if (!container) return;
+      
+      container.innerHTML = this.reminders.map(reminder => `
+        <div class="dashboard-reminder-item">
+          <div class="dashboard-reminder-icon">
+            <i class="${reminder.icon}"></i>
+          </div>
+          <div class="dashboard-reminder-content">
+            <div class="dashboard-reminder-title">${reminder.title}</div>
+            <div class="dashboard-reminder-time">${reminder.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    updateDate() {
+      const now = new Date();
+      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      
+      document.getElementById('dashboard-date-day').textContent = days[now.getDay()];
+      document.getElementById('dashboard-date-date').textContent = 
+        `${now.getDate()} de ${months[now.getMonth()]}`;
+    }
+    
+    setupEventListeners() {
+      // Acciones rápidas
+      document.getElementById('quick-diary')?.addEventListener('click', () => {
+        this.openDiary();
+      });
+      
+      document.getElementById('quick-evaluation')?.addEventListener('click', () => {
+        this.openEvaluation();
+      });
+      
+      document.getElementById('quick-breathing')?.addEventListener('click', () => {
+        this.openBreathing();
+      });
+      
+      document.getElementById('quick-meditation')?.addEventListener('click', () => {
+        this.openMeditation();
+      });
+    }
+    
+    openDiary() {
+      window.location.href = '/diario';
+    }
+    
+    openEvaluation() {
+      window.location.href = '/evaluacion';
+    }
+    
+    openBreathing() {
+      // Implementar ejercicio de respiración
+      console.log('Abriendo ejercicio de respiración...');
+    }
+    
+    openMeditation() {
+      // Implementar meditación
+      console.log('Abriendo meditación...');
+    }
+  }
+  
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    new Dashboard();
+  });
+</script>

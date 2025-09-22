@@ -1,246 +1,227 @@
 import { Request, Response, NextFunction } from 'express';
-import FirebaseService from '../services/firebase.service';
+import jwt from 'jsonwebtoken';
 import { logger } from '../utils/logger.util';
+import FirebaseService from '../services/firebase.service';
 
-// Extender la interfaz Request para incluir el usuario
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        uid: string;
-        email: string;
-        displayName?: string;
-        photoURL?: string;
-      };
-    }
-  }
+interface AuthenticatedRequest extends Request {
+  user?: {
+    uid: string;
+    email: string;
+  };
 }
 
 class AuthMiddleware {
-  // Middleware para verificar autenticación con Firebase
-  async verifyToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+  // Verificar token JWT
+  async verifyToken(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
       
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({
           success: false,
-          error: 'Token de acceso requerido',
-          message: 'Debes proporcionar un token de autenticación válido'
+          error: 'Token requerido',
+          message: 'Debe proporcionar un token de autenticación'
         });
         return;
       }
 
       const token = authHeader.substring(7); // Remover 'Bearer '
 
-      try {
-        const auth = FirebaseService.getAuth();
-        const decodedToken = await auth.verifyIdToken(token);
-        
-        // Agregar información del usuario a la request
-        req.user = {
-          uid: decodedToken.uid,
-          email: decodedToken.email || '',
-          displayName: decodedToken.name,
-          photoURL: decodedToken.picture
-        };
-
-        logger.info(`Usuario autenticado: ${decodedToken.uid}`);
-        next();
-      } catch (tokenError) {
-        logger.error('Error verificando token:', tokenError);
+      if (!token) {
         res.status(401).json({
           success: false,
-          error: 'Token inválido',
-          message: 'El token de autenticación no es válido o ha expirado'
+          error: 'Token requerido',
+          message: 'Token de autenticación no proporcionado'
         });
         return;
       }
+
+      // Verificar token JWT
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
+      
+      if (!decoded.userId || !decoded.email) {
+        res.status(401).json({
+          success: false,
+          error: 'Token inválido',
+          message: 'El token no contiene la información necesaria'
+        });
+        return;
+      }
+
+      // Agregar información del usuario a la request
+      req.user = {
+        uid: decoded.userId,
+        email: decoded.email
+      };
+
+      logger.info(`Token verificado para usuario: ${decoded.userId}`);
+      next();
+
     } catch (error) {
-      logger.error('Error en middleware de autenticación:', error);
+      if (error.name === 'JsonWebTokenError') {
+        res.status(401).json({
+          success: false,
+          error: 'Token inválido',
+          message: 'El token proporcionado no es válido'
+        });
+        return;
+      }
+
+      if (error.name === 'TokenExpiredError') {
+        res.status(401).json({
+          success: false,
+          error: 'Token expirado',
+          message: 'El token ha expirado, por favor inicia sesión nuevamente'
+        });
+        return;
+      }
+
+      logger.error('Error verificando token:', error);
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor',
-        message: 'Error procesando la autenticación'
+        message: 'Error verificando autenticación'
       });
     }
   }
 
-  // Middleware opcional para autenticación (no falla si no hay token)
-  async optionalAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+  // Verificar que el usuario existe en la base de datos
+  async verifyUserExists(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.uid;
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: 'Usuario no identificado',
+          message: 'No se pudo identificar al usuario'
+        });
+        return;
+      }
+
+      const db = FirebaseService.getFirestore();
+      const userDoc = await db.collection('users').doc(userId).get();
+
+      if (!userDoc.exists) {
+        res.status(404).json({
+          success: false,
+          error: 'Usuario no encontrado',
+          message: 'El usuario no existe en la base de datos'
+        });
+        return;
+      }
+
+      const userData = userDoc.data();
+      
+      if (!userData.isActive) {
+        res.status(403).json({
+          success: false,
+          error: 'Cuenta desactivada',
+          message: 'Tu cuenta ha sido desactivada'
+        });
+        return;
+      }
+
+      logger.info(`Usuario verificado: ${userId}`);
+      next();
+
+    } catch (error) {
+      logger.error('Error verificando usuario:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor',
+        message: 'Error verificando usuario'
+      });
+    }
+  }
+
+  // Middleware opcional para verificar token (no falla si no hay token)
+  async optionalAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
       
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        // No hay token, continuar sin usuario autenticado
+        // No hay token, continuar sin autenticación
         next();
         return;
       }
 
       const token = authHeader.substring(7);
 
-      try {
-        const auth = FirebaseService.getAuth();
-        const decodedToken = await auth.verifyIdToken(token);
-        
+      if (!token) {
+        next();
+        return;
+      }
+
+      // Intentar verificar token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
+      
+      if (decoded.userId && decoded.email) {
         req.user = {
-          uid: decodedToken.uid,
-          email: decodedToken.email || '',
-          displayName: decodedToken.name,
-          photoURL: decodedToken.picture
+          uid: decoded.userId,
+          email: decoded.email
         };
-
-        logger.info(`Usuario autenticado (opcional): ${decodedToken.uid}`);
-      } catch (tokenError) {
-        logger.warn('Token inválido en autenticación opcional:', tokenError);
-        // Continuar sin usuario autenticado
       }
 
       next();
+
     } catch (error) {
-      logger.error('Error en middleware de autenticación opcional:', error);
-      next(); // Continuar incluso si hay error
+      // Si hay error con el token, continuar sin autenticación
+      logger.warn('Token opcional inválido:', error.message);
+      next();
     }
   }
 
-  // Middleware para verificar que el usuario existe en la base de datos
-  async verifyUserExists(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      if (!req.user?.uid) {
-        res.status(401).json({
+  // Verificar roles de usuario (para futuras implementaciones)
+  async verifyRole(requiredRoles: string[]) {
+    return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+      try {
+        const userId = req.user?.uid;
+
+        if (!userId) {
+          res.status(401).json({
+            success: false,
+            error: 'Usuario no identificado',
+            message: 'No se pudo identificar al usuario'
+          });
+          return;
+        }
+
+        const db = FirebaseService.getFirestore();
+        const userDoc = await db.collection('users').doc(userId).get();
+
+        if (!userDoc.exists) {
+          res.status(404).json({
+            success: false,
+            error: 'Usuario no encontrado',
+            message: 'El usuario no existe'
+          });
+          return;
+        }
+
+        const userData = userDoc.data();
+        const userRole = userData.role || 'user';
+
+        if (!requiredRoles.includes(userRole)) {
+          res.status(403).json({
+            success: false,
+            error: 'Permisos insuficientes',
+            message: 'No tienes permisos para realizar esta acción'
+          });
+          return;
+        }
+
+        next();
+
+      } catch (error) {
+        logger.error('Error verificando rol:', error);
+        res.status(500).json({
           success: false,
-          error: 'Usuario no autenticado',
-          message: 'Debes estar autenticado para acceder a este recurso'
+          error: 'Error interno del servidor',
+          message: 'Error verificando permisos'
         });
-        return;
       }
-
-      const db = FirebaseService.getFirestore();
-      const userDoc = await db.collection('users').doc(req.user.uid).get();
-
-      if (!userDoc.exists) {
-        res.status(404).json({
-          success: false,
-          error: 'Usuario no encontrado',
-          message: 'Tu perfil de usuario no existe en el sistema'
-        });
-        return;
-      }
-
-      next();
-    } catch (error) {
-      logger.error('Error verificando existencia del usuario:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: 'Error verificando el usuario'
-      });
-    }
-  }
-
-  // Middleware para verificar permisos de administrador
-  async verifyAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      if (!req.user?.uid) {
-        res.status(401).json({
-          success: false,
-          error: 'Usuario no autenticado',
-          message: 'Debes estar autenticado para acceder a este recurso'
-        });
-        return;
-      }
-
-      const db = FirebaseService.getFirestore();
-      const userDoc = await db.collection('users').doc(req.user.uid).get();
-
-      if (!userDoc.exists) {
-        res.status(404).json({
-          success: false,
-          error: 'Usuario no encontrado',
-          message: 'Tu perfil de usuario no existe en el sistema'
-        });
-        return;
-      }
-
-      const userData = userDoc.data();
-      const isAdmin = userData?.role === 'admin' || userData?.subscription?.plan === 'admin';
-
-      if (!isAdmin) {
-        res.status(403).json({
-          success: false,
-          error: 'Acceso denegado',
-          message: 'No tienes permisos de administrador para acceder a este recurso'
-        });
-        return;
-      }
-
-      next();
-    } catch (error) {
-      logger.error('Error verificando permisos de administrador:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: 'Error verificando permisos'
-      });
-    }
-  }
-
-  // Middleware para verificar suscripción premium
-  async verifyPremium(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      if (!req.user?.uid) {
-        res.status(401).json({
-          success: false,
-          error: 'Usuario no autenticado',
-          message: 'Debes estar autenticado para acceder a este recurso'
-        });
-        return;
-      }
-
-      const db = FirebaseService.getFirestore();
-      const userDoc = await db.collection('users').doc(req.user.uid).get();
-
-      if (!userDoc.exists) {
-        res.status(404).json({
-          success: false,
-          error: 'Usuario no encontrado',
-          message: 'Tu perfil de usuario no existe en el sistema'
-        });
-        return;
-      }
-
-      const userData = userDoc.data();
-      const subscription = userData?.subscription;
-      const isPremium = subscription?.plan === 'premium' || subscription?.plan === 'admin';
-
-      if (!isPremium) {
-        res.status(403).json({
-          success: false,
-          error: 'Suscripción premium requerida',
-          message: 'Esta funcionalidad requiere una suscripción premium'
-        });
-        return;
-      }
-
-      // Verificar si la suscripción no ha expirado
-      if (subscription?.endDate && subscription.endDate.toDate() < new Date()) {
-        res.status(403).json({
-          success: false,
-          error: 'Suscripción expirada',
-          message: 'Tu suscripción premium ha expirado'
-        });
-        return;
-      }
-
-      next();
-    } catch (error) {
-      logger.error('Error verificando suscripción premium:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor',
-        message: 'Error verificando suscripción'
-      });
-    }
+    };
   }
 }
 

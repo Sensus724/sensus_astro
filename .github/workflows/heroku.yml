@@ -1,0 +1,224 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  HEROKU_APP_NAME: sensus-app
+  HEROKU_STAGING_APP: sensus-app-staging
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run linting
+        run: npm run lint
+        
+      - name: Run type checking
+        run: npm run type-check
+        
+      - name: Run tests
+        run: npm run test:ci
+        
+      - name: Run quality checks
+        run: npm run quality:check
+        
+      - name: Build application
+        run: npm run build
+
+  deploy-staging:
+    name: Deploy to Heroku Staging
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ env.HEROKU_STAGING_APP }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "."
+          procfile: "web: npm run preview"
+          buildpack: "heroku/nodejs"
+          
+      - name: Set environment variables
+        run: |
+          heroku config:set NODE_ENV=staging -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set PORT=3000 -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set APP_NAME=Sensus -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set APP_VERSION=${{ github.sha }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set APP_URL=https://${{ env.HEROKU_STAGING_APP }}.herokuapp.com -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set API_URL=https://api-${{ env.HEROKU_STAGING_APP }}.herokuapp.com -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set GA_TRACKING_ID=${{ secrets.GA_TRACKING_ID }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set REDIS_URL=${{ secrets.REDIS_URL }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set JWT_SECRET=${{ secrets.JWT_SECRET }} -a ${{ env.HEROKU_STAGING_APP }}
+          heroku config:set ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} -a ${{ env.HEROKU_STAGING_APP }}
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          
+      - name: Run health checks
+        run: |
+          # Wait for deployment to complete
+          sleep 30
+          
+          # Run health check
+          curl -f https://${{ env.HEROKU_STAGING_APP }}.herokuapp.com/health || exit 1
+          
+      - name: Notify staging deployment
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          text: '🚀 Sensus deployed to Heroku staging successfully!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  deploy-production:
+    name: Deploy to Heroku Production
+    runs-on: ubuntu-latest
+    needs: [build-and-test, deploy-staging]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "."
+          procfile: "web: npm run preview"
+          buildpack: "heroku/nodejs"
+          
+      - name: Set environment variables
+        run: |
+          heroku config:set NODE_ENV=production -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set PORT=3000 -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set APP_NAME=Sensus -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set APP_VERSION=${{ github.sha }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set APP_URL=https://sensus.app -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set API_URL=https://api.sensus.app -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set CORS_ORIGIN=https://sensus.app -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set CDN_URL=https://cdn.sensus.app -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set CDN_ENABLED=true -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set LOG_LEVEL=info -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set CACHE_TTL=3600 -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set RATE_LIMIT_WINDOW=900000 -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set RATE_LIMIT_MAX=100 -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set PWA_ENABLED=true -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set NOTIFICATIONS_ENABLED=true -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set OFFLINE_MODE_ENABLED=true -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set DARK_MODE_ENABLED=true -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set BETA_FEATURES_ENABLED=false -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set GA_TRACKING_ID=${{ secrets.GA_TRACKING_ID }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set HOTJAR_SITE_ID=${{ secrets.HOTJAR_SITE_ID }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set MIXPANEL_TOKEN=${{ secrets.MIXPANEL_TOKEN }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set SENDGRID_FROM_NAME=${{ secrets.SENDGRID_FROM_NAME }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set REDIS_URL=${{ secrets.REDIS_URL }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set JWT_SECRET=${{ secrets.JWT_SECRET }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }} -a ${{ env.HEROKU_APP_NAME }}
+          heroku config:set PROMETHEUS_RETENTION=${{ secrets.PROMETHEUS_RETENTION }} -a ${{ env.HEROKU_APP_NAME }}
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          
+      - name: Run production health checks
+        run: |
+          # Wait for deployment to complete
+          sleep 30
+          
+          # Run health check
+          curl -f https://${{ env.HEROKU_APP_NAME }}.herokuapp.com/health || exit 1
+          
+          # Run production tests
+          curl -f https://${{ env.HEROKU_APP_NAME }}.herokuapp.com/api/health || exit 1
+          
+      - name: Notify production deployment
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          text: '🎉 Sensus deployed to Heroku production successfully!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          
+      - name: Create GitHub release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            ## Changes
+            - Automated deployment from commit ${{ github.sha }}
+            - Heroku App: ${{ env.HEROKU_APP_NAME }}
+            - Environment: Production
+            
+            ## Deployment Details
+            - **Heroku App**: ${{ env.HEROKU_APP_NAME }}
+            - **Staging App**: ${{ env.HEROKU_STAGING_APP }}
+            - **Deployed At**: ${{ github.event.head_commit.timestamp }}
+            - **Deployed By**: ${{ github.actor }}
+          draft: false
+          prerelease: false

@@ -1,0 +1,259 @@
+---
+export interface Props {
+  class?: string;
+  sticky?: boolean;
+  transparent?: boolean;
+}
+
+const {
+  class: className = '',
+  sticky = true,
+  transparent = false,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'header',
+  sticky ? 'header-sticky' : '',
+  transparent ? 'header-transparent' : '',
+  className
+].filter(Boolean).join(' ');
+---
+
+<header class={classes} {...rest}>
+  <div class="header-container">
+    <div class="header-brand">
+      <a href="/" class="brand-link">
+        <img src="/favicon.svg" alt="Sensus" class="brand-logo" />
+        <span class="brand-text">Sensus</span>
+      </a>
+    </div>
+
+    <nav class="header-nav" aria-label="Navegación principal">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/" class="nav-link">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a href="/evaluacion" class="nav-link">Evaluación</a>
+        </li>
+        <li class="nav-item">
+          <a href="/diario" class="nav-link">Diario</a>
+        </li>
+        <li class="nav-item">
+          <a href="/planes" class="nav-link">Planes</a>
+        </li>
+        <li class="nav-item">
+          <a href="/equipo" class="nav-link">Equipo</a>
+        </li>
+        <li class="nav-item">
+          <a href="/contacto" class="nav-link">Contacto</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-menu-toggle" aria-label="Abrir menú móvil">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="desktop-actions">
+        <a href="/evaluacion" class="btn btn-primary">
+          <i class="fas fa-heart"></i>
+          Comenzar Gratis
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menú móvil -->
+  <div class="mobile-menu">
+    <nav class="mobile-nav" aria-label="Navegación móvil">
+      <ul class="mobile-nav-list">
+        <li class="mobile-nav-item">
+          <a href="/" class="mobile-nav-link">Inicio</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="/evaluacion" class="mobile-nav-link">Evaluación</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="/diario" class="mobile-nav-link">Diario</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="/planes" class="mobile-nav-link">Planes</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="/equipo" class="mobile-nav-link">Equipo</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="/contacto" class="mobile-nav-link">Contacto</a>
+        </li>
+      </ul>
+      
+      <div class="mobile-actions">
+        <a href="/evaluacion" class="btn btn-primary w-full">
+          <i class="fas fa-heart"></i>
+          Comenzar Gratis
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    @apply bg-white border-b border-gray-200 transition-all duration-300;
+  }
+
+  .header-sticky {
+    @apply sticky top-0 z-40;
+  }
+
+  .header-transparent {
+    @apply bg-transparent border-transparent;
+  }
+
+  .header-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply flex items-center justify-between h-16;
+  }
+
+  .header-brand {
+    @apply flex-shrink-0;
+  }
+
+  .brand-link {
+    @apply flex items-center gap-2 text-xl font-bold text-gray-900;
+    @apply hover:text-blue-600 transition-colors duration-200;
+  }
+
+  .brand-logo {
+    @apply w-8 h-8;
+  }
+
+  .brand-text {
+    @apply font-bold;
+  }
+
+  .header-nav {
+    @apply hidden md:block;
+  }
+
+  .nav-list {
+    @apply flex items-center space-x-8;
+  }
+
+  .nav-item {
+    @apply relative;
+  }
+
+  .nav-link {
+    @apply text-gray-700 hover:text-blue-600 font-medium;
+    @apply transition-colors duration-200 relative;
+  }
+
+  .nav-link:hover::after {
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-blue-600;
+    content: '';
+  }
+
+  .header-actions {
+    @apply flex items-center gap-4;
+  }
+
+  .mobile-menu-toggle {
+    @apply md:hidden p-2 text-gray-700 hover:text-blue-600;
+    @apply transition-colors duration-200;
+  }
+
+  .desktop-actions {
+    @apply hidden md:block;
+  }
+
+  /* Menú móvil */
+  .mobile-menu {
+    @apply md:hidden fixed inset-0 z-50 bg-white transform -translate-x-full;
+    @apply transition-transform duration-300 ease-in-out;
+  }
+
+  .mobile-menu.open {
+    @apply translate-x-0;
+  }
+
+  .mobile-nav {
+    @apply flex flex-col h-full;
+  }
+
+  .mobile-nav-list {
+    @apply flex-1 px-4 py-8 space-y-4;
+  }
+
+  .mobile-nav-item {
+    @apply border-b border-gray-100;
+  }
+
+  .mobile-nav-link {
+    @apply block py-4 text-lg font-medium text-gray-700;
+    @apply hover:text-blue-600 transition-colors duration-200;
+  }
+
+  .mobile-actions {
+    @apply p-4 border-t border-gray-200;
+  }
+
+  /* Estados de scroll */
+  .header.scrolled {
+    @apply shadow-lg bg-white/95 backdrop-blur-sm;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header-container {
+      @apply h-14;
+    }
+    
+    .brand-text {
+      @apply text-lg;
+    }
+  }
+</style>
+
+<script>
+  // Toggle del menú móvil
+  document.addEventListener('DOMContentLoaded', () => {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const header = document.querySelector('.header');
+
+    if (mobileMenuToggle && mobileMenu) {
+      mobileMenuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('open');
+      });
+
+      // Cerrar menú al hacer clic en enlaces
+      const mobileNavLinks = mobileMenu.querySelectorAll('.mobile-nav-link');
+      mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.remove('open');
+        });
+      });
+    }
+
+    // Efecto de scroll
+    if (header) {
+      let lastScrollY = window.scrollY;
+      
+      window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > 100) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+        
+        lastScrollY = currentScrollY;
+      });
+    }
+  });
+</script>

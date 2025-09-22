@@ -1,0 +1,241 @@
+---
+export interface Props {
+  size?: 'small' | 'medium' | 'large'
+  variant?: 'default' | 'minimal' | 'icon-only'
+  showText?: boolean
+}
+
+const {
+  size = 'medium',
+  variant = 'default',
+  showText = true
+} = Astro.props
+
+const sizeClasses = {
+  small: 'theme-toggle-small',
+  medium: 'theme-toggle-medium',
+  large: 'theme-toggle-large'
+}
+
+const variantClasses = {
+  default: 'theme-toggle-default',
+  minimal: 'theme-toggle-minimal',
+  'icon-only': 'theme-toggle-icon-only'
+}
+---
+
+<button 
+  class={`theme-toggle ${sizeClasses[size]} ${variantClasses[variant]}`}
+  data-theme-toggle
+  aria-label="Cambiar tema"
+  title="Cambiar entre tema claro y oscuro (Ctrl+T)"
+>
+  <div class="theme-toggle-content">
+    <div class="theme-toggle-icons">
+      <i class="fas fa-sun theme-icon-light" data-theme-icon="sun" aria-hidden="true"></i>
+      <i class="fas fa-moon theme-icon-dark" data-theme-icon="moon" aria-hidden="true"></i>
+    </div>
+    
+    {showText && variant !== 'icon-only' && (
+      <span class="theme-toggle-text" data-theme-text>
+        Modo claro
+      </span>
+    )}
+  </div>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 2px solid var(--color-border, #e2e8f0);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-primary, #2563eb);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .theme-toggle:focus {
+    outline: none;
+    border-color: var(--color-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 98, 235, 0.1);
+  }
+
+  .theme-toggle:active {
+    transform: translateY(0);
+  }
+
+  .theme-toggle-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .theme-toggle-icons {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-icon-light,
+  .theme-icon-dark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+    color: var(--color-text, #1e293b);
+  }
+
+  .theme-icon-light {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .theme-icon-dark {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  [data-theme="dark"] .theme-icon-light {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  [data-theme="dark"] .theme-icon-dark {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .theme-toggle-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text, #1e293b);
+    transition: color 0.3s ease;
+  }
+
+  /* Tamaños */
+  .theme-toggle-small {
+    font-size: 12px;
+  }
+
+  .theme-toggle-small .theme-toggle-content {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .theme-toggle-small .theme-toggle-icons {
+    width: 16px;
+    height: 16px;
+  }
+
+  .theme-toggle-medium {
+    font-size: 14px;
+  }
+
+  .theme-toggle-large {
+    font-size: 16px;
+  }
+
+  .theme-toggle-large .theme-toggle-content {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .theme-toggle-large .theme-toggle-icons {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Variantes */
+  .theme-toggle-minimal {
+    border: 1px solid var(--color-border, #e2e8f0);
+    background: var(--color-surface, #f8fafc);
+  }
+
+  .theme-toggle-minimal:hover {
+    background: var(--color-primary, #2563eb);
+    color: white;
+    border-color: var(--color-primary, #2563eb);
+  }
+
+  .theme-toggle-icon-only {
+    border-radius: 50%;
+    padding: 8px;
+  }
+
+  .theme-toggle-icon-only .theme-toggle-content {
+    padding: 0;
+    gap: 0;
+  }
+
+  /* Animaciones */
+  .theme-toggle {
+    position: relative;
+  }
+
+  .theme-toggle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .theme-toggle:hover::before {
+    left: 100%;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .theme-toggle-text {
+      display: none;
+    }
+    
+    .theme-toggle {
+      border-radius: 50%;
+      padding: 8px;
+    }
+    
+    .theme-toggle-content {
+      padding: 0;
+      gap: 0;
+    }
+  }
+
+  /* Tema oscuro */
+  [data-theme="dark"] .theme-toggle {
+    border-color: var(--color-border, #334155);
+    background: var(--color-surface, #1e293b);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="dark"] .theme-toggle-text {
+    color: var(--color-text, #f1f5f9);
+  }
+
+  [data-theme="dark"] .theme-toggle-minimal {
+    background: var(--color-surface, #1e293b);
+    border-color: var(--color-border, #334155);
+  }
+</style>

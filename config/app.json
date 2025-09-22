@@ -1,0 +1,122 @@
+{
+  "name": "Sensus",
+  "description": "Mental wellness application built with Astro, Firebase, and PWA technologies",
+  "repository": "https://github.com/username/sensus-astro",
+  "logo": "https://sensus.app/logo.png",
+  "keywords": [
+    "astro",
+    "firebase",
+    "pwa",
+    "mental-health",
+    "wellness",
+    "typescript",
+    "tailwindcss"
+  ],
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-redis:mini",
+      "as": "REDIS"
+    },
+    {
+      "plan": "heroku-postgresql:mini",
+      "as": "DATABASE"
+    },
+    {
+      "plan": "papertrail:choklad",
+      "as": "PAPERTRAIL"
+    },
+    {
+      "plan": "newrelic:wayne",
+      "as": "NEWRELIC"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node.js environment",
+      "value": "production"
+    },
+    "PORT": {
+      "description": "Port to run the application on",
+      "value": "3000"
+    },
+    "APP_NAME": {
+      "description": "Application name",
+      "value": "Sensus"
+    },
+    "APP_VERSION": {
+      "description": "Application version",
+      "value": "1.0.0"
+    },
+    "APP_URL": {
+      "description": "Application URL",
+      "value": "https://sensus.app"
+    },
+    "API_URL": {
+      "description": "API URL",
+      "value": "https://api.sensus.app"
+    },
+    "CORS_ORIGIN": {
+      "description": "CORS origin",
+      "value": "https://sensus.app"
+    },
+    "CDN_URL": {
+      "description": "CDN URL",
+      "value": "https://cdn.sensus.app"
+    },
+    "CDN_ENABLED": {
+      "description": "Enable CDN",
+      "value": "true"
+    },
+    "LOG_LEVEL": {
+      "description": "Log level",
+      "value": "info"
+    },
+    "CACHE_TTL": {
+      "description": "Cache TTL in seconds",
+      "value": "3600"
+    },
+    "RATE_LIMIT_WINDOW": {
+      "description": "Rate limit window in milliseconds",
+      "value": "900000"
+    },
+    "RATE_LIMIT_MAX": {
+      "description": "Maximum requests per window",
+      "value": "100"
+    },
+    "PWA_ENABLED": {
+      "description": "Enable PWA features",
+      "value": "true"
+    },
+    "NOTIFICATIONS_ENABLED": {
+      "description": "Enable notifications",
+      "value": "true"
+    },
+    "OFFLINE_MODE_ENABLED": {
+      "description": "Enable offline mode",
+      "value": "true"
+    },
+    "DARK_MODE_ENABLED": {
+      "description": "Enable dark mode",
+      "value": "true"
+    },
+    "BETA_FEATURES_ENABLED": {
+      "description": "Enable beta features",
+      "value": "false"
+    }
+  },
+  "scripts": {
+    "postdeploy": "npm run build"
+  }
+}

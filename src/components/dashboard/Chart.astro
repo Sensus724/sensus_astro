@@ -1,0 +1,295 @@
+---
+export interface Props {
+  type: 'line' | 'bar' | 'pie' | 'doughnut' | 'area';
+  data: any;
+  options?: any;
+  class?: string;
+  height?: string;
+  width?: string;
+}
+
+const {
+  type,
+  data,
+  options = {},
+  class: className = '',
+  height = '300px',
+  width = '100%',
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'dashboard-chart',
+  `dashboard-chart--${type}`,
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <div class="dashboard-chart-container">
+    <canvas 
+      id="chart-canvas" 
+      class="dashboard-chart-canvas"
+      style={`height: ${height}; width: ${width};`}
+    ></canvas>
+  </div>
+  
+  <div class="dashboard-chart-legend" id="chart-legend">
+    <!-- La leyenda se generará dinámicamente -->
+  </div>
+</div>
+
+<style>
+  .dashboard-chart {
+    @apply relative;
+  }
+
+  .dashboard-chart-container {
+    @apply relative;
+  }
+
+  .dashboard-chart-canvas {
+    @apply max-w-full h-auto;
+  }
+
+  .dashboard-chart-legend {
+    @apply flex flex-wrap justify-center gap-4 mt-4;
+  }
+
+  .dashboard-chart-legend-item {
+    @apply flex items-center gap-2 text-sm;
+  }
+
+  .dashboard-chart-legend-color {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  .dashboard-chart-legend-label {
+    @apply text-gray-600;
+  }
+
+  /* Modo oscuro */
+  [data-theme="dark"] .dashboard-chart-legend-label {
+    @apply text-gray-400;
+  }
+</style>
+
+<script>
+  class DashboardChart {
+    constructor(element, config) {
+      this.element = element;
+      this.config = config;
+      this.chart = null;
+      
+      this.init();
+    }
+    
+    init() {
+      this.createChart();
+    }
+    
+    createChart() {
+      const canvas = this.element.querySelector('#chart-canvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Configuración por defecto
+      const defaultOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false, // Usamos nuestra propia leyenda
+          },
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)',
+            },
+            ticks: {
+              color: '#6b7280',
+            },
+          },
+          y: {
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)',
+            },
+            ticks: {
+              color: '#6b7280',
+            },
+          },
+        },
+      };
+      
+      // Combinar opciones
+      const options = { ...defaultOptions, ...this.config.options };
+      
+      // Crear gráfico
+      this.chart = new Chart(ctx, {
+        type: this.config.type,
+        data: this.config.data,
+        options: options,
+      });
+      
+      // Crear leyenda personalizada
+      this.createLegend();
+    }
+    
+    createLegend() {
+      if (!this.chart) return;
+      
+      const legendContainer = this.element.querySelector('#chart-legend');
+      if (!legendContainer) return;
+      
+      const datasets = this.chart.data.datasets;
+      legendContainer.innerHTML = '';
+      
+      datasets.forEach((dataset, index) => {
+        const legendItem = document.createElement('div');
+        legendItem.className = 'dashboard-chart-legend-item';
+        
+        const colorBox = document.createElement('div');
+        colorBox.className = 'dashboard-chart-legend-color';
+        colorBox.style.backgroundColor = dataset.backgroundColor || dataset.borderColor;
+        
+        const label = document.createElement('span');
+        label.className = 'dashboard-chart-legend-label';
+        label.textContent = dataset.label || `Serie ${index + 1}`;
+        
+        legendItem.appendChild(colorBox);
+        legendItem.appendChild(label);
+        legendContainer.appendChild(legendItem);
+      });
+    }
+    
+    updateData(newData) {
+      if (!this.chart) return;
+      
+      this.chart.data = newData;
+      this.chart.update();
+      this.createLegend();
+    }
+    
+    updateOptions(newOptions) {
+      if (!this.chart) return;
+      
+      this.chart.options = { ...this.chart.options, ...newOptions };
+      this.chart.update();
+    }
+    
+    destroy() {
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+    }
+  }
+  
+  // Función para crear gráficos
+  function createChart(element, config) {
+    return new DashboardChart(element, config);
+  }
+  
+  // Gráficos predefinidos
+  const ChartTemplates = {
+    moodChart: {
+      type: 'line',
+      data: {
+        labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+        datasets: [{
+          label: 'Estado de Ánimo',
+          data: [6, 7, 6.5, 8, 7.5, 8.5, 7],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4,
+          fill: true,
+        }],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 10,
+            ticks: {
+              callback: function(value) {
+                return value;
+              },
+            },
+          },
+        },
+      },
+    },
+    
+    progressChart: {
+      type: 'bar',
+      data: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Progreso Mensual',
+          data: [65, 78, 82, 75, 88, 92],
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: '#3b82f6',
+          borderWidth: 1,
+        }],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              },
+            },
+          },
+        },
+      },
+    },
+    
+    activityChart: {
+      type: 'doughnut',
+      data: {
+        labels: ['Diario', 'Evaluaciones', 'Ejercicios', 'Meditación'],
+        datasets: [{
+          data: [40, 25, 20, 15],
+          backgroundColor: [
+            '#3b82f6',
+            '#10b981',
+            '#f59e0b',
+            '#ef4444',
+          ],
+          borderWidth: 0,
+        }],
+      },
+      options: {
+        cutout: '60%',
+      },
+    },
+  };
+  
+  // Inicializar gráficos cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    // Gráfico de estado de ánimo
+    const moodChartElement = document.getElementById('mood-chart');
+    if (moodChartElement) {
+      createChart(moodChartElement, ChartTemplates.moodChart);
+    }
+    
+    // Gráfico de progreso
+    const progressChartElement = document.getElementById('progress-chart');
+    if (progressChartElement) {
+      createChart(progressChartElement, ChartTemplates.progressChart);
+    }
+  });
+  
+  // Exponer funciones globalmente
+  window.createChart = createChart;
+  window.ChartTemplates = ChartTemplates;
+</script>
+
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

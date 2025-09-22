@@ -1,0 +1,214 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensus-app
+  namespace: sensus
+  labels:
+    app: sensus
+    component: app
+    environment: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sensus
+      component: app
+  template:
+    metadata:
+      labels:
+        app: sensus
+        component: app
+        environment: production
+    spec:
+      containers:
+      - name: sensus-app
+        image: your_registry.com/sensus:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: sensus-config
+              key: NODE_ENV
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: sensus-config
+              key: PORT
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: sensus-config
+              key: APP_NAME
+        - name: APP_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: sensus-config
+              key: APP_VERSION
+        - name: APP_URL
+          valueFrom:
+            configMapKeyRef:
+              name: sensus-config
+              key: APP_URL
+        - name: API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: sensus-config
+              key: API_URL
+        - name: FIREBASE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: FIREBASE_API_KEY
+        - name: FIREBASE_AUTH_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: FIREBASE_AUTH_DOMAIN
+        - name: FIREBASE_PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: FIREBASE_PROJECT_ID
+        - name: FIREBASE_STORAGE_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: FIREBASE_STORAGE_BUCKET
+        - name: FIREBASE_MESSAGING_SENDER_ID
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: FIREBASE_MESSAGING_SENDER_ID
+        - name: FIREBASE_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: FIREBASE_APP_ID
+        - name: FIREBASE_MEASUREMENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: FIREBASE_MEASUREMENT_ID
+        - name: GA_TRACKING_ID
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: GA_TRACKING_ID
+        - name: HOTJAR_SITE_ID
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: HOTJAR_SITE_ID
+        - name: MIXPANEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: MIXPANEL_TOKEN
+        - name: STRIPE_PUBLIC_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: STRIPE_PUBLIC_KEY
+        - name: STRIPE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: STRIPE_SECRET_KEY
+        - name: STRIPE_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: STRIPE_WEBHOOK_SECRET
+        - name: SENDGRID_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: SENDGRID_API_KEY
+        - name: SENDGRID_FROM_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: SENDGRID_FROM_EMAIL
+        - name: SENDGRID_FROM_NAME
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: SENDGRID_FROM_NAME
+        - name: SLACK_WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: SLACK_WEBHOOK_URL
+        - name: DISCORD_WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: DISCORD_WEBHOOK_URL
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: REDIS_URL
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: REDIS_PASSWORD
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: JWT_SECRET
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: ENCRYPTION_KEY
+        - name: GRAFANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: GRAFANA_PASSWORD
+        - name: PROMETHEUS_RETENTION
+          valueFrom:
+            secretKeyRef:
+              name: sensus-secrets
+              key: PROMETHEUS_RETENTION
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: uploads
+          mountPath: /app/uploads
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: uploads
+        emptyDir: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

@@ -1,0 +1,69 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "username"
+    assignees:
+      - "username"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "javascript"
+    ignore:
+      # Ignore major version updates
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    # Group updates
+    groups:
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint/*"
+      prettier:
+        patterns:
+          - "prettier*"
+      jest:
+        patterns:
+          - "jest*"
+          - "@types/jest"
+      lighthouse:
+        patterns:
+          - "lighthouse*"
+      axe:
+        patterns:
+          - "axe*"
+          - "@axe-core/*"
+      husky:
+        patterns:
+          - "husky"
+          - "lint-staged"
+          - "@commitlint/*"
+      semantic-release:
+        patterns:
+          - "semantic-release*"
+          - "@semantic-release/*"
+      astro:
+        patterns:
+          - "astro*"
+          - "@astrojs/*"
+      tailwind:
+        patterns:
+          - "tailwindcss*"
+          - "@tailwindcss/*"
+      firebase:
+        patterns:
+          - "firebase*"
+          - "@firebase/*"
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"

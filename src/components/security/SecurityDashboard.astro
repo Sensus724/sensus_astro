@@ -1,0 +1,724 @@
+---
+// Dashboard de seguridad para Sensus
+---
+
+<div class="security-dashboard">
+  <div class="dashboard-header">
+    <h2>Dashboard de Seguridad</h2>
+    <div class="dashboard-controls">
+      <button id="refresh-security-btn" class="btn btn-primary">Actualizar</button>
+      <button id="export-security-btn" class="btn btn-secondary">Exportar</button>
+      <button id="security-settings-btn" class="btn btn-outline">Configuración</button>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Métricas de seguridad -->
+    <div class="metric-card">
+      <h3>Métricas de Seguridad</h3>
+      <div class="metric-grid">
+        <div class="metric-item">
+          <span class="metric-label">Usuarios Activos</span>
+          <span class="metric-value" id="active-users">0</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Sesiones Activas</span>
+          <span class="metric-value" id="active-sessions">0</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Intentos Fallidos</span>
+          <span class="metric-value" id="failed-attempts">0</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Alertas de Seguridad</span>
+          <span class="metric-value" id="security-alerts">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Eventos de seguridad -->
+    <div class="metric-card">
+      <h3>Eventos de Seguridad Recientes</h3>
+      <div class="events-list" id="security-events-list">
+        <div class="event-item">
+          <span class="event-time">-</span>
+          <span class="event-type">-</span>
+          <span class="event-message">No hay eventos recientes</span>
+          <span class="event-result">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de eventos -->
+    <div class="metric-card chart-card">
+      <h3>Eventos por Tipo</h3>
+      <canvas id="security-events-chart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Gráfico de actividad -->
+    <div class="metric-card chart-card">
+      <h3>Actividad por Hora</h3>
+      <canvas id="security-activity-chart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Usuarios -->
+    <div class="metric-card">
+      <h3>Usuarios</h3>
+      <div class="users-list" id="users-list">
+        <div class="user-item">
+          <span class="user-name">-</span>
+          <span class="user-role">-</span>
+          <span class="user-status">-</span>
+          <span class="user-last-login">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sesiones -->
+    <div class="metric-card">
+      <h3>Sesiones Activas</h3>
+      <div class="sessions-list" id="sessions-list">
+        <div class="session-item">
+          <span class="session-user">-</span>
+          <span class="session-ip">-</span>
+          <span class="session-last-activity">-</span>
+          <span class="session-status">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuración de seguridad -->
+    <div class="metric-card">
+      <h3>Configuración de Seguridad</h3>
+      <div class="security-config">
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="enable-2fa" checked>
+            Autenticación de Dos Factores
+          </label>
+        </div>
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="enable-rate-limiting" checked>
+            Rate Limiting
+          </label>
+        </div>
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="enable-security-logging" checked>
+            Logging de Seguridad
+          </label>
+        </div>
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="enable-anomaly-detection" checked>
+            Detección de Anomalías
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { security } from '../../utils/security';
+
+  class SecurityDashboard {
+    private charts: Map<string, any> = new Map();
+    private updateInterval?: number;
+
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      this.setupEventListeners();
+      this.setupCharts();
+      this.startRealTimeUpdates();
+    }
+
+    private setupEventListeners(): void {
+      // Botón de actualizar
+      document.getElementById('refresh-security-btn')?.addEventListener('click', () => {
+        this.updateDashboard();
+      });
+
+      // Botón de exportar
+      document.getElementById('export-security-btn')?.addEventListener('click', () => {
+        this.exportSecurityData();
+      });
+
+      // Botón de configuración
+      document.getElementById('security-settings-btn')?.addEventListener('click', () => {
+        this.openSecuritySettings();
+      });
+
+      // Configuración de seguridad
+      document.getElementById('enable-2fa')?.addEventListener('change', (e) => {
+        this.toggle2FA((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-rate-limiting')?.addEventListener('change', (e) => {
+        this.toggleRateLimiting((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-security-logging')?.addEventListener('change', (e) => {
+        this.toggleSecurityLogging((e.target as HTMLInputElement).checked);
+      });
+
+      document.getElementById('enable-anomaly-detection')?.addEventListener('change', (e) => {
+        this.toggleAnomalyDetection((e.target as HTMLInputElement).checked);
+      });
+    }
+
+    private setupCharts(): void {
+      // Gráfico de eventos de seguridad
+      const eventsCanvas = document.getElementById('security-events-chart') as HTMLCanvasElement;
+      if (eventsCanvas) {
+        const eventsChart = this.createEventsChart(eventsCanvas);
+        this.charts.set('events', eventsChart);
+      }
+
+      // Gráfico de actividad
+      const activityCanvas = document.getElementById('security-activity-chart') as HTMLCanvasElement;
+      if (activityCanvas) {
+        const activityChart = this.createActivityChart(activityCanvas);
+        this.charts.set('activity', activityChart);
+      }
+    }
+
+    private createEventsChart(canvas: HTMLCanvasElement): any {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      return {
+        canvas,
+        ctx,
+        data: {
+          login: 0,
+          logout: 0,
+          failed_login: 0,
+          permission_denied: 0,
+          suspicious_activity: 0,
+        },
+        update: (newData: any) => {
+          this.data = { ...this.data, ...newData };
+          this.drawEventsChart();
+        },
+        draw: () => {
+          this.drawEventsChart();
+        },
+      };
+    }
+
+    private createActivityChart(canvas: HTMLCanvasElement): any {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      return {
+        canvas,
+        ctx,
+        data: {
+          hours: Array.from({ length: 24 }, (_, i) => i),
+          activity: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100)),
+        },
+        update: (newData: any) => {
+          this.data = { ...this.data, ...newData };
+          this.drawActivityChart();
+        },
+        draw: () => {
+          this.drawActivityChart();
+        },
+      };
+    }
+
+    private drawEventsChart(): void {
+      const chart = this.charts.get('events');
+      if (!chart) return;
+
+      const { ctx, canvas, data } = chart;
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // Limpiar canvas
+      ctx.clearRect(0, 0, width, height);
+
+      // Configurar colores
+      const colors = {
+        login: '#00aa00',
+        logout: '#4488ff',
+        failed_login: '#ff4444',
+        permission_denied: '#ffaa00',
+        suspicious_activity: '#ff6600',
+      };
+
+      // Calcular total
+      const total = Object.values(data).reduce((sum: number, value: any) => sum + value, 0);
+      if (total === 0) return;
+
+      // Dibujar gráfico de barras
+      let x = 0;
+      const barWidth = width / 5;
+      const maxHeight = height - 40;
+
+      Object.entries(data).forEach(([type, value]) => {
+        const barHeight = (value / total) * maxHeight;
+        const y = height - barHeight - 20;
+
+        // Dibujar barra
+        ctx.fillStyle = colors[type as keyof typeof colors];
+        ctx.fillRect(x, y, barWidth - 10, barHeight);
+
+        // Dibujar etiqueta
+        ctx.fillStyle = '#333';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(type.replace('_', ' '), x + barWidth / 2, height - 5);
+        ctx.fillText(value.toString(), x + barWidth / 2, y - 5);
+
+        x += barWidth;
+      });
+    }
+
+    private drawActivityChart(): void {
+      const chart = this.charts.get('activity');
+      if (!chart) return;
+
+      const { ctx, canvas, data } = chart;
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // Limpiar canvas
+      ctx.clearRect(0, 0, width, height);
+
+      // Dibujar gráfico de líneas
+      ctx.strokeStyle = '#4488ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      data.hours.forEach((hour: number, index: number) => {
+        const x = (index / (data.hours.length - 1)) * width;
+        const y = height - (data.activity[index] / 100) * height;
+
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+
+      ctx.stroke();
+
+      // Dibujar puntos
+      ctx.fillStyle = '#4488ff';
+      data.hours.forEach((hour: number, index: number) => {
+        const x = (index / (data.hours.length - 1)) * width;
+        const y = height - (data.activity[index] / 100) * height;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    }
+
+    private startRealTimeUpdates(): void {
+      this.updateInterval = setInterval(() => {
+        this.updateDashboard();
+      }, 10000); // Actualizar cada 10 segundos
+    }
+
+    private async updateDashboard(): Promise<void> {
+      try {
+        // Actualizar métricas de seguridad
+        await this.updateSecurityMetrics();
+
+        // Actualizar eventos de seguridad
+        await this.updateSecurityEvents();
+
+        // Actualizar usuarios
+        await this.updateUsers();
+
+        // Actualizar sesiones
+        await this.updateSessions();
+
+        // Actualizar gráficos
+        this.updateCharts();
+      } catch (error) {
+        console.error('Error updating security dashboard:', error);
+      }
+    }
+
+    private async updateSecurityMetrics(): Promise<void> {
+      const users = security.getUsers();
+      const sessions = security.getSessions();
+      const events = security.getSecurityEvents();
+
+      const activeUsers = users.filter(user => user.isActive).length;
+      const activeSessions = sessions.filter(session => session.isActive).length;
+      const failedAttempts = events.filter(event => event.type === 'failed_login').length;
+      const securityAlerts = events.filter(event => event.type === 'suspicious_activity').length;
+
+      // Actualizar UI
+      this.updateElement('active-users', activeUsers.toString());
+      this.updateElement('active-sessions', activeSessions.toString());
+      this.updateElement('failed-attempts', failedAttempts.toString());
+      this.updateElement('security-alerts', securityAlerts.toString());
+    }
+
+    private async updateSecurityEvents(): Promise<void> {
+      const events = security.getSecurityEvents();
+      const recentEvents = events.slice(-10).reverse();
+
+      const eventsList = document.getElementById('security-events-list');
+      if (eventsList) {
+        if (recentEvents.length === 0) {
+          eventsList.innerHTML = `
+            <div class="event-item">
+              <span class="event-time">-</span>
+              <span class="event-type">-</span>
+              <span class="event-message">No hay eventos recientes</span>
+              <span class="event-result">-</span>
+            </div>
+          `;
+        } else {
+          eventsList.innerHTML = recentEvents.map(event => `
+            <div class="event-item">
+              <span class="event-time">${new Date(event.timestamp).toLocaleTimeString()}</span>
+              <span class="event-type">${event.type.replace('_', ' ')}</span>
+              <span class="event-message">${event.message}</span>
+              <span class="event-result ${event.result}">${event.result}</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    private async updateUsers(): Promise<void> {
+      const users = security.getUsers();
+
+      const usersList = document.getElementById('users-list');
+      if (usersList) {
+        if (users.length === 0) {
+          usersList.innerHTML = `
+            <div class="user-item">
+              <span class="user-name">-</span>
+              <span class="user-role">-</span>
+              <span class="user-status">-</span>
+              <span class="user-last-login">-</span>
+            </div>
+          `;
+        } else {
+          usersList.innerHTML = users.slice(0, 10).map(user => `
+            <div class="user-item">
+              <span class="user-name">${user.name}</span>
+              <span class="user-role">${user.role}</span>
+              <span class="user-status ${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'Activo' : 'Inactivo'}</span>
+              <span class="user-last-login">${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Nunca'}</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    private async updateSessions(): Promise<void> {
+      const sessions = security.getSessions();
+      const activeSessions = sessions.filter(session => session.isActive);
+
+      const sessionsList = document.getElementById('sessions-list');
+      if (sessionsList) {
+        if (activeSessions.length === 0) {
+          sessionsList.innerHTML = `
+            <div class="session-item">
+              <span class="session-user">-</span>
+              <span class="session-ip">-</span>
+              <span class="session-last-activity">-</span>
+              <span class="session-status">-</span>
+            </div>
+          `;
+        } else {
+          sessionsList.innerHTML = activeSessions.slice(0, 10).map(session => `
+            <div class="session-item">
+              <span class="session-user">${session.userId}</span>
+              <span class="session-ip">${session.ipAddress}</span>
+              <span class="session-last-activity">${new Date(session.lastActivity).toLocaleTimeString()}</span>
+              <span class="session-status ${session.isActive ? 'active' : 'inactive'}">${session.isActive ? 'Activa' : 'Inactiva'}</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    private updateCharts(): void {
+      // Actualizar gráfico de eventos
+      const eventsChart = this.charts.get('events');
+      if (eventsChart) {
+        eventsChart.update({
+          login: Math.floor(Math.random() * 20),
+          logout: Math.floor(Math.random() * 15),
+          failed_login: Math.floor(Math.random() * 5),
+          permission_denied: Math.floor(Math.random() * 3),
+          suspicious_activity: Math.floor(Math.random() * 2),
+        });
+      }
+
+      // Actualizar gráfico de actividad
+      const activityChart = this.charts.get('activity');
+      if (activityChart) {
+        activityChart.update({
+          activity: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100)),
+        });
+      }
+    }
+
+    private updateElement(id: string, value: string): void {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+      }
+    }
+
+    private toggle2FA(enabled: boolean): void {
+      console.log('2FA toggled:', enabled);
+    }
+
+    private toggleRateLimiting(enabled: boolean): void {
+      console.log('Rate limiting toggled:', enabled);
+    }
+
+    private toggleSecurityLogging(enabled: boolean): void {
+      console.log('Security logging toggled:', enabled);
+    }
+
+    private toggleAnomalyDetection(enabled: boolean): void {
+      console.log('Anomaly detection toggled:', enabled);
+    }
+
+    private async exportSecurityData(): Promise<void> {
+      try {
+        const data = {
+          timestamp: new Date().toISOString(),
+          users: security.getUsers(),
+          sessions: security.getSessions(),
+          events: security.getSecurityEvents(),
+          config: security.getConfig(),
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `security-data-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error exporting security data:', error);
+      }
+    }
+
+    private openSecuritySettings(): void {
+      console.log('Opening security settings...');
+    }
+
+    public destroy(): void {
+      if (this.updateInterval) {
+        clearInterval(this.updateInterval);
+      }
+    }
+  }
+
+  // Inicializar dashboard cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    new SecurityDashboard();
+  });
+</script>
+
+<style>
+  .security-dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-controls {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .metric-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .metric-card h3 {
+    margin: 0 0 1rem 0;
+    color: var(--color-text-primary);
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: var(--color-surface-secondary);
+    border-radius: var(--border-radius);
+  }
+
+  .metric-label {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .metric-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .chart-card {
+    grid-column: span 2;
+  }
+
+  .events-list,
+  .users-list,
+  .sessions-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .event-item,
+  .user-item,
+  .session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--color-surface-secondary);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--color-info);
+  }
+
+  .event-time,
+  .user-name,
+  .session-user {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .event-type,
+  .user-role,
+  .session-ip {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .event-message {
+    flex: 1;
+    margin: 0 1rem;
+    color: var(--color-text-primary);
+  }
+
+  .event-result {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    color: white;
+  }
+
+  .event-result.success {
+    background: var(--color-success);
+  }
+
+  .event-result.failure {
+    background: var(--color-error);
+  }
+
+  .event-result.warning {
+    background: var(--color-warning);
+  }
+
+  .user-status,
+  .session-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    color: white;
+  }
+
+  .user-status.active,
+  .session-status.active {
+    background: var(--color-success);
+  }
+
+  .user-status.inactive,
+  .session-status.inactive {
+    background: var(--color-error);
+  }
+
+  .user-last-login,
+  .session-last-activity {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  .security-config {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .config-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .config-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--color-text-primary);
+  }
+
+  .config-item input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .chart-card {
+      grid-column: span 1;
+    }
+
+    .metric-grid,
+    .security-config {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

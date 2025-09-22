@@ -1,0 +1,954 @@
+---
+export interface Props {
+  class?: string;
+  defaultTab?: 'login' | 'register' | 'forgot-password';
+  showSocialAuth?: boolean;
+  showForgotPassword?: boolean;
+  showRememberMe?: boolean;
+  showNewsletter?: boolean;
+}
+
+const {
+  class: className = '',
+  defaultTab = 'login',
+  showSocialAuth = true,
+  showForgotPassword = true,
+  showRememberMe = true,
+  showNewsletter = true,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'auth-modal',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} id="auth-modal" {...rest}>
+  <div class="auth-modal-backdrop" id="auth-modal-backdrop"></div>
+  
+  <div class="auth-modal-container">
+    <div class="auth-modal-content">
+      <!-- Header del Modal -->
+      <div class="auth-modal-header">
+        <button class="auth-modal-close" id="auth-modal-close" aria-label="Cerrar modal">
+          <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="auth-modal-logo">
+          <i class="fas fa-heart"></i>
+        </div>
+        
+        <h2 class="auth-modal-title">Bienvenido a Sensus</h2>
+        <p class="auth-modal-subtitle">Tu compañero para el bienestar mental</p>
+      </div>
+
+      <!-- Tabs de Autenticación -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" id="auth-tab-login">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión
+        </button>
+        <button class="auth-tab" data-tab="register" id="auth-tab-register">
+          <i class="fas fa-user-plus"></i>
+          Registrarse
+        </button>
+      </div>
+
+      <!-- Formulario de Inicio de Sesión -->
+      <form id="login-form" class="auth-form active" data-form="login">
+        <div class="auth-form-group">
+          <label for="login-email" class="auth-form-label required">Correo electrónico</label>
+          <input 
+            type="email" 
+            id="login-email" 
+            name="email"
+            class="auth-form-input" 
+            placeholder="tu@email.com"
+            required
+            autocomplete="email"
+          >
+          <div class="auth-form-error" id="login-email-error"></div>
+        </div>
+
+        <div class="auth-form-group">
+          <label for="login-password" class="auth-form-label required">Contraseña</label>
+          <div class="auth-form-input-container">
+            <input 
+              type="password" 
+              id="login-password" 
+              name="password"
+              class="auth-form-input" 
+              placeholder="Tu contraseña"
+              required
+              autocomplete="current-password"
+            >
+            <button type="button" class="auth-form-toggle-password" id="login-toggle-password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="auth-form-error" id="login-password-error"></div>
+        </div>
+
+        {showRememberMe && (
+          <div class="auth-form-checkbox-group">
+            <input type="checkbox" id="remember-me" name="rememberMe" class="auth-form-checkbox">
+            <label for="remember-me" class="auth-form-checkbox-label">
+              Recordarme
+            </label>
+          </div>
+        )}
+
+        <button type="submit" class="auth-form-submit auth-submit" id="login-submit">
+          <i class="fas fa-sign-in-alt"></i>
+          <span class="auth-submit-text">Iniciar Sesión</span>
+          <div class="auth-submit-loading" style="display: none;">
+            <div class="auth-spinner"></div>
+            <span>Iniciando sesión...</span>
+          </div>
+        </button>
+
+        {showForgotPassword && (
+          <div class="auth-form-links">
+            <a href="#" class="auth-form-link" id="forgot-password-link">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+        )}
+
+        {showSocialAuth && (
+          <div class="auth-social-buttons">
+            <div class="auth-social-divider">
+              <span>O continúa con</span>
+            </div>
+            
+            <button type="button" class="auth-social-btn google" id="google-login">
+              <i class="fab fa-google"></i>
+              Google
+            </button>
+            
+            <button type="button" class="auth-social-btn apple" id="apple-login">
+              <i class="fab fa-apple"></i>
+              Apple
+            </button>
+          </div>
+        )}
+      </form>
+
+      <!-- Formulario de Registro -->
+      <form id="register-form" class="auth-form" data-form="register">
+        <div class="auth-form-group double">
+          <div>
+            <label for="register-first-name" class="auth-form-label required">Nombre</label>
+            <input 
+              type="text" 
+              id="register-first-name" 
+              name="firstName"
+              class="auth-form-input" 
+              placeholder="Tu nombre"
+              required
+              autocomplete="given-name"
+            >
+            <div class="auth-form-error" id="register-first-name-error"></div>
+          </div>
+          <div>
+            <label for="register-last-name" class="auth-form-label required">Apellido</label>
+            <input 
+              type="text" 
+              id="register-last-name" 
+              name="lastName"
+              class="auth-form-input" 
+              placeholder="Tu apellido"
+              required
+              autocomplete="family-name"
+            >
+            <div class="auth-form-error" id="register-last-name-error"></div>
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label for="register-email" class="auth-form-label required">Correo electrónico</label>
+          <input 
+            type="email" 
+            id="register-email" 
+            name="email"
+            class="auth-form-input" 
+            placeholder="tu@email.com"
+            required
+            autocomplete="email"
+          >
+          <div class="auth-form-error" id="register-email-error"></div>
+        </div>
+
+        <div class="auth-form-group">
+          <label for="register-birth-date" class="auth-form-label required">Fecha de nacimiento</label>
+          <input 
+            type="date" 
+            id="register-birth-date" 
+            name="birthDate"
+            class="auth-form-input" 
+            required
+          >
+          <div class="auth-form-error" id="register-birth-date-error"></div>
+        </div>
+
+        <div class="auth-form-group">
+          <label for="register-password" class="auth-form-label required">Contraseña</label>
+          <div class="auth-form-input-container">
+            <input 
+              type="password" 
+              id="register-password" 
+              name="password"
+              class="auth-form-input" 
+              placeholder="Mínimo 8 caracteres"
+              required
+              autocomplete="new-password"
+            >
+            <button type="button" class="auth-form-toggle-password" id="register-toggle-password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="auth-form-error" id="register-password-error"></div>
+          <div class="auth-form-help" id="password-strength"></div>
+        </div>
+
+        <div class="auth-form-group">
+          <label for="register-confirm-password" class="auth-form-label required">Confirmar contraseña</label>
+          <div class="auth-form-input-container">
+            <input 
+              type="password" 
+              id="register-confirm-password" 
+              name="confirmPassword"
+              class="auth-form-input" 
+              placeholder="Repite tu contraseña"
+              required
+              autocomplete="new-password"
+            >
+            <button type="button" class="auth-form-toggle-password" id="register-confirm-toggle-password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="auth-form-error" id="register-confirm-password-error"></div>
+        </div>
+
+        <div class="auth-form-checkbox-group">
+          <input type="checkbox" id="accept-terms" name="acceptTerms" class="auth-form-checkbox" required>
+          <label for="accept-terms" class="auth-form-checkbox-label">
+            Acepto los <a href="/terminos-uso" class="auth-form-link" target="_blank">términos y condiciones</a>
+          </label>
+          <div class="auth-form-error" id="accept-terms-error"></div>
+        </div>
+
+        {showNewsletter && (
+          <div class="auth-form-checkbox-group">
+            <input type="checkbox" id="newsletter" name="newsletter" class="auth-form-checkbox">
+            <label for="newsletter" class="auth-form-checkbox-label">
+              Quiero recibir consejos de bienestar por email
+            </label>
+          </div>
+        )}
+
+        <button type="submit" class="auth-form-submit auth-submit" id="register-submit">
+          <i class="fas fa-user-plus"></i>
+          <span class="auth-submit-text">Crear Cuenta</span>
+          <div class="auth-submit-loading" style="display: none;">
+            <div class="auth-spinner"></div>
+            <span>Creando cuenta...</span>
+          </div>
+        </button>
+
+        {showSocialAuth && (
+          <div class="auth-social-buttons">
+            <div class="auth-social-divider">
+              <span>O regístrate con</span>
+            </div>
+            
+            <button type="button" class="auth-social-btn google" id="google-register">
+              <i class="fab fa-google"></i>
+              Google
+            </button>
+            
+            <button type="button" class="auth-social-btn apple" id="apple-register">
+              <i class="fab fa-apple"></i>
+              Apple
+            </button>
+          </div>
+        )}
+      </form>
+
+      <!-- Formulario de Recuperación de Contraseña -->
+      <form id="forgot-password-form" class="auth-form" data-form="forgot-password">
+        <div class="auth-form-group">
+          <label for="forgot-email" class="auth-form-label required">Correo electrónico</label>
+          <input 
+            type="email" 
+            id="forgot-email" 
+            name="email"
+            class="auth-form-input" 
+            placeholder="tu@email.com"
+            required
+            autocomplete="email"
+          >
+          <div class="auth-form-error" id="forgot-email-error"></div>
+        </div>
+
+        <button type="submit" class="auth-form-submit auth-submit" id="forgot-submit">
+          <i class="fas fa-paper-plane"></i>
+          <span class="auth-submit-text">Enviar enlace de recuperación</span>
+          <div class="auth-submit-loading" style="display: none;">
+            <div class="auth-spinner"></div>
+            <span>Enviando...</span>
+          </div>
+        </button>
+
+        <div class="auth-form-links">
+          <a href="#" class="auth-form-link" id="back-to-login">
+            <i class="fas fa-arrow-left"></i>
+            Volver al inicio de sesión
+          </a>
+        </div>
+      </form>
+
+      <!-- Mensajes de estado -->
+      <div class="auth-messages" id="auth-messages"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .auth-modal {
+    @apply fixed inset-0 z-50 hidden;
+  }
+
+  .auth-modal.active {
+    @apply block;
+  }
+
+  .auth-modal-backdrop {
+    @apply absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm;
+    @apply transition-opacity duration-300 ease-out;
+  }
+
+  .auth-modal-container {
+    @apply absolute inset-0 flex items-center justify-center p-4;
+  }
+
+  .auth-modal-content {
+    @apply bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden;
+    @apply transform transition-all duration-300 ease-out;
+  }
+
+  .auth-modal.active .auth-modal-content {
+    @apply scale-100 opacity-100;
+  }
+
+  .auth-modal-header {
+    @apply relative p-6 text-center border-b border-gray-200;
+  }
+
+  .auth-modal-close {
+    @apply absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600;
+    @apply transition-colors duration-200 rounded-lg hover:bg-gray-100;
+  }
+
+  .auth-modal-logo {
+    @apply w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600;
+    @apply rounded-2xl flex items-center justify-center text-white text-2xl;
+    @apply mx-auto mb-4;
+  }
+
+  .auth-modal-title {
+    @apply text-2xl font-bold text-gray-900 mb-2;
+  }
+
+  .auth-modal-subtitle {
+    @apply text-gray-600;
+  }
+
+  /* Tabs */
+  .auth-tabs {
+    @apply flex border-b border-gray-200;
+  }
+
+  .auth-tab {
+    @apply flex-1 py-4 px-6 text-center font-medium text-gray-600;
+    @apply border-b-2 border-transparent transition-all duration-200;
+    @apply hover:text-gray-900 hover:bg-gray-50;
+  }
+
+  .auth-tab.active {
+    @apply text-blue-600 border-blue-600 bg-blue-50;
+  }
+
+  .auth-tab i {
+    @apply mr-2;
+  }
+
+  /* Formularios */
+  .auth-form {
+    @apply p-6 space-y-4 hidden;
+  }
+
+  .auth-form.active {
+    @apply block;
+  }
+
+  .auth-form-group {
+    @apply space-y-2;
+  }
+
+  .auth-form-group.double {
+    @apply grid grid-cols-2 gap-4;
+  }
+
+  .auth-form-label {
+    @apply block text-sm font-medium text-gray-700;
+  }
+
+  .auth-form-label.required::after {
+    content: ' *';
+    @apply text-red-500;
+  }
+
+  .auth-form-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply transition-all duration-200;
+  }
+
+  .auth-form-input:invalid {
+    @apply border-red-300;
+  }
+
+  .auth-form-input-container {
+    @apply relative;
+  }
+
+  .auth-form-toggle-password {
+    @apply absolute right-3 top-1/2 transform -translate-y-1/2;
+    @apply text-gray-400 hover:text-gray-600 transition-colors duration-200;
+  }
+
+  .auth-form-error {
+    @apply text-sm text-red-600 hidden;
+  }
+
+  .auth-form-help {
+    @apply text-sm text-gray-500;
+  }
+
+  .auth-form-checkbox-group {
+    @apply flex items-start space-x-3;
+  }
+
+  .auth-form-checkbox {
+    @apply mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded;
+    @apply focus:ring-blue-500;
+  }
+
+  .auth-form-checkbox-label {
+    @apply text-sm text-gray-700 leading-5;
+  }
+
+  .auth-form-checkbox-label a {
+    @apply text-blue-600 hover:text-blue-800;
+  }
+
+  /* Botón de envío */
+  .auth-form-submit {
+    @apply w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white;
+    @apply py-3 px-4 rounded-lg font-medium transition-all duration-200;
+    @apply hover:from-blue-700 hover:to-purple-700 hover:shadow-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .auth-submit-loading {
+    @apply flex items-center justify-center space-x-2;
+  }
+
+  .auth-spinner {
+    @apply w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin;
+  }
+
+  /* Botones sociales */
+  .auth-social-buttons {
+    @apply space-y-3;
+  }
+
+  .auth-social-divider {
+    @apply relative text-center;
+  }
+
+  .auth-social-divider::before {
+    content: '';
+    @apply absolute top-1/2 left-0 right-0 h-px bg-gray-300;
+  }
+
+  .auth-social-divider span {
+    @apply bg-white px-4 text-sm text-gray-500;
+  }
+
+  .auth-social-btn {
+    @apply w-full py-3 px-4 rounded-lg font-medium transition-all duration-200;
+    @apply border border-gray-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .auth-social-btn.google {
+    @apply bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-500;
+  }
+
+  .auth-social-btn.apple {
+    @apply bg-black text-white hover:bg-gray-900 focus:ring-gray-500;
+  }
+
+  .auth-social-btn i {
+    @apply mr-2;
+  }
+
+  /* Enlaces */
+  .auth-form-links {
+    @apply text-center space-y-2;
+  }
+
+  .auth-form-link {
+    @apply text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200;
+  }
+
+  /* Mensajes */
+  .auth-messages {
+    @apply p-4 space-y-2;
+  }
+
+  .auth-message {
+    @apply p-3 rounded-lg text-sm;
+  }
+
+  .auth-message.success {
+    @apply bg-green-50 text-green-800 border border-green-200;
+  }
+
+  .auth-message.error {
+    @apply bg-red-50 text-red-800 border border-red-200;
+  }
+
+  .auth-message.warning {
+    @apply bg-yellow-50 text-yellow-800 border border-yellow-200;
+  }
+
+  .auth-message.info {
+    @apply bg-blue-50 text-blue-800 border border-blue-200;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .auth-modal-container {
+      @apply p-2;
+    }
+    
+    .auth-modal-content {
+      @apply max-h-[95vh];
+    }
+    
+    .auth-modal-header,
+    .auth-form {
+      @apply p-4;
+    }
+    
+    .auth-form-group.double {
+      @apply grid-cols-1 gap-3;
+    }
+  }
+
+  /* Modo oscuro */
+  [data-theme="dark"] .auth-modal-content {
+    @apply bg-gray-800 border border-gray-700;
+  }
+
+  [data-theme="dark"] .auth-modal-header {
+    @apply border-gray-700;
+  }
+
+  [data-theme="dark"] .auth-modal-title {
+    @apply text-gray-100;
+  }
+
+  [data-theme="dark"] .auth-modal-subtitle {
+    @apply text-gray-400;
+  }
+
+  [data-theme="dark"] .auth-tabs {
+    @apply border-gray-700;
+  }
+
+  [data-theme="dark"] .auth-tab {
+    @apply text-gray-400 hover:text-gray-200 hover:bg-gray-700;
+  }
+
+  [data-theme="dark"] .auth-tab.active {
+    @apply text-blue-400 border-blue-400 bg-blue-900;
+  }
+
+  [data-theme="dark"] .auth-form-input {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  [data-theme="dark"] .auth-form-input:focus {
+    @apply ring-blue-400;
+  }
+
+  [data-theme="dark"] .auth-form-label {
+    @apply text-gray-300;
+  }
+
+  [data-theme="dark"] .auth-form-checkbox-label {
+    @apply text-gray-300;
+  }
+
+  [data-theme="dark"] .auth-social-btn.google {
+    @apply bg-gray-700 text-gray-200 border-gray-600 hover:bg-gray-600;
+  }
+</style>
+
+<script>
+  class AuthModal {
+    constructor() {
+      this.modal = document.getElementById('auth-modal');
+      this.backdrop = document.getElementById('auth-modal-backdrop');
+      this.closeBtn = document.getElementById('auth-modal-close');
+      this.tabs = document.querySelectorAll('.auth-tab');
+      this.forms = document.querySelectorAll('.auth-form');
+      this.currentTab = 'login';
+      this.isOpen = false;
+      
+      this.init();
+    }
+    
+    init() {
+      this.setupEventListeners();
+      this.setupFormValidation();
+      this.setupPasswordToggles();
+    }
+    
+    setupEventListeners() {
+      // Cerrar modal
+      this.closeBtn?.addEventListener('click', () => this.close());
+      this.backdrop?.addEventListener('click', () => this.close());
+      
+      // Cambiar tabs
+      this.tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.dataset.tab;
+          this.switchTab(tabName);
+        });
+      });
+      
+      // Enlaces especiales
+      document.getElementById('forgot-password-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchTab('forgot-password');
+      });
+      
+      document.getElementById('back-to-login')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchTab('login');
+      });
+      
+      // Cerrar con Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen) {
+          this.close();
+        }
+      });
+    }
+    
+    setupFormValidation() {
+      // Validación en tiempo real
+      const inputs = document.querySelectorAll('.auth-form-input');
+      inputs.forEach(input => {
+        input.addEventListener('blur', () => this.validateField(input));
+        input.addEventListener('input', () => this.clearFieldError(input));
+      });
+      
+      // Validación de contraseña
+      const passwordInput = document.getElementById('register-password');
+      passwordInput?.addEventListener('input', () => this.checkPasswordStrength());
+      
+      // Validación de confirmación de contraseña
+      const confirmPasswordInput = document.getElementById('register-confirm-password');
+      confirmPasswordInput?.addEventListener('input', () => this.validatePasswordMatch());
+    }
+    
+    setupPasswordToggles() {
+      const toggleButtons = document.querySelectorAll('.auth-form-toggle-password');
+      toggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const input = button.parentElement?.querySelector('input');
+          if (input) {
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            button.querySelector('i')?.classList.toggle('fa-eye', !isPassword);
+            button.querySelector('i')?.classList.toggle('fa-eye-slash', isPassword);
+          }
+        });
+      });
+    }
+    
+    open(tab = 'login') {
+      this.modal?.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      this.isOpen = true;
+      this.switchTab(tab);
+      
+      // Focus en el primer input
+      setTimeout(() => {
+        const firstInput = this.modal?.querySelector('.auth-form.active input');
+        if (firstInput) {
+          (firstInput as HTMLInputElement).focus();
+        }
+      }, 100);
+    }
+    
+    close() {
+      this.modal?.classList.remove('active');
+      document.body.style.overflow = '';
+      this.isOpen = false;
+      this.clearForms();
+    }
+    
+    switchTab(tabName) {
+      // Actualizar tabs
+      this.tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+      });
+      
+      // Actualizar formularios
+      this.forms.forEach(form => {
+        form.classList.toggle('active', form.dataset.form === tabName);
+      });
+      
+      this.currentTab = tabName;
+      this.clearForms();
+    }
+    
+    validateField(input) {
+      const value = input.value.trim();
+      const fieldName = input.name;
+      const errorElement = document.getElementById(`${fieldName}-error`);
+      
+      let isValid = true;
+      let errorMessage = '';
+      
+      // Validaciones específicas
+      switch (fieldName) {
+        case 'email':
+          if (!value) {
+            errorMessage = 'El correo electrónico es requerido';
+            isValid = false;
+          } else if (!this.isValidEmail(value)) {
+            errorMessage = 'Ingresa un correo electrónico válido';
+            isValid = false;
+          }
+          break;
+          
+        case 'password':
+          if (!value) {
+            errorMessage = 'La contraseña es requerida';
+            isValid = false;
+          } else if (value.length < 8) {
+            errorMessage = 'La contraseña debe tener al menos 8 caracteres';
+            isValid = false;
+          }
+          break;
+          
+        case 'confirmPassword':
+          const password = document.getElementById('register-password')?.value;
+          if (!value) {
+            errorMessage = 'Confirma tu contraseña';
+            isValid = false;
+          } else if (value !== password) {
+            errorMessage = 'Las contraseñas no coinciden';
+            isValid = false;
+          }
+          break;
+          
+        case 'firstName':
+        case 'lastName':
+          if (!value) {
+            errorMessage = 'Este campo es requerido';
+            isValid = false;
+          }
+          break;
+          
+        case 'birthDate':
+          if (!value) {
+            errorMessage = 'La fecha de nacimiento es requerida';
+            isValid = false;
+          } else if (this.calculateAge(value) < 13) {
+            errorMessage = 'Debes tener al menos 13 años';
+            isValid = false;
+          }
+          break;
+      }
+      
+      // Mostrar/ocultar error
+      if (errorElement) {
+        if (isValid) {
+          errorElement.classList.add('hidden');
+          input.classList.remove('border-red-300');
+        } else {
+          errorElement.textContent = errorMessage;
+          errorElement.classList.remove('hidden');
+          input.classList.add('border-red-300');
+        }
+      }
+      
+      return isValid;
+    }
+    
+    clearFieldError(input) {
+      const fieldName = input.name;
+      const errorElement = document.getElementById(`${fieldName}-error`);
+      
+      if (errorElement) {
+        errorElement.classList.add('hidden');
+        input.classList.remove('border-red-300');
+      }
+    }
+    
+    isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+    
+    calculateAge(birthDate) {
+      const today = new Date();
+      const birth = new Date(birthDate);
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      
+      return age;
+    }
+    
+    checkPasswordStrength() {
+      const password = document.getElementById('register-password')?.value;
+      const strengthElement = document.getElementById('password-strength');
+      
+      if (!strengthElement || !password) return;
+      
+      let strength = 0;
+      let feedback = [];
+      
+      if (password.length >= 8) strength++;
+      else feedback.push('Al menos 8 caracteres');
+      
+      if (/[a-z]/.test(password)) strength++;
+      else feedback.push('Una letra minúscula');
+      
+      if (/[A-Z]/.test(password)) strength++;
+      else feedback.push('Una letra mayúscula');
+      
+      if (/[0-9]/.test(password)) strength++;
+      else feedback.push('Un número');
+      
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+      else feedback.push('Un carácter especial');
+      
+      const strengthText = ['Muy débil', 'Débil', 'Regular', 'Fuerte', 'Muy fuerte'][strength];
+      const strengthColor = ['text-red-500', 'text-orange-500', 'text-yellow-500', 'text-blue-500', 'text-green-500'][strength];
+      
+      strengthElement.innerHTML = `
+        <div class="flex items-center space-x-2">
+          <span class="text-sm ${strengthColor}">${strengthText}</span>
+          <div class="flex space-x-1">
+            ${Array.from({length: 5}, (_, i) => 
+              `<div class="w-2 h-2 rounded-full ${i < strength ? 'bg-current' : 'bg-gray-300'}"></div>`
+            ).join('')}
+          </div>
+        </div>
+        ${feedback.length > 0 ? `<div class="text-xs text-gray-500 mt-1">Falta: ${feedback.join(', ')}</div>` : ''}
+      `;
+    }
+    
+    validatePasswordMatch() {
+      const password = document.getElementById('register-password')?.value;
+      const confirmPassword = document.getElementById('register-confirm-password')?.value;
+      const errorElement = document.getElementById('register-confirm-password-error');
+      
+      if (confirmPassword && password !== confirmPassword) {
+        if (errorElement) {
+          errorElement.textContent = 'Las contraseñas no coinciden';
+          errorElement.classList.remove('hidden');
+        }
+        return false;
+      } else {
+        if (errorElement) {
+          errorElement.classList.add('hidden');
+        }
+        return true;
+      }
+    }
+    
+    clearForms() {
+      this.forms.forEach(form => {
+        form.reset();
+        const errors = form.querySelectorAll('.auth-form-error');
+        errors.forEach(error => error.classList.add('hidden'));
+        const inputs = form.querySelectorAll('.auth-form-input');
+        inputs.forEach(input => input.classList.remove('border-red-300'));
+      });
+      
+      // Limpiar mensajes
+      const messagesElement = document.getElementById('auth-messages');
+      if (messagesElement) {
+        messagesElement.innerHTML = '';
+      }
+    }
+    
+    showMessage(message, type = 'info') {
+      const messagesElement = document.getElementById('auth-messages');
+      if (!messagesElement) return;
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `auth-message ${type}`;
+      messageDiv.textContent = message;
+      
+      messagesElement.appendChild(messageDiv);
+      
+      // Auto-remove después de 5 segundos
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+    
+    setLoading(formName, loading = true) {
+      const submitBtn = document.getElementById(`${formName}-submit`);
+      if (!submitBtn) return;
+      
+      const textElement = submitBtn.querySelector('.auth-submit-text');
+      const loadingElement = submitBtn.querySelector('.auth-submit-loading');
+      
+      if (loading) {
+        submitBtn.disabled = true;
+        textElement?.classList.add('hidden');
+        loadingElement?.classList.remove('hidden');
+      } else {
+        submitBtn.disabled = false;
+        textElement?.classList.remove('hidden');
+        loadingElement?.classList.add('hidden');
+      }
+    }
+  }
+  
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    const authModal = new AuthModal();
+    
+    // Exponer globalmente
+    window.authModal = authModal;
+  });
+</script>

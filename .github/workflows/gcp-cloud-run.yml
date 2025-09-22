@@ -1,0 +1,253 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  GCP_PROJECT_ID: sensus-app
+  GCP_REGION: us-central1
+  GAR_LOCATION: us-central1
+  SERVICE_NAME: sensus-app
+  ARTIFACT_REGISTRY: sensus-registry
+
+jobs:
+  build-and-push:
+    name: Build and Push to GAR
+    runs-on: ubuntu-latest
+    outputs:
+      image-uri: ${{ steps.build-image.outputs.image }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        
+      - name: Configure Docker to use gcloud as a credential helper
+        run: |
+          gcloud auth configure-docker $GAR_LOCATION-docker.pkg.dev
+          
+      - name: Build and push image to GAR
+        id: build-image
+        run: |
+          # Build image
+          docker build -t $GAR_LOCATION-docker.pkg.dev/$GCP_PROJECT_ID/$ARTIFACT_REGISTRY/$SERVICE_NAME:${{ github.sha }} .
+          
+          # Push image
+          docker push $GAR_LOCATION-docker.pkg.dev/$GCP_PROJECT_ID/$ARTIFACT_REGISTRY/$SERVICE_NAME:${{ github.sha }}
+          
+          # Set output
+          echo "image=$GAR_LOCATION-docker.pkg.dev/$GCP_PROJECT_ID/$ARTIFACT_REGISTRY/$SERVICE_NAME:${{ github.sha }}" >> $GITHUB_OUTPUT
+          
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.build-image.outputs.image }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  deploy-staging:
+    name: Deploy to Cloud Run Staging
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloud-run@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}-staging
+          region: ${{ env.GCP_REGION }}
+          image: ${{ needs.build-and-push.outputs.image-uri }}
+          env_vars: |
+            NODE_ENV=staging
+            PORT=3000
+            APP_NAME=Sensus
+            APP_VERSION=${{ github.sha }}
+            APP_URL=https://${{ env.SERVICE_NAME }}-staging-${{ github.run_number }}-uc.a.run.app
+            API_URL=https://api-${{ env.SERVICE_NAME }}-staging-${{ github.run_number }}-uc.a.run.app
+          secret_env_vars: |
+            FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
+            FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }}
+            FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+            FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}
+            FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+            FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}
+            FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}
+            GA_TRACKING_ID=${{ secrets.GA_TRACKING_ID }}
+            STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }}
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+          flags: '--max-instances=10 --min-instances=1 --cpu=1 --memory=1Gi --port=3000 --allow-unauthenticated'
+          
+      - name: Run health checks
+        run: |
+          # Get the service URL
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }}-staging --region=${{ env.GCP_REGION }} --format="value(status.url)")
+          
+          # Run health check
+          curl -f $SERVICE_URL/health || exit 1
+          
+      - name: Notify staging deployment
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          text: '🚀 Sensus deployed to Cloud Run staging successfully!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  deploy-production:
+    name: Deploy to Cloud Run Production
+    runs-on: ubuntu-latest
+    needs: [build-and-push, deploy-staging]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloud-run@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ needs.build-and-push.outputs.image-uri }}
+          env_vars: |
+            NODE_ENV=production
+            PORT=3000
+            APP_NAME=Sensus
+            APP_VERSION=${{ github.sha }}
+            APP_URL=https://sensus.app
+            API_URL=https://api.sensus.app
+            CORS_ORIGIN=https://sensus.app
+            CDN_URL=https://cdn.sensus.app
+            CDN_ENABLED=true
+            LOG_LEVEL=info
+            CACHE_TTL=3600
+            RATE_LIMIT_WINDOW=900000
+            RATE_LIMIT_MAX=100
+            PWA_ENABLED=true
+            NOTIFICATIONS_ENABLED=true
+            OFFLINE_MODE_ENABLED=true
+            DARK_MODE_ENABLED=true
+            BETA_FEATURES_ENABLED=false
+          secret_env_vars: |
+            FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
+            FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }}
+            FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+            FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}
+            FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+            FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}
+            FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}
+            GA_TRACKING_ID=${{ secrets.GA_TRACKING_ID }}
+            HOTJAR_SITE_ID=${{ secrets.HOTJAR_SITE_ID }}
+            MIXPANEL_TOKEN=${{ secrets.MIXPANEL_TOKEN }}
+            STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }}
+            STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+            SENDGRID_FROM_NAME=${{ secrets.SENDGRID_FROM_NAME }}
+            SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
+            DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+            GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}
+            PROMETHEUS_RETENTION=${{ secrets.PROMETHEUS_RETENTION }}
+          flags: '--max-instances=100 --min-instances=2 --cpu=2 --memory=2Gi --port=3000 --allow-unauthenticated'
+          
+      - name: Run production health checks
+        run: |
+          # Get the service URL
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} --region=${{ env.GCP_REGION }} --format="value(status.url)")
+          
+          # Run health check
+          curl -f $SERVICE_URL/health || exit 1
+          
+          # Run production tests
+          curl -f $SERVICE_URL/api/health || exit 1
+          
+      - name: Notify production deployment
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          text: '🎉 Sensus deployed to Cloud Run production successfully!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          
+      - name: Create GitHub release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            ## Changes
+            - Automated deployment from commit ${{ github.sha }}
+            - Cloud Run Image: ${{ needs.build-and-push.outputs.image-uri }}
+            - Environment: Production
+            
+            ## Deployment Details
+            - **GCP Project**: ${{ env.GCP_PROJECT_ID }}
+            - **Service Name**: ${{ env.SERVICE_NAME }}
+            - **Region**: ${{ env.GCP_REGION }}
+            - **Deployed At**: ${{ github.event.head_commit.timestamp }}
+            - **Deployed By**: ${{ github.actor }}
+          draft: false
+          prerelease: false

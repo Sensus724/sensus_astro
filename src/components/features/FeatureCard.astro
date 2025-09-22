@@ -1,0 +1,99 @@
+---
+export interface Props {
+  icon: string;
+  title: string;
+  description: string;
+  highlight?: boolean;
+  class?: string;
+}
+
+const {
+  icon,
+  title,
+  description,
+  highlight = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'feature-card',
+  highlight ? 'feature-card-highlight' : '',
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <div class="feature-icon">
+    <i class={`fas ${icon}`}></i>
+  </div>
+  
+  <div class="feature-content">
+    <h3 class="feature-title">{title}</h3>
+    <p class="feature-description">{description}</p>
+  </div>
+</div>
+
+<style>
+  .feature-card {
+    @apply bg-white rounded-xl p-6 shadow-lg border border-gray-100;
+    @apply hover:shadow-xl transition-all duration-300;
+    @apply transform hover:-translate-y-1;
+  }
+
+  .feature-card-highlight {
+    @apply bg-gradient-to-br from-blue-50 to-purple-50;
+    @apply border-blue-200;
+  }
+
+  .feature-icon {
+    @apply w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600;
+    @apply rounded-xl flex items-center justify-center text-white text-2xl;
+    @apply mb-4 shadow-lg;
+  }
+
+  .feature-card-highlight .feature-icon {
+    @apply from-blue-600 to-purple-700;
+  }
+
+  .feature-content {
+    @apply space-y-3;
+  }
+
+  .feature-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .feature-description {
+    @apply text-gray-600 leading-relaxed;
+  }
+
+  /* Animaciones */
+  .feature-card {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .feature-card:hover .feature-icon {
+    @apply transform scale-110;
+  }
+
+  /* Estados de focus para accesibilidad */
+  .feature-card:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .feature-card {
+      @apply p-4;
+    }
+    
+    .feature-icon {
+      @apply w-12 h-12 text-xl;
+    }
+    
+    .feature-title {
+      @apply text-lg;
+    }
+  }
+</style>

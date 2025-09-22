@@ -12,9 +12,7 @@ router.use(authMiddleware.verifyUserExists);
 router.post('/', evaluationController.createEvaluation);
 router.get('/', evaluationController.getEvaluations);
 router.get('/stats', evaluationController.getStats);
-router.get('/latest/:testType', evaluationController.getLatestEvaluation);
-router.get('/compare/:testType', evaluationController.compareEvaluations);
-router.get('/type/:testType', evaluationController.getEvaluationsByTestType);
+router.get('/latest', evaluationController.getLatestEvaluation);
 router.get('/:evaluationId', evaluationController.getEvaluationById);
 
 export default router;
