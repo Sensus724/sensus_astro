@@ -5,8 +5,12 @@ import FirebaseService from '../services/firebase.service';
 
 interface AuthenticatedRequest extends Request {
   user?: {
-    uid: string;
+    userId: string;
     email: string;
+    role?: string;
+    permissions?: string[];
+    sessionId?: string;
+    lastActivity?: Date;
   };
 }
 
@@ -50,15 +54,19 @@ class AuthMiddleware {
 
       // Agregar información del usuario a la request
       req.user = {
-        uid: decoded.userId,
-        email: decoded.email
+        userId: decoded.userId,
+        email: decoded.email,
+        role: decoded.role || 'user',
+        permissions: decoded.permissions || [],
+        sessionId: decoded.sessionId,
+        lastActivity: new Date()
       };
 
       logger.info(`Token verificado para usuario: ${decoded.userId}`);
       next();
 
     } catch (error) {
-      if (error.name === 'JsonWebTokenError') {
+      if ((error as any).name === 'JsonWebTokenError') {
         res.status(401).json({
           success: false,
           error: 'Token inválido',
@@ -67,7 +75,7 @@ class AuthMiddleware {
         return;
       }
 
-      if (error.name === 'TokenExpiredError') {
+      if ((error as any).name === 'TokenExpiredError') {
         res.status(401).json({
           success: false,
           error: 'Token expirado',
@@ -88,7 +96,7 @@ class AuthMiddleware {
   // Verificar que el usuario existe en la base de datos
   async verifyUserExists(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
 
       if (!userId) {
         res.status(401).json({
@@ -113,7 +121,7 @@ class AuthMiddleware {
 
       const userData = userDoc.data();
       
-      if (!userData.isActive) {
+      if (userData && !userData.isActive) {
         res.status(403).json({
           success: false,
           error: 'Cuenta desactivada',
@@ -158,8 +166,12 @@ class AuthMiddleware {
       
       if (decoded.userId && decoded.email) {
         req.user = {
-          uid: decoded.userId,
-          email: decoded.email
+          userId: decoded.userId,
+          email: decoded.email,
+          role: decoded.role || 'user',
+          permissions: decoded.permissions || [],
+          sessionId: decoded.sessionId,
+          lastActivity: new Date()
         };
       }
 
@@ -167,7 +179,7 @@ class AuthMiddleware {
 
     } catch (error) {
       // Si hay error con el token, continuar sin autenticación
-      logger.warn('Token opcional inválido:', error.message);
+      logger.warn('Token opcional inválido:', (error as Error).message);
       next();
     }
   }
@@ -176,7 +188,7 @@ class AuthMiddleware {
   async verifyRole(requiredRoles: string[]) {
     return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
       try {
-        const userId = req.user?.uid;
+        const userId = req.user?.userId;
 
         if (!userId) {
           res.status(401).json({
@@ -200,7 +212,7 @@ class AuthMiddleware {
         }
 
         const userData = userDoc.data();
-        const userRole = userData.role || 'user';
+        const userRole = userData?.role || 'user';
 
         if (!requiredRoles.includes(userRole)) {
           res.status(403).json({

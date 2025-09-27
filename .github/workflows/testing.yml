@@ -1,0 +1,331 @@
+name: Testing Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # Job para tests unitarios
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run unit tests
+      run: npm run test:unit
+      
+    - name: Generate coverage report
+      run: npm run test:coverage
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  # Job para tests de integración
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run integration tests
+      run: npm run test:integration
+      env:
+        REDIS_URL: redis://localhost:6379
+        NODE_ENV: test
+
+  # Job para tests E2E
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Start application
+      run: npm run preview &
+      
+    - name: Wait for application
+      run: npx wait-on http://localhost:4321
+      
+    - name: Run E2E tests
+      run: npm run test:e2e
+      
+    - name: Upload E2E videos
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: cypress-videos
+        path: cypress/videos
+        
+    - name: Upload E2E screenshots
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: cypress-screenshots
+        path: cypress/screenshots
+
+  # Job para tests de accesibilidad
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Start application
+      run: npm run preview &
+      
+    - name: Wait for application
+      run: npx wait-on http://localhost:4321
+      
+    - name: Run accessibility tests
+      run: npm run test:a11y
+      
+    - name: Upload accessibility report
+      uses: actions/upload-artifact@v3
+      with:
+        name: accessibility-report
+        path: reports/accessibility.html
+
+  # Job para tests de rendimiento
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Start application
+      run: npm run preview &
+      
+    - name: Wait for application
+      run: npx wait-on http://localhost:4321
+      
+    - name: Run performance tests
+      run: npm run test:performance
+      
+    - name: Upload performance report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-report
+        path: reports/performance.html
+
+  # Job para tests de seguridad
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run security audit
+      run: npm audit --audit-level moderate
+      
+    - name: Run dependency check
+      run: npm run security:check
+      
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-report
+        path: reports/security.json
+
+  # Job para tests de compatibilidad
+  compatibility-tests:
+    name: Compatibility Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Start application
+      run: npm run preview &
+      
+    - name: Wait for application
+      run: npx wait-on http://localhost:4321
+      
+    - name: Run compatibility tests
+      run: npm run test:compatibility --browser=${{ matrix.browser }}
+      
+    - name: Upload compatibility report
+      uses: actions/upload-artifact@v3
+      with:
+        name: compatibility-report-${{ matrix.browser }}
+        path: reports/compatibility-${{ matrix.browser }}.html
+
+  # Job para reporte final
+  test-report:
+    name: Test Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, e2e-tests, accessibility-tests, performance-tests, security-tests, compatibility-tests]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      
+    - name: Generate test report
+      run: npm run test:report
+      
+    - name: Upload final report
+      uses: actions/upload-artifact@v3
+      with:
+        name: final-test-report
+        path: reports/
+        
+    - name: Comment PR with test results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Leer resultados de tests
+          const results = {
+            unit: '${{ needs.unit-tests.result }}',
+            integration: '${{ needs.integration-tests.result }}',
+            e2e: '${{ needs.e2e-tests.result }}',
+            accessibility: '${{ needs.accessibility-tests.result }}',
+            performance: '${{ needs.performance-tests.result }}',
+            security: '${{ needs.security-tests.result }}',
+            compatibility: '${{ needs.compatibility-tests.result }}'
+          };
+          
+          // Generar comentario
+          const comment = `## 🧪 Test Results
+          
+          | Test Type | Status |
+          |-----------|--------|
+          | Unit Tests | ${results.unit === 'success' ? '✅ Passed' : '❌ Failed'} |
+          | Integration Tests | ${results.integration === 'success' ? '✅ Passed' : '❌ Failed'} |
+          | E2E Tests | ${results.e2e === 'success' ? '✅ Passed' : '❌ Failed'} |
+          | Accessibility Tests | ${results.accessibility === 'success' ? '✅ Passed' : '❌ Failed'} |
+          | Performance Tests | ${results.performance === 'success' ? '✅ Passed' : '❌ Failed'} |
+          | Security Tests | ${results.security === 'success' ? '✅ Passed' : '❌ Failed'} |
+          | Compatibility Tests | ${results.compatibility === 'success' ? '✅ Passed' : '❌ Failed'} |
+          
+          ${Object.values(results).every(r => r === 'success') ? '🎉 All tests passed!' : '⚠️ Some tests failed. Please check the logs.'}
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+

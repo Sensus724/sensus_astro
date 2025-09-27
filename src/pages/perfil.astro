@@ -1,0 +1,451 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Mi Perfil - Sensus" description="Gestiona tu perfil y configuración personal en Sensus">
+  <main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <!-- Header del Perfil -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+        <div class="flex items-center space-x-6">
+          <div class="relative">
+            <img 
+              id="profile-avatar" 
+              src="/assets/images/default-avatar.jpg" 
+              alt="Avatar del usuario"
+              class="w-24 h-24 rounded-full object-cover border-4 border-indigo-200"
+            >
+            <button 
+              id="change-avatar-btn"
+              class="absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-2 hover:bg-indigo-700 transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="flex-1">
+            <h1 id="profile-name" class="text-3xl font-bold text-gray-900 mb-2">Usuario</h1>
+            <p id="profile-email" class="text-gray-600 mb-4">usuario@ejemplo.com</p>
+            <div class="flex space-x-4">
+              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                Miembro desde: <span id="member-since">2024</span>
+              </span>
+              <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                Entradas: <span id="total-entries">0</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas del Usuario -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Racha Actual</p>
+              <p id="current-streak" class="text-2xl font-bold text-indigo-600">0 días</p>
+            </div>
+            <div class="bg-indigo-100 p-3 rounded-full">
+              <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Mejor Racha</p>
+              <p id="best-streak" class="text-2xl font-bold text-green-600">0 días</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Ejercicios Completados</p>
+              <p id="exercises-completed" class="text-2xl font-bold text-purple-600">0</p>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-full">
+              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuración del Perfil -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Configuración del Perfil</h2>
+        
+        <form id="profile-form" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="display-name" class="block text-sm font-medium text-gray-700 mb-2">
+                Nombre Completo
+              </label>
+              <input 
+                type="text" 
+                id="display-name" 
+                name="displayName"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="Tu nombre completo"
+              >
+            </div>
+            
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                Correo Electrónico
+              </label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="tu@email.com"
+              >
+            </div>
+          </div>
+
+          <div>
+            <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">
+              Biografía
+            </label>
+            <textarea 
+              id="bio" 
+              name="bio"
+              rows="4"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="Cuéntanos un poco sobre ti..."
+            ></textarea>
+          </div>
+
+          <div class="flex justify-end">
+            <button 
+              type="submit"
+              class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Configuración de Privacidad -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Privacidad y Seguridad</h2>
+        
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900">Perfil Público</h3>
+              <p class="text-sm text-gray-600">Permitir que otros usuarios vean tu perfil</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="public-profile" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900">Notificaciones por Email</h3>
+              <p class="text-sm text-gray-600">Recibir recordatorios y actualizaciones por correo</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="email-notifications" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones de Cuenta -->
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Acciones de Cuenta</h2>
+        
+        <div class="space-y-4">
+          <button 
+            id="change-password-btn"
+            class="w-full md:w-auto bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 transition-colors font-medium"
+          >
+            Cambiar Contraseña
+          </button>
+          
+          <button 
+            id="export-data-btn"
+            class="w-full md:w-auto bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium ml-0 md:ml-4"
+          >
+            Exportar Mis Datos
+          </button>
+          
+          <button 
+            id="delete-account-btn"
+            class="w-full md:w-auto bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium ml-0 md:ml-4"
+          >
+            Eliminar Cuenta
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+class ProfileManager {
+    constructor() {
+        this.user = null;
+        this.db = null;
+        this.init();
+    }
+
+    async init() {
+        // Inicializar Firebase
+        if (window.FirebaseServices) {
+            this.db = window.FirebaseServices.firestore();
+            this.user = window.FirebaseServices.auth().currentUser;
+            
+            // Escuchar cambios de autenticación
+            window.FirebaseServices.auth().onAuthStateChanged((user) => {
+                this.user = user;
+                if (user) {
+                    this.loadUserProfile();
+                } else {
+                    // Redirigir al login si no está autenticado
+                    window.location.href = '/';
+                }
+            });
+        }
+
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Formulario de perfil
+        document.getElementById('profile-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.updateProfile();
+        });
+
+        // Cambiar avatar
+        document.getElementById('change-avatar-btn').addEventListener('click', () => {
+            this.changeAvatar();
+        });
+
+        // Cambiar contraseña
+        document.getElementById('change-password-btn').addEventListener('click', () => {
+            this.changePassword();
+        });
+
+        // Exportar datos
+        document.getElementById('export-data-btn').addEventListener('click', () => {
+            this.exportData();
+        });
+
+        // Eliminar cuenta
+        document.getElementById('delete-account-btn').addEventListener('click', () => {
+            this.deleteAccount();
+        });
+    }
+
+    async loadUserProfile() {
+        if (!this.user) return;
+
+        try {
+            // Cargar datos del perfil
+            const profileDoc = await this.db.collection('user-profiles').doc(this.user.uid).get();
+            const profileData = profileDoc.exists ? profileDoc.data() : {};
+
+            // Actualizar la interfaz
+            document.getElementById('profile-name').textContent = profileData.displayName || this.user.displayName || 'Usuario';
+            document.getElementById('profile-email').textContent = this.user.email;
+            document.getElementById('display-name').value = profileData.displayName || this.user.displayName || '';
+            document.getElementById('email').value = this.user.email;
+            document.getElementById('bio').value = profileData.bio || '';
+
+            // Cargar estadísticas
+            await this.loadUserStats();
+
+        } catch (error) {
+            console.error('Error cargando perfil:', error);
+        }
+    }
+
+    async loadUserStats() {
+        try {
+            // Cargar entradas del diario
+            const entriesSnapshot = await this.db.collection('diary-entries')
+                .where('userId', '==', this.user.uid)
+                .get();
+
+            // Cargar resultados de ejercicios
+            const exercisesSnapshot = await this.db.collection('exercise-results')
+                .where('userId', '==', this.user.uid)
+                .get();
+
+            // Actualizar estadísticas
+            document.getElementById('total-entries').textContent = entriesSnapshot.size;
+            document.getElementById('exercises-completed').textContent = exercisesSnapshot.size;
+            document.getElementById('member-since').textContent = new Date(this.user.metadata.creationTime).getFullYear();
+
+            // Calcular rachas (simplificado)
+            const currentStreak = this.calculateStreak(entriesSnapshot.docs);
+            const bestStreak = this.calculateBestStreak(entriesSnapshot.docs);
+
+            document.getElementById('current-streak').textContent = `${currentStreak} días`;
+            document.getElementById('best-streak').textContent = `${bestStreak} días`;
+
+        } catch (error) {
+            console.error('Error cargando estadísticas:', error);
+        }
+    }
+
+    calculateStreak(entries) {
+        // Lógica simplificada para calcular racha actual
+        return Math.min(entries.length, 30);
+    }
+
+    calculateBestStreak(entries) {
+        // Lógica simplificada para calcular mejor racha
+        return Math.min(entries.length, 50);
+    }
+
+    async updateProfile() {
+        if (!this.user) return;
+
+        try {
+            const formData = new FormData(document.getElementById('profile-form'));
+            const profileData = {
+                displayName: formData.get('displayName'),
+                bio: formData.get('bio'),
+                updatedAt: new Date()
+            };
+
+            // Actualizar en Firebase
+            await this.db.collection('user-profiles').doc(this.user.uid).set(profileData, { merge: true });
+
+            // Actualizar en Auth
+            await this.user.updateProfile({
+                displayName: profileData.displayName
+            });
+
+            this.showNotification('Perfil actualizado correctamente', 'success');
+            this.loadUserProfile();
+
+        } catch (error) {
+            console.error('Error actualizando perfil:', error);
+            this.showNotification('Error al actualizar el perfil', 'error');
+        }
+    }
+
+    changeAvatar() {
+        // Implementar cambio de avatar
+        this.showNotification('Función de cambio de avatar próximamente', 'info');
+    }
+
+    async changePassword() {
+        const newPassword = prompt('Ingresa tu nueva contraseña:');
+        if (newPassword && newPassword.length >= 6) {
+            try {
+                await this.user.updatePassword(newPassword);
+                this.showNotification('Contraseña actualizada correctamente', 'success');
+            } catch (error) {
+                console.error('Error cambiando contraseña:', error);
+                this.showNotification('Error al cambiar la contraseña', 'error');
+            }
+        }
+    }
+
+    async exportData() {
+        try {
+            // Recopilar todos los datos del usuario
+            const [entriesSnapshot, exercisesSnapshot, profileDoc] = await Promise.all([
+                this.db.collection('diary-entries').where('userId', '==', this.user.uid).get(),
+                this.db.collection('exercise-results').where('userId', '==', this.user.uid).get(),
+                this.db.collection('user-profiles').doc(this.user.uid).get()
+            ]);
+
+            const exportData = {
+                profile: profileDoc.exists ? profileDoc.data() : {},
+                entries: entriesSnapshot.docs.map(doc => doc.data()),
+                exercises: exercisesSnapshot.docs.map(doc => doc.data()),
+                exportedAt: new Date().toISOString()
+            };
+
+            // Descargar como JSON
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sensus-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            this.showNotification('Datos exportados correctamente', 'success');
+
+        } catch (error) {
+            console.error('Error exportando datos:', error);
+            this.showNotification('Error al exportar los datos', 'error');
+        }
+    }
+
+    async deleteAccount() {
+        if (confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+            try {
+                // Eliminar datos del usuario
+                await this.db.collection('user-profiles').doc(this.user.uid).delete();
+                
+                // Eliminar entradas del diario
+                const entriesSnapshot = await this.db.collection('diary-entries').where('userId', '==', this.user.uid).get();
+                const batch = this.db.batch();
+                entriesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+
+                // Eliminar cuenta de autenticación
+                await this.user.delete();
+
+                this.showNotification('Cuenta eliminada correctamente', 'success');
+                window.location.href = '/';
+
+            } catch (error) {
+                console.error('Error eliminando cuenta:', error);
+                this.showNotification('Error al eliminar la cuenta', 'error');
+            }
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        // Crear notificación
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 
+            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+        } text-white`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        // Remover después de 3 segundos
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    new ProfileManager();
+});
+</script>

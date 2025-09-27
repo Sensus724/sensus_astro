@@ -322,7 +322,7 @@ Please investigate this alert immediately.`,
       this.unsuppressAlert(alertId);
     }, duration * 60 * 1000);
 
-    this.suppressionTimers.set(alertId, timer);
+    this.suppressionTimers.set(alertId, timer as any);
 
     return true;
   }
@@ -679,7 +679,7 @@ Please investigate this alert immediately.`,
       this.escalateAlert(alert.id);
     }, escalationLevel.delay * 60 * 1000);
 
-    this.escalationTimers.set(alert.id, timer);
+    this.escalationTimers.set(alert.id, timer as any);
     alert.nextEscalationAt = new Date(Date.now() + escalationLevel.delay * 60 * 1000).toISOString();
   }
 

@@ -180,7 +180,8 @@ class PerformanceMonitor {
       const fidObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         entries.forEach(entry => {
-          const fid = entry.processingStart - entry.startTime;
+          const fidEntry = entry as any;
+          const fid = fidEntry.processingStart && fidEntry.startTime ? fidEntry.processingStart - fidEntry.startTime : 0;
           this.recordMetric('fid', fid);
           this.checkAlert('fid', fid);
         });
@@ -195,8 +196,9 @@ class PerformanceMonitor {
       const clsObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         entries.forEach(entry => {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
+          const clsEntry = entry as any;
+          if (!clsEntry.hadRecentInput && clsEntry.value) {
+            clsValue += clsEntry.value;
           }
         });
         this.recordMetric('cls', clsValue);
@@ -306,7 +308,7 @@ class PerformanceMonitor {
     // Tracking de clics
     document.addEventListener('click', (event) => {
       this.recordUserAction('click', {
-        element: event.target.tagName,
+        element: (event.target as HTMLElement)?.tagName || 'unknown',
         x: event.clientX,
         y: event.clientY,
         timestamp: Date.now(),
@@ -314,7 +316,7 @@ class PerformanceMonitor {
     });
 
     // Tracking de scroll
-    let scrollTimeout: number;
+    let scrollTimeout: NodeJS.Timeout;
     window.addEventListener('scroll', () => {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
@@ -344,12 +346,13 @@ class PerformanceMonitor {
         entries.forEach(entry => {
           // Monitorear recursos lentos
           if (entry.duration > 1000) {
-            this.recordResourceIssue(entry);
+            this.recordResourceIssue(entry as any);
           }
           
           // Monitorear recursos fallidos
-          if (entry.transferSize === 0 && entry.decodedBodySize > 0) {
-            this.recordResourceIssue(entry, 'cached');
+          const resourceEntry = entry as any;
+          if (resourceEntry.transferSize === 0 && resourceEntry.decodedBodySize > 0) {
+            this.recordResourceIssue(resourceEntry, 'cached');
           }
         });
       });

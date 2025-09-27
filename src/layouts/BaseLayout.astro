@@ -32,6 +32,7 @@ const {
     <!-- CSS Principal Optimizado -->
     <style is:global>
         @import "/src/styles/main.css";
+        @import "/src/styles/notifications.css";
     </style>
     
     <!-- Fuentes -->
@@ -41,6 +42,7 @@ const {
     
     <!-- Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/src/styles/themes/theme-variables.css">
     
     <!-- Meta tags -->
     <meta name="description" content={description}>
@@ -89,8 +91,8 @@ const {
     
     <!-- Preload crítico -->
     <link rel="preload" href="/src/styles/main.css" as="style">
-    <link rel="preload" href="/js/base/core.js" as="script">
-    <link rel="preload" href="/js/modules/auth-enhanced.js" as="script">
+    <link rel="preload" href="/src/js/core/core.js" as="script">
+    <link rel="preload" href="/src/js/modules/auth-enhanced.js" as="script">
     
     <!-- Favicon -->
     <link rel="icon" href="/assets/images/Logo.jpeg" type="image/jpeg">
@@ -203,8 +205,8 @@ const {
                     <!-- Botones de autenticación y toggle de tema -->
                     <div class="auth-buttons">
                         <ThemeToggle size="medium" variant="default" />
-                        <button class="btn-cta btn-outline" id="login-btn">Iniciar sesión</button>
-                        <button class="btn-cta" id="register-btn">Registrarse</button>
+                        <button class="btn-cta btn-outline" data-auth="login">Iniciar sesión</button>
+                        <button class="btn-cta" data-auth="register">Registrarse</button>
                     </div>
         </div>
     </header>
@@ -252,11 +254,11 @@ const {
                         <span class="theme-label">Tema:</span>
                         <ThemeToggle size="small" variant="minimal" />
                     </div>
-                    <button class="btn-cta btn-outline" id="mobile-login-btn">
+                    <button class="btn-cta btn-outline" data-auth="login">
                         <i class="fas fa-sign-in-alt"></i>
                         Iniciar sesión
                     </button>
-                    <button class="btn-cta" id="mobile-register-btn">
+                    <button class="btn-cta" data-auth="register">
                         <i class="fas fa-user-plus"></i>
                         Registrarse
                     </button>
@@ -305,6 +307,7 @@ const {
             <input 
               type="email" 
               id="login-email" 
+              name="email"
               class="auth-form-input" 
               placeholder="tu@email.com"
               required
@@ -316,6 +319,7 @@ const {
             <input 
               type="password" 
               id="login-password" 
+              name="password"
               class="auth-form-input" 
               placeholder="Tu contraseña"
               required
@@ -373,6 +377,7 @@ const {
               <input 
                 type="text" 
                 id="register-first-name" 
+                name="firstName"
                 class="auth-form-input" 
                 placeholder="Tu nombre"
                 required
@@ -383,6 +388,7 @@ const {
               <input 
                 type="text" 
                 id="register-last-name" 
+                name="lastName"
                 class="auth-form-input" 
                 placeholder="Tu apellido"
                 required
@@ -395,6 +401,7 @@ const {
             <input 
               type="email" 
               id="register-email" 
+              name="email"
               class="auth-form-input" 
               placeholder="tu@email.com"
               required
@@ -406,6 +413,7 @@ const {
             <input 
               type="date" 
               id="register-birth-date" 
+              name="birthDate"
               class="auth-form-input" 
               required
             >
@@ -416,6 +424,7 @@ const {
             <input 
               type="password" 
               id="register-password" 
+              name="password"
               class="auth-form-input" 
               placeholder="Mínimo 8 caracteres"
               required
@@ -427,6 +436,7 @@ const {
             <input 
               type="password" 
               id="register-confirm-password" 
+              name="confirmPassword"
               class="auth-form-input" 
               placeholder="Repite tu contraseña"
               required
@@ -584,24 +594,8 @@ const {
             </button>
 
 
-    <!-- Scripts - Sistema modular optimizado -->
-    <script is:inline src="/js/load-existing-files.js"></script>
-    
-    <!-- Firebase - Sistema Completo -->
-    <script is:inline src="/js/firebase-init.js"></script>
-    <script is:inline src="/js/modules/firebase-services.js"></script>
-    
-    <!-- Core App -->
-    <script type="module" src="/js/core/app.js"></script>
-    
-    <!-- Modules -->
-    <script type="module" src="/js/modules/auth.js"></script>
-    <script type="module" src="/js/modules/theme.js"></script>
-    <script type="module" src="/js/modules/pwa.js"></script>
-    
-    <!-- Scripts Core -->
-    <script is:inline src="/js/base/core.js"></script>
-    <script is:inline src="/js/components/header-interactions.js"></script>
+    <!-- Scripts simplificados -->
+    <script src="/src/js/app.js"></script>
 
     <!-- Script de Funcionalidades Básicas -->
     <script is:inline>
@@ -1012,5 +1006,8 @@ const {
         });
       }
     </script>
+
+    <!-- Theme Manager -->
+    <script src="/src/utils/themeManager.js"></script>
 </body>
 </html>

@@ -9,11 +9,13 @@ import {
   signOut, 
   sendPasswordResetEmail,
   updateProfile,
-  User,
-  UserCredential,
   GoogleAuthProvider,
   signInWithPopup,
   OAuthProvider
+} from 'firebase/auth';
+import type {
+  User,
+  UserCredential
 } from 'firebase/auth';
 import { 
   doc, 
@@ -26,7 +28,27 @@ import {
   where,
   getDocs
 } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+// Importación temporal - crear archivo de configuración
+// import { auth, db } from '../config/firebase';
+
+// Configuración temporal de Firebase
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBKZiEz_291NXNQpAsuGq8qz0MSUQw41Fw",
+  authDomain: "sensus-version-pro.firebaseapp.com",
+  projectId: "sensus-version-pro",
+  storageBucket: "sensus-version-pro.firebasestorage.app",
+  messagingSenderId: "887018721709",
+  appId: "1:887018721709:web:fbf4bfa3dc89517f9b9124",
+  measurementId: "G-L9YHW52ZSK"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 export interface UserProfile {
   uid: string;

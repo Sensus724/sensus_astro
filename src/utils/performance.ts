@@ -152,8 +152,8 @@ class PerformanceManager {
   private preloadCriticalResources() {
     const criticalResources = [
       '/src/styles/main.css',
-      '/js/base/core.js',
-      '/js/modules/auth.js',
+      '/src/js/core/core.js',
+      '/src/js/modules/auth.js',
     ];
 
     criticalResources.forEach(resource => {
@@ -167,9 +167,9 @@ class PerformanceManager {
 
   private prefetchNonCriticalResources() {
     const nonCriticalResources = [
-      '/js/modules/diary.js',
-      '/js/modules/evaluation.js',
-      '/js/pages/dashboard.js',
+      '/src/js/pages/diary-wellness.js',
+      '/src/js/pages/evaluacion.js',
+      '/src/js/pages/homepage.js',
     ];
 
     // Prefetch después de que la página esté cargada
@@ -215,9 +215,9 @@ class PerformanceManager {
   private setupCodeSplitting() {
     // Lazy loading de módulos
     const lazyModules = {
-      'dashboard': () => import('../pages/dashboard.js'),
-      'diary': () => import('../pages/diary.js'),
-      'evaluation': () => import('../pages/evaluation.js'),
+      'dashboard': () => import('../pages/index.astro'),
+      'diary': () => import('../pages/diario.astro'),
+      'evaluation': () => import('../pages/evaluacion.astro'),
     };
 
     // Cargar módulos cuando sean necesarios
@@ -351,7 +351,10 @@ class PerformanceManager {
       const fidObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         entries.forEach(entry => {
-          this.metrics.fid = entry.processingStart - entry.startTime;
+          const fidEntry = entry as any;
+          if (fidEntry.processingStart && fidEntry.startTime) {
+            this.metrics.fid = fidEntry.processingStart - fidEntry.startTime;
+          }
           this.checkThreshold('fid', this.metrics.fid);
         });
       });
@@ -365,8 +368,9 @@ class PerformanceManager {
       const clsObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         entries.forEach(entry => {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
+          const clsEntry = entry as any;
+          if (!clsEntry.hadRecentInput && clsEntry.value) {
+            clsValue += clsEntry.value;
           }
         });
         this.metrics.cls = clsValue;

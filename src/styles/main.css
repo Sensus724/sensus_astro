@@ -21,6 +21,8 @@
 @import './components/forms.css';
 @import './components/auth-forms.css';
 @import './components/header-fix.css';
+@import './components/notifications.css';
+@import './components/loading.css';
 
 /* === PÁGINAS ESPECÍFICAS (Solo las esenciales) === */
 @import './pages/homepage-enhanced.css';

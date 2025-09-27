@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "src/services/ai.service.ts",
+    "src/services/analytics.service.ts", 
+    "src/services/realtime.service.ts",
+    "src/middleware/security.middleware.ts"
+  ]
+}

@@ -1,0 +1,158 @@
+---
+// Componente de Scroll to Top optimizado
+---
+
+<button 
+  class="scroll-to-top" 
+  id="scroll-to-top" 
+  aria-label="Volver arriba"
+  title="Volver al inicio de la página"
+>
+  <i class="fas fa-chevron-up" aria-hidden="true"></i>
+  <span class="sr-only">Volver arriba</span>
+</button>
+
+<style>
+  .scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3rem;
+    height: 3rem;
+    background: var(--primary-500);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+  }
+
+  .scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .scroll-to-top:hover {
+    background: var(--primary-600);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .scroll-to-top:active {
+    transform: translateY(0);
+  }
+
+  .scroll-to-top:focus {
+    outline: 2px solid var(--primary-300);
+    outline-offset: 2px;
+  }
+
+  /* Tema oscuro */
+  [data-theme="dark"] .scroll-to-top {
+    background: var(--primary-400);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="dark"] .scroll-to-top:hover {
+    background: var(--primary-300);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .scroll-to-top {
+      bottom: 1rem;
+      right: 1rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1rem;
+    }
+  }
+
+  /* Animación de pulso */
+  .scroll-to-top.pulse {
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 10px rgba(37, 99, 235, 0.1);
+    }
+    100% {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  // Script para manejar el scroll to top
+  document.addEventListener('DOMContentLoaded', () => {
+    const scrollToTopButton = document.getElementById('scroll-to-top');
+    
+    if (scrollToTopButton) {
+      // Mostrar/ocultar botón según scroll
+      const handleScroll = () => {
+        if (window.scrollY > 300) {
+          scrollToTopButton.classList.add('visible');
+        } else {
+          scrollToTopButton.classList.remove('visible');
+        }
+      };
+
+      // Throttle scroll event para mejor rendimiento
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            handleScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+
+      // Scroll suave al hacer clic
+      scrollToTopButton.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+
+      // Añadir efecto de pulso ocasional
+      setInterval(() => {
+        if (scrollToTopButton.classList.contains('visible')) {
+          scrollToTopButton.classList.add('pulse');
+          setTimeout(() => {
+            scrollToTopButton.classList.remove('pulse');
+          }, 2000);
+        }
+      }, 30000); // Cada 30 segundos
+    }
+  });
+</script>

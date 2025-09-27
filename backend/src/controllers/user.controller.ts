@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { logger } from '../utils/logger.util';
 import FirebaseService from '../services/firebase.service';
+import SecurityService from '../services/security.service';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -31,12 +32,14 @@ class UserController {
         return;
       }
 
-      // Validar contraseña
-      if (password.length < 8) {
+      // Validar fortaleza de contraseña con servicio de seguridad
+      const passwordValidation = SecurityService.validatePasswordStrength(password);
+      if (!passwordValidation.isValid) {
         res.status(400).json({
           success: false,
           error: 'Contraseña débil',
-          message: 'La contraseña debe tener al menos 8 caracteres'
+          message: 'La contraseña no cumple con los requisitos de seguridad',
+          details: passwordValidation.feedback
         });
         return;
       }
@@ -54,9 +57,8 @@ class UserController {
         return;
       }
 
-      // Hash de la contraseña
-      const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '12');
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      // Hash de la contraseña con servicio de seguridad
+      const hashedPassword = await SecurityService.hashPassword(password);
 
       // Crear usuario
       const userData = {
@@ -79,12 +81,13 @@ class UserController {
       const userRef = await db.collection('users').add(userData);
       const userId = userRef.id;
 
-      // Generar JWT token
-      const token = jwt.sign(
-        { userId, email },
-        process.env.JWT_SECRET || 'fallback-secret',
-        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-      );
+      // Generar JWT token seguro
+      const token = SecurityService.generateSecureToken({
+        userId,
+        email,
+        role: 'user',
+        permissions: ['read:profile', 'write:profile', 'read:diary', 'write:diary']
+      });
 
       logger.info(`Nuevo usuario registrado: ${userId} - ${email}`);
 
@@ -119,12 +122,26 @@ class UserController {
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
+      const ip = req.ip || req.connection.remoteAddress || 'unknown';
+      const userAgent = req.get('User-Agent') || 'unknown';
 
       if (!email || !password) {
         res.status(400).json({
           success: false,
           error: 'Credenciales requeridas',
           message: 'Email y contraseña son obligatorios'
+        });
+        return;
+      }
+
+      // Verificar intentos de login
+      const loginCheck = await SecurityService.checkLoginAttempts(ip, email);
+      if (!loginCheck.allowed) {
+        res.status(429).json({
+          success: false,
+          error: 'Cuenta bloqueada temporalmente',
+          message: `Demasiados intentos fallidos. Intenta de nuevo en ${Math.ceil(loginCheck.lockoutTime! / 1000 / 60)} minutos`,
+          retryAfter: loginCheck.lockoutTime
         });
         return;
       }
@@ -157,29 +174,37 @@ class UserController {
         return;
       }
 
-      // Verificar contraseña
-      const isPasswordValid = await bcrypt.compare(password, userData.password);
+      // Verificar contraseña con servicio de seguridad
+      const isPasswordValid = await SecurityService.verifyPassword(password, userData.password);
       if (!isPasswordValid) {
+        // Registrar intento fallido
+        await SecurityService.recordLoginAttempt(ip, email, false, userAgent);
+        
         res.status(401).json({
           success: false,
           error: 'Credenciales inválidas',
-          message: 'Email o contraseña incorrectos'
+          message: 'Email o contraseña incorrectos',
+          remainingAttempts: loginCheck.remainingAttempts - 1
         });
         return;
       }
 
       // Actualizar último login
-      await db.collection('users').doc(userId).update({
+      await db.collection('users').doc(userId!).update({
         lastLogin: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
 
-      // Generar JWT token
-      const token = jwt.sign(
-        { userId, email },
-        process.env.JWT_SECRET || 'fallback-secret',
-        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-      );
+      // Registrar login exitoso
+      await SecurityService.recordLoginAttempt(ip, email, true, userAgent);
+
+      // Generar JWT token seguro
+      const token = SecurityService.generateSecureToken({
+        userId,
+        email,
+        role: userData.role || 'user',
+        permissions: userData.permissions || ['read:profile', 'write:profile', 'read:diary', 'write:diary']
+      });
 
       logger.info(`Usuario inició sesión: ${userId} - ${email}`);
 
@@ -214,10 +239,10 @@ class UserController {
   // Obtener perfil del usuario
   async getProfile(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
 
       const db = FirebaseService.getFirestore();
-      const userDoc = await db.collection('users').doc(userId).get();
+      const userDoc = await db.collection('users').doc(userId!).get();
 
       if (!userDoc.exists) {
         res.status(404).json({
@@ -231,7 +256,7 @@ class UserController {
       const userData = userDoc.data();
       
       // Remover datos sensibles
-      const { password, ...safeUserData } = userData;
+      const { password, ...safeUserData } = userData || {};
 
       res.status(200).json({
         success: true,
@@ -254,7 +279,7 @@ class UserController {
   // Actualizar perfil del usuario
   async updateProfile(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { firstName, lastName, birthDate, preferences } = req.body;
 
       const updateData: any = {
@@ -267,7 +292,7 @@ class UserController {
       if (preferences) updateData.preferences = { ...preferences };
 
       const db = FirebaseService.getFirestore();
-      await db.collection('users').doc(userId).update(updateData);
+      await db.collection('users').doc(userId!).update(updateData);
 
       logger.info(`Perfil actualizado para usuario: ${userId}`);
 
@@ -290,7 +315,7 @@ class UserController {
   // Cambiar contraseña
   async changePassword(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { currentPassword, newPassword } = req.body;
 
       if (!currentPassword || !newPassword) {
@@ -312,7 +337,7 @@ class UserController {
       }
 
       const db = FirebaseService.getFirestore();
-      const userDoc = await db.collection('users').doc(userId).get();
+      const userDoc = await db.collection('users').doc(userId!).get();
 
       if (!userDoc.exists) {
         res.status(404).json({
@@ -326,7 +351,7 @@ class UserController {
       const userData = userDoc.data();
       
       // Verificar contraseña actual
-      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userData.password);
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userData?.password || '');
       if (!isCurrentPasswordValid) {
         res.status(401).json({
           success: false,
@@ -341,7 +366,7 @@ class UserController {
       const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
 
       // Actualizar contraseña
-      await db.collection('users').doc(userId).update({
+      await db.collection('users').doc(userId!).update({
         password: hashedNewPassword,
         updatedAt: new Date().toISOString()
       });
@@ -366,7 +391,7 @@ class UserController {
   // Eliminar cuenta
   async deleteAccount(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { password } = req.body;
 
       if (!password) {
@@ -379,7 +404,7 @@ class UserController {
       }
 
       const db = FirebaseService.getFirestore();
-      const userDoc = await db.collection('users').doc(userId).get();
+      const userDoc = await db.collection('users').doc(userId!).get();
 
       if (!userDoc.exists) {
         res.status(404).json({
@@ -393,7 +418,7 @@ class UserController {
       const userData = userDoc.data();
       
       // Verificar contraseña
-      const isPasswordValid = await bcrypt.compare(password, userData.password);
+      const isPasswordValid = await bcrypt.compare(password, userData?.password || '');
       if (!isPasswordValid) {
         res.status(401).json({
           success: false,
@@ -404,7 +429,7 @@ class UserController {
       }
 
       // Eliminar datos del usuario (soft delete)
-      await db.collection('users').doc(userId).update({
+      await db.collection('users').doc(userId!).update({
         isActive: false,
         deletedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()

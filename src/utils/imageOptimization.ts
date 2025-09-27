@@ -6,6 +6,8 @@
 export interface ImageOptions {
   width?: number;
   height?: number;
+  maxWidth?: number;
+  maxHeight?: number;
   quality?: number;
   format?: 'webp' | 'avif' | 'jpeg' | 'png' | 'auto';
   fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';

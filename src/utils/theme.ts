@@ -99,12 +99,6 @@ class ThemeManager {
     });
   }
 
-  private getEffectiveTheme(): Theme {
-    if (this.currentTheme === 'auto') {
-      return this.systemTheme;
-    }
-    return this.currentTheme;
-  }
 
   private applyTheme(theme: Theme, source: ThemeChangeEvent['source'] = 'programmatic') {
     const previousTheme = this.currentTheme;
@@ -158,7 +152,10 @@ class ThemeManager {
   }
 
   public getEffectiveTheme(): Theme {
-    return this.getEffectiveTheme();
+    if (this.currentTheme === 'auto') {
+      return this.systemTheme;
+    }
+    return this.currentTheme;
   }
 
   public getSystemTheme(): Theme {

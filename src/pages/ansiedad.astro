@@ -655,7 +655,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
                         current = target;
                         clearInterval(timer);
                     }
-                    element.textContent = Math.floor(current);
+                    element.textContent = Math.floor(current).toString();
                 }, 16);
             });
         }

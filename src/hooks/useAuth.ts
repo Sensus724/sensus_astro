@@ -4,12 +4,12 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  AuthState, 
-  LoginCredentials, 
-  RegisterCredentials, 
+import type {
+  AuthState,
+  LoginCredentials,
+  RegisterCredentials,
   UserProfile,
-  AuthError 
+  AuthError
 } from '../services/auth';
 import { getAuthService } from '../services/auth';
 
@@ -200,8 +200,8 @@ export function useRequireAuth() {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       // Redirigir al login o mostrar modal
-      if (window.authModal) {
-        window.authModal.open('login');
+      if ((window as any).authModal) {
+        (window as any).authModal.open('login');
       }
     }
   }, [isAuthenticated, isLoading]);

@@ -12,16 +12,16 @@ const API_CACHE = 'sensus-api-v1.0.0';
 const CRITICAL_RESOURCES = [
   '/',
   '/index.html',
-  '/js/core/app.js',
-  '/js/modules/auth.js',
-  '/js/modules/theme.js',
+  '/src/js/core/app.js',
+  '/src/js/modules/auth.js',
+  '/src/js/modules/theme.js',
   '/css/main.css',
   '/manifest.json'
 ];
 
 // Recursos estáticos para caché
 const STATIC_RESOURCES = [
-  '/js/',
+  '/src/js/',
   '/css/',
   '/assets/',
   '/images/',

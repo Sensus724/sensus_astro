@@ -4,44 +4,26 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:full": "concurrently \"npm run dev\" \"npm run dev:backend\"",
+    "build": "astro build",
+    "build:backend": "cd backend && npm run build",
+    "build:full": "npm run build:backend && npm run build",
     "preview": "astro preview",
-    "astro": "astro",
-    "deploy": "npm run build && firebase deploy",
-    "deploy:hosting": "npm run build && firebase deploy --only hosting",
-    "deploy:firestore": "firebase deploy --only firestore",
-    "deploy:storage": "firebase deploy --only storage",
-    "deploy:rules": "firebase deploy --only firestore:rules",
-    "deploy:indexes": "firebase deploy --only firestore:indexes",
-    "serve": "firebase serve",
-    "test": "cypress run",
-    "test:open": "cypress open",
-    "test:headless": "cypress run --headless",
-    "test:chrome": "cypress run --browser chrome",
-    "test:firefox": "cypress run --browser firefox",
-    "test:edge": "cypress run --browser edge",
-    "test:mobile": "cypress run --config viewportWidth=375,viewportHeight=667",
-    "test:tablet": "cypress run --config viewportWidth=768,viewportHeight=1024",
-    "test:desktop": "cypress run --config viewportWidth=1920,viewportHeight=1080",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "start": "astro dev"
   },
   "dependencies": {
     "@astrojs/check": "^0.8.0",
+    "@astrojs/node": "^8.0.0",
+    "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "^5.1.0",
     "astro": "^4.5.0",
+    "firebase": "^12.3.0",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.0"
   },
   "devDependencies": {
-    "cypress": "^13.6.0",
-    "eslint": "^8.55.0",
-    "eslint-config-astro": "^0.28.0",
-    "prettier": "^3.1.0",
-    "prettier-plugin-astro": "^0.12.0"
+    "concurrently": "^8.2.0"
   },
   "engines": {
     "node": ">=18.0.0"

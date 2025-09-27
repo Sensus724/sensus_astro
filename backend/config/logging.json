@@ -1,0 +1,8 @@
+{
+  "level": "info",
+  "maxSize": "10m",
+  "maxFiles": 5,
+  "datePattern": "YYYY-MM-DD",
+  "auditLog": true,
+  "securityLog": true
+}

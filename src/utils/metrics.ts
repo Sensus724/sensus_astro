@@ -78,7 +78,7 @@ export class MetricsCollector {
   private metrics: Metric[] = [];
   private maxMetrics: number = 10000;
   private flushInterval: number = 60000; // 1 minuto
-  private flushTimer?: number;
+  private flushTimer?: NodeJS.Timeout;
   private remoteEndpoint?: string;
   private enableRemote: boolean = false;
   private sampleRate: number = 1.0;
@@ -107,11 +107,12 @@ export class MetricsCollector {
   private setupSystemMetrics(): void {
     // Métricas de memoria
     setInterval(() => {
-      if (performance.memory) {
-        this.gauge('memory.used', performance.memory.usedJSHeapSize, { unit: 'bytes' });
-        this.gauge('memory.total', performance.memory.totalJSHeapSize, { unit: 'bytes' });
-        this.gauge('memory.limit', performance.memory.jsHeapSizeLimit, { unit: 'bytes' });
-        this.gauge('memory.percentage', (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100, { unit: 'percent' });
+      if ('memory' in performance && (performance as any).memory) {
+        const memory = (performance as any).memory;
+        this.gauge('memory.used', memory.usedJSHeapSize, { unit: 'bytes' });
+        this.gauge('memory.total', memory.totalJSHeapSize, { unit: 'bytes' });
+        this.gauge('memory.limit', memory.jsHeapSizeLimit, { unit: 'bytes' });
+        this.gauge('memory.percentage', (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100, { unit: 'percent' });
       }
     }, 30000);
 
@@ -145,7 +146,10 @@ export class MetricsCollector {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        this.histogram('webvitals.fid', entry.processingStart - entry.startTime, { unit: 'ms' });
+        const fidEntry = entry as any;
+        if (fidEntry.processingStart && fidEntry.startTime) {
+          this.histogram('webvitals.fid', fidEntry.processingStart - fidEntry.startTime, { unit: 'ms' });
+        }
       });
     }).observe({ entryTypes: ['first-input'] });
 
@@ -154,8 +158,9 @@ export class MetricsCollector {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value;
+        const clsEntry = entry as any;
+        if (!clsEntry.hadRecentInput && clsEntry.value) {
+          clsValue += clsEntry.value;
         }
       });
       this.histogram('webvitals.cls', clsValue, { unit: 'score' });

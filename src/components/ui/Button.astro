@@ -1,13 +1,17 @@
 ---
 export interface Props {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  loading?: boolean;
-  href?: string;
-  target?: string;
-  class?: string;
-  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
+  size?: 'sm' | 'md' | 'lg'
+  disabled?: boolean
+  loading?: boolean
+  icon?: string
+  iconPosition?: 'left' | 'right'
+  fullWidth?: boolean
+  type?: 'button' | 'submit' | 'reset'
+  href?: string
+  target?: string
+  rel?: string
+  class?: string
 }
 
 const {
@@ -15,115 +19,255 @@ const {
   size = 'md',
   disabled = false,
   loading = false,
+  icon,
+  iconPosition = 'left',
+  fullWidth = false,
+  type = 'button',
   href,
   target,
-  class: className = '',
-  type = 'button',
-  ...rest
-} = Astro.props;
+  rel,
+  class: className = ''
+} = Astro.props
 
-// Generar clases CSS basadas en props
-const baseClasses = 'btn';
+const baseClasses = 'btn'
 const variantClasses = {
   primary: 'btn-primary',
-  secondary: 'btn-secondary',
+  secondary: 'btn-secondary', 
   outline: 'btn-outline',
   ghost: 'btn-ghost',
   danger: 'btn-danger'
-};
+}
 const sizeClasses = {
   sm: 'btn-sm',
   md: 'btn-md',
   lg: 'btn-lg'
-};
+}
 
 const classes = [
   baseClasses,
   variantClasses[variant],
   sizeClasses[size],
-  disabled || loading ? 'btn-disabled' : '',
+  fullWidth ? 'btn-full' : '',
+  disabled ? 'btn-disabled' : '',
   loading ? 'btn-loading' : '',
   className
-].filter(Boolean).join(' ');
+].filter(Boolean).join(' ')
 
-// Determinar si es un enlace o botón
-const isLink = href !== undefined;
-const Tag = isLink ? 'a' : 'button';
-const tagProps = isLink 
-  ? { href, target, role: 'button' }
-  : { type, disabled: disabled || loading };
+const isLink = href !== undefined
+const Tag = isLink ? 'a' : 'button'
+const tagProps = isLink ? { href, target, rel } : { type, disabled }
 ---
 
-<Tag class={classes} {...tagProps} {...rest}>
+<Tag class={classes} {...tagProps}>
   {loading && (
     <span class="btn-spinner" aria-hidden="true">
       <i class="fas fa-spinner fa-spin"></i>
     </span>
   )}
-  <span class="btn-content">
+  
+  {icon && iconPosition === 'left' && !loading && (
+    <i class={`fas fa-${icon} btn-icon btn-icon-left`} aria-hidden="true"></i>
+  )}
+  
+  <span class="btn-text">
     <slot />
   </span>
+  
+  {icon && iconPosition === 'right' && !loading && (
+    <i class={`fas fa-${icon} btn-icon btn-icon-right`} aria-hidden="true"></i>
+  )}
 </Tag>
 
 <style>
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: inherit;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    white-space: nowrap;
+    user-select: none;
+    outline: none;
   }
 
-  .btn-primary {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl;
+  .btn:focus {
+    outline: 2px solid var(--primary-300);
+    outline-offset: 2px;
   }
 
-  .btn-secondary {
-    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 
-  .btn-outline {
-    @apply border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500;
-  }
-
-  .btn-ghost {
-    @apply text-gray-700 hover:bg-gray-100 focus:ring-gray-500;
-  }
-
-  .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
-  }
-
+  /* Tamaños */
   .btn-sm {
-    @apply px-3 py-1.5 text-sm;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .btn-md {
-    @apply px-4 py-2 text-base;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 
   .btn-lg {
-    @apply px-6 py-3 text-lg;
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
   }
 
-  .btn-disabled {
-    @apply opacity-50 cursor-not-allowed;
+  /* Variantes */
+  .btn-primary {
+    background: var(--primary-500);
+    color: white;
+    border-color: var(--primary-500);
   }
 
+  .btn-primary:hover:not(:disabled) {
+    background: var(--primary-600);
+    border-color: var(--primary-600);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-secondary {
+    background: var(--secondary-500);
+    color: white;
+    border-color: var(--secondary-500);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--secondary-600);
+    border-color: var(--secondary-600);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--primary-500);
+    border-color: var(--primary-500);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    background: var(--primary-500);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--gray-600);
+    border-color: transparent;
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--gray-100);
+    color: var(--gray-900);
+  }
+
+  .btn-danger {
+    background: var(--red-500);
+    color: white;
+    border-color: var(--red-500);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: var(--red-600);
+    border-color: var(--red-600);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  /* Ancho completo */
+  .btn-full {
+    width: 100%;
+  }
+
+  /* Loading state */
   .btn-loading {
-    @apply cursor-wait;
+    pointer-events: none;
+  }
+
+  .btn-loading .btn-text {
+    opacity: 0.7;
   }
 
   .btn-spinner {
-    @apply animate-spin;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
   }
 
-  .btn-content {
-    @apply flex items-center gap-2;
+  .btn-loading .btn-icon {
+    opacity: 0;
   }
 
-  /* Estados de hover y focus mejorados */
-  .btn:not(.btn-disabled):hover {
-    @apply transform scale-105;
+  /* Iconos */
+  .btn-icon {
+    font-size: 0.875em;
   }
 
-  .btn:not(.btn-disabled):active {
-    @apply transform scale-95;
+  .btn-icon-left {
+    margin-right: 0.25rem;
+  }
+
+  .btn-icon-right {
+    margin-left: 0.25rem;
+  }
+
+  /* Tema oscuro */
+  [data-theme="dark"] .btn-ghost:hover:not(:disabled) {
+    background: var(--gray-700);
+    color: var(--gray-100);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .btn-lg {
+      padding: 0.875rem 1.25rem;
+      font-size: 1rem;
+    }
+  }
+
+  /* Estados especiales */
+  .btn-success {
+    background: var(--green-500);
+    color: white;
+    border-color: var(--green-500);
+  }
+
+  .btn-success:hover:not(:disabled) {
+    background: var(--green-600);
+    border-color: var(--green-600);
+  }
+
+  .btn-warning {
+    background: var(--yellow-500);
+    color: white;
+    border-color: var(--yellow-500);
+  }
+
+  .btn-warning:hover:not(:disabled) {
+    background: var(--yellow-600);
+    border-color: var(--yellow-600);
   }
 </style>

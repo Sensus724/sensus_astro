@@ -54,8 +54,8 @@ export class HealthCheckService {
   private static instance: HealthCheckService;
   private checks: Map<string, HealthCheck> = new Map();
   private config: HealthCheckConfig;
-  private interval?: number;
-  private isRunning: boolean = false;
+  private interval?: NodeJS.Timeout;
+  private _isRunning: boolean = false;
 
   private constructor() {
     this.config = this.getDefaultConfig();
@@ -169,7 +169,7 @@ export class HealthCheckService {
   public start(): void {
     if (this.isRunning) return;
 
-    this.isRunning = true;
+    this._isRunning = true;
     this.runChecks(); // Ejecutar inmediatamente
     this.interval = setInterval(() => {
       this.runChecks();
@@ -179,7 +179,7 @@ export class HealthCheckService {
   public stop(): void {
     if (!this.isRunning) return;
 
-    this.isRunning = false;
+    this._isRunning = false;
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = undefined;
@@ -481,7 +481,7 @@ export class HealthCheckService {
   }
 
   public isRunning(): boolean {
-    return this.isRunning;
+    return this._isRunning;
   }
 
   // Métodos de utilidad

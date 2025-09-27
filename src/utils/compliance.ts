@@ -227,7 +227,7 @@ export class ComplianceService {
             article: 'Article 6',
             title: 'Lawfulness of processing',
             description: 'Processing shall be lawful only if and to the extent that at least one of the legal bases applies',
-            category: 'legal_basis',
+            category: 'data_protection',
             mandatory: true,
             implementation: ['Consent management', 'Contract processing', 'Legal obligation compliance'],
             evidence: ['Consent records', 'Contract documentation', 'Legal basis assessments'],

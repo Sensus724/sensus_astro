@@ -70,13 +70,13 @@ class BundleOptimizer {
 
   private setupCodeSplitting() {
     // Definir chunks dinámicos
-    const dynamicChunks = {
-      'dashboard': () => import('../pages/dashboard.js'),
-      'diary': () => import('../pages/diary.js'),
-      'evaluation': () => import('../pages/evaluation.js'),
-      'auth': () => import('../components/auth/AuthModal.js'),
-      'charts': () => import('../components/dashboard/Chart.js'),
-      'gallery': () => import('../components/ImageGallery.js'),
+  const dynamicChunks = {
+    'dashboard': () => import('../pages/index.astro'),
+    'diary': () => import('../pages/diario.astro'),
+    'evaluation': () => import('../pages/evaluacion.astro'),
+    'auth': () => import('../components/auth/AuthModal.astro'),
+    'charts': () => import('../components/ui/Card.astro'),
+    'gallery': () => import('../components/OptimizedImage.astro'),
     };
 
     // Registrar chunks
@@ -557,7 +557,7 @@ class BundleOptimizer {
       request.onsuccess = () => resolve();
       
       request.onupgradeneeded = (event) => {
-        const db = event.target.result;
+        const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains('chunks')) {
           db.createObjectStore('chunks', { keyPath: 'name' });
         }

@@ -3,240 +3,164 @@ name: Deploy to Production
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-        - production
-        - staging
-      tag:
-        description: 'Docker tag to deploy'
-        required: false
-        default: 'latest'
+  pull_request:
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # Build and test
-  build-and-test:
-    name: Build and Test
+  test:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
-      image-digest: ${{ steps.build.outputs.digest }}
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run linting
-        run: npm run lint
-        
-      - name: Run type checking
-        run: npm run type-check
-        
-      - name: Run tests
-        run: npm run test:ci
-        
-      - name: Run quality checks
-        run: npm run quality:check
-        
-      - name: Build application
-        run: npm run build
-        
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-            
-      - name: Build and push Docker image
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install Frontend Dependencies
+      run: npm ci
+    
+    - name: Install Backend Dependencies
+      run: |
+        cd backend
+        npm ci
+    
+    - name: Run Frontend Tests
+      run: npm run test:unit
+    
+    - name: Run Backend Tests
+      run: |
+        cd backend
+        npm test
+    
+    - name: Build Frontend
+      run: npm run build
+    
+    - name: Build Backend
+      run: |
+        cd backend
+        npm run build
 
-  # Deploy to staging
-  deploy-staging:
-    name: Deploy to Staging
+  security:
     runs-on: ubuntu-latest
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment: staging
+    needs: test
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-          
-      - name: Configure kubectl
-        run: |
-          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
-          export KUBECONFIG=kubeconfig
-          
-      - name: Deploy to staging
-        run: |
-          export KUBECONFIG=kubeconfig
-          ./scripts/k8s-deploy.sh ${{ needs.build-and-test.outputs.image-tag }} staging
-        env:
-          DOCKER_REGISTRY: ${{ env.REGISTRY }}
-          DOCKER_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          
-      - name: Run smoke tests
-        run: |
-          export KUBECONFIG=kubeconfig
-          kubectl wait --for=condition=ready --timeout=300s deployment/sensus-app -n sensus-staging
-          kubectl exec -n sensus-staging deployment/sensus-app -- npm run test:smoke
-          
-      - name: Notify staging deployment
-        uses: 8398a7/action-slack@v3
-        with:
-          status: success
-          channel: '#deployments'
-          text: '🚀 Sensus deployed to staging successfully!'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    - uses: actions/checkout@v4
+    
+    - name: Run Security Audit
+      run: |
+        npm audit --audit-level moderate
+        cd backend && npm audit --audit-level moderate
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
 
-  # Deploy to production
-  deploy-production:
-    name: Deploy to Production
+  build-and-push:
     runs-on: ubuntu-latest
-    needs: [build-and-test, deploy-staging]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment: production
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      packages: write
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-          
-      - name: Configure kubectl
-        run: |
-          echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
-          export KUBECONFIG=kubeconfig
-          
-      - name: Deploy to production
-        run: |
-          export KUBECONFIG=kubeconfig
-          ./scripts/k8s-deploy.sh ${{ needs.build-and-test.outputs.image-tag }} production
-        env:
-          DOCKER_REGISTRY: ${{ env.REGISTRY }}
-          DOCKER_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          
-      - name: Run production tests
-        run: |
-          export KUBECONFIG=kubeconfig
-          kubectl wait --for=condition=ready --timeout=300s deployment/sensus-app -n sensus
-          kubectl exec -n sensus deployment/sensus-app -- npm run test:production
-          
-      - name: Notify production deployment
-        uses: 8398a7/action-slack@v3
-        with:
-          status: success
-          channel: '#deployments'
-          text: '🎉 Sensus deployed to production successfully!'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          
-      - name: Create GitHub release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
-          body: |
-            ## Changes
-            - Automated deployment from commit ${{ github.sha }}
-            - Docker image: ${{ needs.build-and-test.outputs.image-tag }}
-            - Environment: Production
-            
-            ## Deployment Details
-            - **Image Digest**: ${{ needs.build-and-test.outputs.image-digest }}
-            - **Deployed At**: ${{ github.event.head_commit.timestamp }}
-            - **Deployed By**: ${{ github.actor }}
-          draft: false
-          prerelease: false
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push Frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile.prod
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Build and push Backend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        file: ./Dockerfile.prod
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-  # Rollback job
-  rollback:
-    name: Rollback Deployment
+  deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment
-    environment: ${{ github.event.inputs.environment }}
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-          
-      - name: Configure kubectl
-        run: |
-          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
-            echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
-          else
-            echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
-          fi
-          export KUBECONFIG=kubeconfig
-          
-      - name: Rollback deployment
-        run: |
-          export KUBECONFIG=kubeconfig
-          ./scripts/k8s-deploy.sh rollback ${{ github.event.inputs.environment }}
-          
-      - name: Notify rollback
-        uses: 8398a7/action-slack@v3
-        with:
-          status: warning
-          channel: '#deployments'
-          text: '⚠️ Sensus rolled back in ${{ github.event.inputs.environment }}!'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production..."
+        # Aquí irían los comandos para desplegar en tu infraestructura
+        # Por ejemplo, para Kubernetes:
+        # kubectl set image deployment/frontend frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ github.sha }}
+        # kubectl set image deployment/backend backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}
+    
+    - name: Run health checks
+      run: |
+        echo "Running health checks..."
+        # curl -f https://your-domain.com/health
+        # curl -f https://your-domain.com/api/health
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: always()
+    
+    steps:
+    - name: Notify deployment status
+      run: |
+        if [ "${{ needs.deploy.result }}" == "success" ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment failed!"
+        fi

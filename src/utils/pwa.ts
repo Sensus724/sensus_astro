@@ -57,7 +57,7 @@ export class PWAUtils {
     // Escuchar evento beforeinstallprompt
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
-      this.deferredPrompt = e as PWAInstallPrompt;
+      this.deferredPrompt = e as unknown as PWAInstallPrompt;
       this.dispatchEvent('installprompt', { available: true });
     });
 
@@ -224,7 +224,7 @@ export class PWAUtils {
         badge: options.badge || PWA_CONFIG.NOTIFICATIONS.badge,
         tag: options.tag || PWA_CONFIG.NOTIFICATIONS.tag,
         requireInteraction: options.requireInteraction || PWA_CONFIG.NOTIFICATIONS.requireInteraction,
-        actions: options.actions || PWA_CONFIG.NOTIFICATIONS.actions,
+        // actions: options.actions || PWA_CONFIG.NOTIFICATIONS.actions, // Comentado temporalmente
       });
 
       notification.onclick = () => {

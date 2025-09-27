@@ -341,7 +341,7 @@ class AdvancedCache {
 
     return {
       key,
-      value: encrypted,
+      value: encrypted as T,
       timestamp: Date.now(),
       accessCount: 0,
       lastAccess: Date.now(),
@@ -585,12 +585,12 @@ class AdvancedCache {
     }
     
     // Fallback: compresión simple
-    return data;
+    return Promise.resolve(data);
   }
 
-  private decompress(data: string): string {
+  private decompress(data: string): Promise<string> {
     if (this.compressionWorker) {
-      return new Promise((resolve, reject) => {
+      return new Promise<string>((resolve, reject) => {
         const handler = (e: MessageEvent) => {
           this.compressionWorker?.removeEventListener('message', handler);
           if (e.data.success) {
@@ -606,7 +606,7 @@ class AdvancedCache {
     }
     
     // Fallback: descompresión simple
-    return data;
+    return Promise.resolve(data);
   }
 
   private async encrypt(data: string): Promise<string> {

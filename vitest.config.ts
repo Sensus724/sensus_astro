@@ -3,8 +3,8 @@ import { resolve } from 'path'
 
 export default defineConfig({
   test: {
-    globals: true,
     environment: 'jsdom',
+    globals: true,
     setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'v8',
@@ -12,12 +12,12 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'dist/',
-        'coverage/',
-        'cypress/',
         'tests/',
         '**/*.d.ts',
         '**/*.config.*',
-        '**/mockData/**'
+        '**/coverage/**',
+        '**/public/**',
+        '**/backend/**'
       ],
       thresholds: {
         global: {
@@ -29,21 +29,25 @@ export default defineConfig({
       }
     },
     include: [
-      'tests/**/*.{test,spec}.{js,ts}',
-      'src/**/*.{test,spec}.{js,ts}'
+      'src/**/*.{test,spec}.{js,ts,jsx,tsx}',
+      'tests/unit/**/*.{test,spec}.{js,ts,jsx,tsx}'
     ],
     exclude: [
       'node_modules/',
       'dist/',
-      'cypress/',
-      '**/*.e2e.{test,spec}.{js,ts}'
+      'tests/e2e/**'
     ]
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
-      '@tests': resolve(__dirname, './tests'),
-      '@backend': resolve(__dirname, './backend/src')
+      '@components': resolve(__dirname, './src/components'),
+      '@utils': resolve(__dirname, './src/utils'),
+      '@services': resolve(__dirname, './src/services'),
+      '@config': resolve(__dirname, './src/config'),
+      '@layouts': resolve(__dirname, './src/layouts'),
+      '@pages': resolve(__dirname, './src/pages'),
+      '@styles': resolve(__dirname, './src/styles')
     }
   }
 })

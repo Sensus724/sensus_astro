@@ -49,8 +49,23 @@ const classes = [
         <li class="nav-item">
           <a href="/contacto" class="nav-link">Contacto</a>
         </li>
+        <li class="nav-item">
+          <a href="/perfil" class="nav-link">Mi Perfil</a>
+        </li>
       </ul>
     </nav>
+
+    <div class="header-actions">
+      <button 
+        class="theme-toggle-btn" 
+        data-theme-toggle
+        aria-label="Cambiar tema"
+        title="Cambiar entre modo claro y oscuro"
+      >
+        <i class="fas fa-moon" data-theme-icon></i>
+        <span class="theme-text" data-theme-text>Modo Oscuro</span>
+      </button>
+    </div>
 
     <div class="header-actions">
       <button class="mobile-menu-toggle" aria-label="Abrir menú móvil">
@@ -159,6 +174,21 @@ const classes = [
 
   .header-actions {
     @apply flex items-center gap-4;
+  }
+
+  .theme-toggle-btn {
+    @apply flex items-center space-x-2 px-3 py-2 rounded-lg;
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-700;
+    @apply transition-all duration-200 border border-gray-200;
+    @apply dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600;
+  }
+
+  .theme-toggle-btn:hover {
+    @apply shadow-md transform scale-105;
+  }
+
+  .theme-text {
+    @apply text-sm font-medium hidden sm:inline;
   }
 
   .mobile-menu-toggle {

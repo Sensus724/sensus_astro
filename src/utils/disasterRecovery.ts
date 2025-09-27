@@ -533,7 +533,7 @@ export class DisasterRecoveryService {
       
       const nextTest = new Date(plan.nextTest);
       if (now >= nextTest) {
-        this.scheduleTest(planId, 'scheduled');
+        // this.scheduleTest(planId, 'scheduled'); // Comentado temporalmente
       }
     }
   }

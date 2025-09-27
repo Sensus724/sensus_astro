@@ -6,7 +6,7 @@ class EvaluationController {
   // Crear nueva evaluación GAD-7
   async createEvaluation(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { answers, totalScore, date } = req.body;
 
       // Validación de respuestas GAD-7
@@ -98,7 +98,7 @@ class EvaluationController {
   // Obtener evaluaciones del usuario
   async getEvaluations(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { limit = 10, offset = 0, startDate, endDate } = req.query;
 
       const db = FirebaseService.getFirestore();
@@ -147,7 +147,7 @@ class EvaluationController {
   // Obtener estadísticas de evaluaciones
   async getStats(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { period = '30d' } = req.query;
 
       const db = FirebaseService.getFirestore();
@@ -163,18 +163,18 @@ class EvaluationController {
       
       // Calcular estadísticas
       const totalEvaluations = evaluations.length;
-      const avgScore = evaluations.reduce((sum, eval) => sum + eval.totalScore, 0) / totalEvaluations || 0;
+      const avgScore = evaluations.reduce((sum, evaluation) => sum + evaluation.totalScore, 0) / totalEvaluations || 0;
       
-      const levelDistribution = evaluations.reduce((acc, eval) => {
-        acc[eval.anxietyLevel] = (acc[eval.anxietyLevel] || 0) + 1;
+      const levelDistribution = evaluations.reduce((acc, evaluation) => {
+        acc[evaluation.anxietyLevel] = (acc[evaluation.anxietyLevel] || 0) + 1;
         return acc;
       }, {});
 
       // Calcular tendencia
       const recentEvaluations = evaluations.slice(0, 3);
       const olderEvaluations = evaluations.slice(-3);
-      const recentAvg = recentEvaluations.reduce((sum, eval) => sum + eval.totalScore, 0) / recentEvaluations.length || 0;
-      const olderAvg = olderEvaluations.reduce((sum, eval) => sum + eval.totalScore, 0) / olderEvaluations.length || 0;
+      const recentAvg = recentEvaluations.reduce((sum, evaluation) => sum + evaluation.totalScore, 0) / recentEvaluations.length || 0;
+      const olderAvg = olderEvaluations.reduce((sum, evaluation) => sum + evaluation.totalScore, 0) / olderEvaluations.length || 0;
       const trend = recentAvg - olderAvg;
 
       logger.info(`Estadísticas de evaluaciones calculadas para usuario: ${userId}`);
@@ -204,7 +204,7 @@ class EvaluationController {
   // Obtener evaluación específica
   async getEvaluationById(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { evaluationId } = req.params;
 
       const db = FirebaseService.getFirestore();
@@ -220,7 +220,7 @@ class EvaluationController {
       }
 
       const evaluation = doc.data();
-      if (evaluation.userId !== userId) {
+      if (evaluation && evaluation.userId !== userId) {
         res.status(403).json({
           success: false,
           error: 'Acceso denegado',
@@ -250,7 +250,7 @@ class EvaluationController {
   // Obtener la última evaluación
   async getLatestEvaluation(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
 
       const db = FirebaseService.getFirestore();
       const snapshot = await db.collection('evaluations')

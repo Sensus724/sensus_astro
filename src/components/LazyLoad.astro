@@ -1,350 +1,213 @@
 ---
 export interface Props {
-  class?: string;
   threshold?: number;
   rootMargin?: string;
-  placeholder?: string;
-  error?: string;
-  loading?: 'lazy' | 'eager';
-  fadeIn?: boolean;
-  delay?: number;
+  once?: boolean;
+  className?: string;
 }
 
 const {
-  class: className = '',
   threshold = 0.1,
   rootMargin = '50px',
-  placeholder = 'Cargando...',
-  error = 'Error al cargar',
-  loading = 'lazy',
-  fadeIn = true,
-  delay = 0,
-  ...rest
+  once = true,
+  className = ''
 } = Astro.props;
-
-const classes = [
-  'lazy-load',
-  className
-].filter(Boolean).join(' ');
 ---
 
-<div class={classes} {...rest}>
-  <div class="lazy-load-container" id="lazy-load-container">
-    <div class="lazy-load-placeholder" id="lazy-load-placeholder">
-      <div class="lazy-load-spinner"></div>
-      <span class="lazy-load-text">{placeholder}</span>
-    </div>
-    
-    <div class="lazy-load-content" id="lazy-load-content" style="display: none;">
-      <slot />
-    </div>
-    
-    <div class="lazy-load-error" id="lazy-load-error" style="display: none;">
-      <i class="fas fa-exclamation-triangle"></i>
-      <span>{error}</span>
-      <button class="lazy-load-retry" id="lazy-load-retry">
-        Reintentar
-      </button>
-    </div>
-  </div>
+<div 
+  class={`lazy-container ${className}`}
+  data-threshold={threshold}
+  data-root-margin={rootMargin}
+  data-once={once}
+>
+  <slot />
 </div>
 
 <style>
-  .lazy-load {
-    @apply relative;
+  .lazy-container {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
-
-  .lazy-load-container {
-    @apply relative min-h-[200px];
+  
+  .lazy-container.loaded {
+    opacity: 1;
+    transform: translateY(0);
   }
-
-  .lazy-load-placeholder {
-    @apply absolute inset-0 flex flex-col items-center justify-center;
-    @apply bg-gray-50 text-gray-500;
+  
+  /* Animaciones específicas para diferentes elementos */
+  .lazy-container[data-animation="fade-in"] {
+    opacity: 0;
+    transition: opacity 0.8s ease;
   }
-
-  .lazy-load-spinner {
-    @apply w-8 h-8 border-2 border-blue-600 border-t-transparent;
-    @apply rounded-full animate-spin mb-3;
+  
+  .lazy-container[data-animation="fade-in"].loaded {
+    opacity: 1;
   }
-
-  .lazy-load-text {
-    @apply text-sm font-medium;
+  
+  .lazy-container[data-animation="slide-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
-
-  .lazy-load-content {
-    @apply w-full h-full;
+  
+  .lazy-container[data-animation="slide-up"].loaded {
+    opacity: 1;
+    transform: translateY(0);
   }
-
-  .lazy-load-error {
-    @apply absolute inset-0 flex flex-col items-center justify-center;
-    @apply bg-red-50 text-red-600 text-center p-4;
+  
+  .lazy-container[data-animation="slide-left"] {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
-
-  .lazy-load-error i {
-    @apply text-2xl mb-2;
+  
+  .lazy-container[data-animation="slide-left"].loaded {
+    opacity: 1;
+    transform: translateX(0);
   }
-
-  .lazy-load-retry {
-    @apply mt-3 px-4 py-2 bg-red-600 text-white rounded-lg;
-    @apply hover:bg-red-700 transition-colors duration-200;
+  
+  .lazy-container[data-animation="slide-right"] {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
-
-  /* Animaciones */
-  .lazy-load-content.fade-in {
-    @apply opacity-0 transition-opacity duration-500 ease-in-out;
+  
+  .lazy-container[data-animation="slide-right"].loaded {
+    opacity: 1;
+    transform: translateX(0);
   }
-
-  .lazy-load-content.fade-in.loaded {
-    @apply opacity-100;
+  
+  .lazy-container[data-animation="scale"] {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
-
-  /* Estados */
-  .lazy-load-container.loading .lazy-load-placeholder {
-    @apply block;
-  }
-
-  .lazy-load-container.loading .lazy-load-content,
-  .lazy-load-container.loading .lazy-load-error {
-    @apply hidden;
-  }
-
-  .lazy-load-container.loaded .lazy-load-placeholder,
-  .lazy-load-container.loaded .lazy-load-error {
-    @apply hidden;
-  }
-
-  .lazy-load-container.loaded .lazy-load-content {
-    @apply block;
-  }
-
-  .lazy-load-container.error .lazy-load-placeholder,
-  .lazy-load-container.error .lazy-load-content {
-    @apply hidden;
-  }
-
-  .lazy-load-container.error .lazy-load-error {
-    @apply block;
-  }
-
-  /* Modo oscuro */
-  [data-theme="dark"] .lazy-load-placeholder {
-    @apply bg-gray-800 text-gray-400;
-  }
-
-  [data-theme="dark"] .lazy-load-error {
-    @apply bg-red-900 text-red-400;
+  
+  .lazy-container[data-animation="scale"].loaded {
+    opacity: 1;
+    transform: scale(1);
   }
 </style>
 
 <script>
-  class LazyLoad {
-    constructor(element, options = {}) {
-      this.element = element;
-      this.container = element.querySelector('#lazy-load-container');
-      this.placeholder = element.querySelector('#lazy-load-placeholder');
-      this.content = element.querySelector('#lazy-load-content');
-      this.error = element.querySelector('#lazy-load-error');
-      this.retryBtn = element.querySelector('#lazy-load-retry');
-      
-      this.options = {
-        threshold: 0.1,
-        rootMargin: '50px',
-        fadeIn: true,
-        delay: 0,
-        ...options,
-      };
-      
-      this.isLoaded = false;
-      this.isLoading = false;
-      this.hasError = false;
-      this.observer = null;
-      
+  class LazyLoader {
+    private observer: IntersectionObserver;
+    private containers: Set<Element> = new Set();
+
+    constructor() {
       this.init();
     }
-    
-    init() {
-      this.setupIntersectionObserver();
-      this.setupEventListeners();
-    }
-    
-    setupIntersectionObserver() {
-      if (!('IntersectionObserver' in window)) {
-        // Fallback para navegadores que no soportan IntersectionObserver
-        this.loadContent();
-        return;
-      }
-      
+
+    private init() {
+      // Crear observer con configuración por defecto
       this.observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting && !this.isLoaded && !this.isLoading) {
-              this.loadContent();
-            }
-          });
-        },
+        this.handleIntersection.bind(this),
         {
-          threshold: this.options.threshold,
-          rootMargin: this.options.rootMargin,
+          threshold: 0.1,
+          rootMargin: '50px'
         }
       );
+
+      // Observar todos los contenedores lazy
+      this.observeContainers();
       
-      this.observer.observe(this.container);
+      // Re-observar cuando se añaden nuevos elementos
+      this.observeNewElements();
     }
-    
-    setupEventListeners() {
-      this.retryBtn?.addEventListener('click', () => {
-        this.retry();
+
+    private observeContainers() {
+      const containers = document.querySelectorAll('.lazy-container');
+      containers.forEach(container => {
+        this.observeContainer(container);
       });
     }
-    
-    async loadContent() {
-      if (this.isLoading || this.isLoaded) return;
-      
-      this.isLoading = true;
-      this.container.classList.add('loading');
-      
-      try {
-        // Simular delay si está configurado
-        if (this.options.delay > 0) {
-          await new Promise(resolve => setTimeout(resolve, this.options.delay));
+
+    private observeContainer(container: Element) {
+      if (!this.containers.has(container)) {
+        this.containers.add(container);
+        
+        // Configurar observer con parámetros específicos del contenedor
+        const threshold = parseFloat(container.getAttribute('data-threshold') || '0.1');
+        const rootMargin = container.getAttribute('data-root-margin') || '50px';
+        
+        const observer = new IntersectionObserver(
+          this.handleIntersection.bind(this),
+          { threshold, rootMargin }
+        );
+        
+        observer.observe(container);
+      }
+    }
+
+    private handleIntersection(entries: IntersectionObserverEntry[]) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const container = entry.target as HTMLElement;
+          this.loadContainer(container);
+          
+          // Si es "once", dejar de observar
+          const once = container.getAttribute('data-once') === 'true';
+          if (once) {
+            this.observer.unobserve(container);
+            this.containers.delete(container);
+          }
         }
-        
-        // Cargar contenido
-        await this.loadLazyContent();
-        
-        // Mostrar contenido
-        this.showContent();
-        
-        this.isLoaded = true;
-        this.hasError = false;
-        
-      } catch (error) {
-        console.error('Error loading lazy content:', error);
-        this.showError();
-        this.hasError = true;
-      } finally {
-        this.isLoading = false;
-        this.container.classList.remove('loading');
-      }
-    }
-    
-    async loadLazyContent() {
-      // Buscar elementos que necesitan carga diferida
-      const lazyImages = this.content.querySelectorAll('img[data-src]');
-      const lazyScripts = this.content.querySelectorAll('script[data-src]');
-      const lazyStyles = this.content.querySelectorAll('link[data-href]');
-      
-      // Cargar imágenes
-      const imagePromises = Array.from(lazyImages).map(img => this.loadImage(img));
-      
-      // Cargar scripts
-      const scriptPromises = Array.from(lazyScripts).map(script => this.loadScript(script));
-      
-      // Cargar estilos
-      const stylePromises = Array.from(lazyStyles).map(link => this.loadStyle(link));
-      
-      // Esperar a que todo se cargue
-      await Promise.all([...imagePromises, ...scriptPromises, ...stylePromises]);
-    }
-    
-    async loadImage(img) {
-      return new Promise((resolve, reject) => {
-        const image = new Image();
-        
-        image.onload = () => {
-          img.src = image.src;
-          img.removeAttribute('data-src');
-          resolve();
-        };
-        
-        image.onerror = () => {
-          reject(new Error(`Failed to load image: ${img.dataset.src}`));
-        };
-        
-        image.src = img.dataset.src;
       });
     }
-    
-    async loadScript(script) {
-      return new Promise((resolve, reject) => {
-        const newScript = document.createElement('script');
-        newScript.src = script.dataset.src;
-        newScript.onload = () => {
-          script.remove();
-          resolve();
-        };
-        newScript.onerror = () => {
-          reject(new Error(`Failed to load script: ${script.dataset.src}`));
-        };
-        document.head.appendChild(newScript);
+
+    private loadContainer(container: HTMLElement) {
+      // Añadir clase loaded con delay para mejor animación
+      setTimeout(() => {
+        container.classList.add('loaded');
+        
+        // Disparar evento personalizado
+        container.dispatchEvent(new CustomEvent('lazy-loaded', {
+          detail: { container }
+        }));
+      }, 100);
+    }
+
+    private observeNewElements() {
+      // Usar MutationObserver para detectar nuevos elementos
+      const mutationObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node as Element;
+              const lazyContainers = element.querySelectorAll('.lazy-container');
+              lazyContainers.forEach(container => {
+                this.observeContainer(container);
+              });
+            }
+          });
+        });
+      });
+
+      mutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true
       });
     }
-    
-    async loadStyle(link) {
-      return new Promise((resolve, reject) => {
-        const newLink = document.createElement('link');
-        newLink.rel = 'stylesheet';
-        newLink.href = link.dataset.href;
-        newLink.onload = () => {
-          link.remove();
-          resolve();
-        };
-        newLink.onerror = () => {
-          reject(new Error(`Failed to load style: ${link.dataset.href}`));
-        };
-        document.head.appendChild(newLink);
-      });
+
+    // Método público para añadir nuevos contenedores
+    public addContainer(container: Element) {
+      this.observeContainer(container);
     }
-    
-    showContent() {
-      this.container.classList.add('loaded');
-      
-      if (this.options.fadeIn) {
-        this.content.classList.add('fade-in');
-        // Trigger fade in after a small delay
-        setTimeout(() => {
-          this.content.classList.add('loaded');
-        }, 10);
-      }
-      
-      // Dispatch evento de carga
-      this.element.dispatchEvent(new CustomEvent('lazy:loaded', {
-        detail: { element: this.element }
-      }));
-    }
-    
-    showError() {
-      this.container.classList.add('error');
-      
-      // Dispatch evento de error
-      this.element.dispatchEvent(new CustomEvent('lazy:error', {
-        detail: { element: this.element }
-      }));
-    }
-    
-    retry() {
-      this.hasError = false;
-      this.isLoaded = false;
-      this.container.classList.remove('error');
-      this.loadContent();
-    }
-    
-    destroy() {
-      if (this.observer) {
-        this.observer.disconnect();
-      }
+
+    // Método público para limpiar
+    public destroy() {
+      this.observer.disconnect();
+      this.containers.clear();
     }
   }
-  
-  // Inicializar lazy loading cuando el DOM esté listo
-  document.addEventListener('DOMContentLoaded', () => {
-    const lazyElements = document.querySelectorAll('.lazy-load');
-    lazyElements.forEach(element => {
-      new LazyLoad(element);
+
+  // Inicializar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new LazyLoader();
     });
-  });
-  
-  // Exponer globalmente
-  window.LazyLoad = LazyLoad;
+  } else {
+    new LazyLoader();
+  }
 </script>

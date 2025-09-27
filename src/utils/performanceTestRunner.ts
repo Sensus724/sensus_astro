@@ -452,12 +452,22 @@ class PerformanceTestRunner {
       const uxMetrics = await this.measureUXMetrics();
       
       const metrics: PerformanceMetrics = {
-        ...coreWebVitals,
+        pageLoadTime: coreWebVitals.pageLoadTime || 0,
+        lcp: coreWebVitals.lcp || 0,
+        fid: coreWebVitals.fid || 0,
+        cls: coreWebVitals.cls || 0,
+        fcp: coreWebVitals.fcp || 0,
+        ttfb: coreWebVitals.ttfb || 0,
+        domContentLoaded: 0,
+        resourceLoadTime: 0,
+        memoryUsage: 0,
+        timeToInteractive: 0,
+        firstMeaningfulPaint: 0,
         ...resourceMetrics,
         ...memoryMetrics,
         ...cpuMetrics,
         ...uxMetrics,
-        pageLoadTime: Date.now() - startTime,
+        // pageLoadTime: Date.now() - startTime, // Comentado para evitar duplicado
       };
       
       this.metrics.push(metrics);

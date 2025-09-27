@@ -155,10 +155,11 @@ export class MonitoringService {
   private startSystemMetrics(): void {
     setInterval(() => {
       // Memoria
-      if (performance.memory) {
-        this.recordMetric('memory.used', performance.memory.usedJSHeapSize, 'gauge');
-        this.recordMetric('memory.total', performance.memory.totalJSHeapSize, 'gauge');
-        this.recordMetric('memory.limit', performance.memory.jsHeapSizeLimit, 'gauge');
+      if ('memory' in performance && (performance as any).memory) {
+        const memory = (performance as any).memory;
+        this.recordMetric('memory.used', memory.usedJSHeapSize, 'gauge');
+        this.recordMetric('memory.total', memory.totalJSHeapSize, 'gauge');
+        this.recordMetric('memory.limit', memory.jsHeapSizeLimit, 'gauge');
       }
 
       // Timing
@@ -240,7 +241,10 @@ export class MonitoringService {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        this.recordMetric('webvitals.fid', entry.processingStart - entry.startTime, 'histogram');
+        const fidEntry = entry as any;
+        if (fidEntry.processingStart && fidEntry.startTime) {
+          this.recordMetric('webvitals.fid', fidEntry.processingStart - fidEntry.startTime, 'histogram');
+        }
       });
     }).observe({ entryTypes: ['first-input'] });
 
@@ -249,8 +253,9 @@ export class MonitoringService {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value;
+        const clsEntry = entry as any;
+        if (!clsEntry.hadRecentInput && clsEntry.value) {
+          clsValue += clsEntry.value;
         }
       });
       this.recordMetric('webvitals.cls', clsValue, 'histogram');
@@ -262,7 +267,7 @@ export class MonitoringService {
       const entries = list.getEntries();
       entries.forEach((entry) => {
         this.recordMetric('resource.timing', entry.duration, 'histogram', {
-          type: entry.initiatorType,
+          type: (entry as any).initiatorType || 'unknown',
           name: entry.name,
         });
       });

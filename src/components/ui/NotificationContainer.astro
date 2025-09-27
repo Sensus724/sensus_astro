@@ -1,0 +1,173 @@
+---
+// Componente contenedor de notificaciones
+---
+
+<div id="notification-container" class="notification-container" aria-live="polite" aria-atomic="true"></div>
+
+<style>
+  .notification-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 400px;
+    pointer-events: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .notification-container {
+      top: 0.5rem;
+      right: 0.5rem;
+      left: 0.5rem;
+      max-width: none;
+    }
+  }
+</style>
+
+<script>
+  // Sistema de notificaciones mejorado
+  class NotificationSystem {
+    constructor() {
+      this.container = document.getElementById('notification-container');
+      this.notifications = new Map();
+      this.maxNotifications = 5;
+    }
+
+    show(message, type = 'info', duration = 5000, options = {}) {
+      const id = this.generateId();
+      const notification = this.createNotification(id, message, type, options);
+      
+      this.container.appendChild(notification);
+      this.notifications.set(id, notification);
+
+      // Animar entrada
+      requestAnimationFrame(() => {
+        notification.classList.add('show');
+      });
+
+      // Auto-remover
+      if (duration > 0) {
+        setTimeout(() => {
+          this.remove(id);
+        }, duration);
+      }
+
+      // Limitar número de notificaciones
+      if (this.notifications.size > this.maxNotifications) {
+        const firstId = this.notifications.keys().next().value;
+        this.remove(firstId);
+      }
+
+      return id;
+    }
+
+    createNotification(id, message, type, options) {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.setAttribute('data-id', id);
+      
+      const icon = this.getIcon(type);
+      const closeButton = options.closable !== false ? 
+        `<button class="notification-close" aria-label="Cerrar notificación">
+          <i class="fas fa-times"></i>
+        </button>` : '';
+
+      notification.innerHTML = `
+        <div class="notification-content">
+          <div class="notification-icon">${icon}</div>
+          <div class="notification-body">
+            <div class="notification-message">${message}</div>
+            ${options.title ? `<div class="notification-title">${options.title}</div>` : ''}
+          </div>
+          ${closeButton}
+        </div>
+        ${options.progress ? '<div class="notification-progress"></div>' : ''}
+      `;
+
+      // Botón de cerrar
+      const closeBtn = notification.querySelector('.notification-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => this.remove(id));
+      }
+
+      // Click para cerrar
+      if (options.clickToClose !== false) {
+        notification.addEventListener('click', () => {
+          if (event.target !== closeBtn) {
+            this.remove(id);
+          }
+        });
+      }
+
+      return notification;
+    }
+
+    getIcon(type) {
+      const icons = {
+        success: '<i class="fas fa-check-circle"></i>',
+        error: '<i class="fas fa-exclamation-circle"></i>',
+        warning: '<i class="fas fa-exclamation-triangle"></i>',
+        info: '<i class="fas fa-info-circle"></i>',
+        loading: '<i class="fas fa-spinner fa-spin"></i>'
+      };
+      return icons[type] || icons.info;
+    }
+
+    remove(id) {
+      const notification = this.notifications.get(id);
+      if (notification) {
+        notification.classList.add('hide');
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+          this.notifications.delete(id);
+        }, 300);
+      }
+    }
+
+    clear() {
+      this.notifications.forEach((_, id) => {
+        this.remove(id);
+      });
+    }
+
+    generateId() {
+      return 'notification-' + Math.random().toString(36).substr(2, 9);
+    }
+  }
+
+  // Inicializar sistema de notificaciones
+  document.addEventListener('DOMContentLoaded', () => {
+    window.notificationSystem = new NotificationSystem();
+    
+    // Métodos de conveniencia
+    window.showNotification = (message, type, duration, options) => {
+      return window.notificationSystem.show(message, type, duration, options);
+    };
+    
+    window.showSuccess = (message, duration, options) => {
+      return window.notificationSystem.show(message, 'success', duration, options);
+    };
+    
+    window.showError = (message, duration, options) => {
+      return window.notificationSystem.show(message, 'error', duration, options);
+    };
+    
+    window.showWarning = (message, duration, options) => {
+      return window.notificationSystem.show(message, 'warning', duration, options);
+    };
+    
+    window.showInfo = (message, duration, options) => {
+      return window.notificationSystem.show(message, 'info', duration, options);
+    };
+    
+    window.showLoading = (message, options) => {
+      return window.notificationSystem.show(message, 'loading', 0, options);
+    };
+  });
+</script>

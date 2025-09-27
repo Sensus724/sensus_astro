@@ -76,6 +76,7 @@ export interface SecurityIncident {
   remediation: string[];
   lessonsLearned: string[];
   assignedTo?: string;
+  updatedAt?: string;
   metadata: Record<string, any>;
 }
 

@@ -31,17 +31,8 @@ class App {
   }
 
   private initializeMiddlewares(): void {
-    // Configuración de seguridad
-    this.app.use(helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],
-          scriptSrc: ["'self'"],
-          imgSrc: ["'self'", "data:", "https:"],
-        },
-      },
-    }));
+    // Configuración de seguridad básica
+    this.app.use(helmet());
 
     // CORS
     this.app.use(cors({
@@ -54,17 +45,15 @@ class App {
     // Compresión
     this.app.use(compression());
 
-    // Rate limiting
+    // Rate limiting básico
     const limiter = rateLimit({
-      windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutos
-      max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'), // límite por IP
+      windowMs: 15 * 60 * 1000, // 15 minutos
+      max: 100, // límite por IP
       message: {
         success: false,
         error: 'Demasiadas solicitudes',
         message: 'Has excedido el límite de solicitudes. Intenta de nuevo más tarde.'
-      },
-      standardHeaders: true,
-      legacyHeaders: false,
+      }
     });
     this.app.use(limiter);
 
@@ -80,19 +69,18 @@ class App {
   }
 
   private initializeRoutes(): void {
-    // Ruta de salud
+    // Ruta de salud básica
     this.app.get('/health', (req, res) => {
-      res.status(200).json({
+      res.json({
         success: true,
-        message: 'Sensus Backend está funcionando correctamente',
-        timestamp: new Date().toISOString(),
-        version: '1.0.0'
+        message: 'Servidor funcionando correctamente',
+        timestamp: new Date().toISOString()
       });
     });
 
     // Ruta de información de la API
     this.app.get('/api/info', (req, res) => {
-      res.status(200).json({
+      res.json({
         success: true,
         data: {
           name: 'Sensus Backend API',
@@ -100,35 +88,25 @@ class App {
           description: 'API para la aplicación de bienestar mental Sensus',
           endpoints: {
             health: '/health',
-            info: '/api/info',
             users: '/api/v1/users',
             diary: '/api/v1/diary',
             evaluations: '/api/v1/evaluations'
-          },
-          documentation: 'https://docs.sensus.app/api'
+          }
         }
       });
     });
 
     // Rutas de la API
-    const apiVersion = process.env.API_VERSION || 'v1';
-    this.app.use(`/api/${apiVersion}/users`, userRoutes);
-    this.app.use(`/api/${apiVersion}/diary`, diaryRoutes);
-    this.app.use(`/api/${apiVersion}/evaluations`, evaluationRoutes);
+    this.app.use('/api/v1/users', userRoutes);
+    this.app.use('/api/v1/diary', diaryRoutes);
+    this.app.use('/api/v1/evaluations', evaluationRoutes);
 
     // Ruta 404 para endpoints no encontrados
     this.app.use('*', (req, res) => {
       res.status(404).json({
         success: false,
         error: 'Endpoint no encontrado',
-        message: `La ruta ${req.originalUrl} no existe`,
-        availableEndpoints: [
-          '/health',
-          '/api/info',
-          `/api/${apiVersion}/users`,
-          `/api/${apiVersion}/diary`,
-          `/api/${apiVersion}/evaluations`
-        ]
+        message: `La ruta ${req.originalUrl} no existe`
       });
     });
   }
@@ -137,38 +115,6 @@ class App {
     // Middleware de manejo de errores
     this.app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
       logger.error('Error no manejado:', error);
-
-      // Error de validación
-      if (error.name === 'ValidationError') {
-        res.status(400).json({
-          success: false,
-          error: 'Error de validación',
-          message: error.message,
-          details: error.details
-        });
-        return;
-      }
-
-      // Error de Firebase
-      if (error.code && error.code.startsWith('firebase/')) {
-        res.status(400).json({
-          success: false,
-          error: 'Error de Firebase',
-          message: 'Error en la base de datos',
-          code: error.code
-        });
-        return;
-      }
-
-      // Error de autenticación
-      if (error.name === 'UnauthorizedError') {
-        res.status(401).json({
-          success: false,
-          error: 'No autorizado',
-          message: 'Token de autenticación inválido o expirado'
-        });
-        return;
-      }
 
       // Error genérico
       res.status(500).json({

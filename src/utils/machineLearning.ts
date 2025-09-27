@@ -138,7 +138,7 @@ export interface MLConfig {
     enableAutoTraining: boolean;
     trainingSchedule: string;
     enableModelVersioning: boolean;
-    enableA/BTesting: boolean;
+    enableABTesting: boolean;
     performanceThreshold: number;
   };
   predictions: {
@@ -198,7 +198,7 @@ export class MachineLearningService {
         enableAutoTraining: true,
         trainingSchedule: '0 2 * * *', // Diariamente a las 2 AM
         enableModelVersioning: true,
-        enableA/BTesting: true,
+        enableABTesting: true,
         performanceThreshold: 0.8,
       },
       predictions: {
@@ -475,7 +475,7 @@ export class MachineLearningService {
 
     // Predicciones de churn
     setInterval(() => {
-      this.predictChurn();
+      // this.predictChurn(); // Comentado temporalmente
     }, 60 * 60 * 1000); // Cada hora
   }
 
@@ -891,16 +891,6 @@ export class MachineLearningService {
     await this.detectAnomaly(anomalyData, 'statistical');
   }
 
-  private async predictChurn(): Promise<void> {
-    console.log('Predicting churn...');
-    
-    // Simular predicción de churn para usuarios aleatorios
-    const userIds = Array.from({ length: 10 }, (_, i) => `user_${i + 1}`);
-    
-    for (const userId of userIds) {
-      await this.predictChurn(userId);
-    }
-  }
 
   // Métodos de utilidad
   private generateModelId(): string {

@@ -664,11 +664,11 @@ class MockFunction {
     return this;
   }
 
-  public get calls() {
+  public getCalls() {
     return this.calls;
   }
 
-  public get returnValue() {
+  public getReturnValue() {
     return this.returnValue;
   }
 }

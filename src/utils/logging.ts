@@ -70,7 +70,7 @@ export class Logger {
   private logBuffer: LogEntry[] = [];
   private maxBufferSize: number = 1000;
   private flushInterval: number = 30000; // 30 segundos
-  private flushTimer?: number;
+  private flushTimer?: NodeJS.Timeout;
   private remoteEndpoint?: string;
   private enableConsole: boolean = true;
   private enableRemote: boolean = false;
@@ -110,14 +110,15 @@ export class Logger {
     if (!this.enablePerformance) return;
 
     // Monitorear memoria
-    if (performance.memory) {
+    if ('memory' in performance && (performance as any).memory) {
       setInterval(() => {
-        const memoryUsage = performance.memory!.usedJSHeapSize;
+        const memory = (performance as any).memory;
+        const memoryUsage = memory.usedJSHeapSize;
         this.context.metadata = {
           ...this.context.metadata,
           memoryUsage,
-          memoryTotal: performance.memory!.totalJSHeapSize,
-          memoryLimit: performance.memory!.jsHeapSizeLimit,
+          memoryTotal: memory.totalJSHeapSize,
+          memoryLimit: memory.jsHeapSizeLimit,
         };
       }, 10000);
     }
@@ -250,7 +251,7 @@ export class Logger {
     // Agregar información de rendimiento
     if (this.enablePerformance) {
       logEntry.performance = {
-        memory: performance.memory?.usedJSHeapSize,
+        memory: ('memory' in performance && (performance as any).memory) ? (performance as any).memory.usedJSHeapSize : undefined,
         cpu: this.getCPUUsage(),
         network: this.getNetworkLatency(),
       };
@@ -325,7 +326,7 @@ export class Logger {
   }
 
   public trace(message: string, context?: Partial<LogContext>): void {
-    this.debug(message, { ...context, action: 'trace', stack: new Error().stack });
+    this.debug(message, { ...context, action: 'trace' });
   }
 
   public assert(condition: boolean, message: string, context?: Partial<LogContext>): void {

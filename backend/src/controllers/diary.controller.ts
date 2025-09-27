@@ -6,7 +6,7 @@ class DiaryController {
   // Crear nueva entrada del diario
   async createEntry(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { content, mood, tags, date } = req.body;
 
       // Validación básica
@@ -56,7 +56,7 @@ class DiaryController {
   // Obtener entradas del diario
   async getEntries(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { limit = 10, offset = 0, startDate, endDate } = req.query;
 
       const db = FirebaseService.getFirestore();
@@ -105,7 +105,7 @@ class DiaryController {
   // Obtener estadísticas del diario
   async getStats(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { period = '30d' } = req.query;
 
       const db = FirebaseService.getFirestore();
@@ -152,7 +152,7 @@ class DiaryController {
   // Buscar entradas del diario
   async searchEntries(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { q, tags, mood, limit = 10 } = req.query;
 
       if (!q && !tags && !mood) {
@@ -182,14 +182,14 @@ class DiaryController {
       if (q) {
         const searchTerm = (q as string).toLowerCase();
         entries = entries.filter(entry => 
-          entry.content.toLowerCase().includes(searchTerm)
+          (entry as any).content?.toLowerCase().includes(searchTerm)
         );
       }
 
       if (tags) {
         const searchTags = (tags as string).split(',');
         entries = entries.filter(entry => 
-          searchTags.some(tag => entry.tags.includes(tag))
+          searchTags.some(tag => (entry as any).tags?.includes(tag))
         );
       }
 
@@ -214,7 +214,7 @@ class DiaryController {
   // Obtener entrada específica
   async getEntryById(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { entryId } = req.params;
 
       const db = FirebaseService.getFirestore();
@@ -230,7 +230,7 @@ class DiaryController {
       }
 
       const entry = doc.data();
-      if (entry.userId !== userId) {
+      if (entry && entry.userId !== userId) {
         res.status(403).json({
           success: false,
           error: 'Acceso denegado',
@@ -260,7 +260,7 @@ class DiaryController {
   // Actualizar entrada del diario
   async updateEntry(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { entryId } = req.params;
       const { content, mood, tags } = req.body;
 
@@ -278,7 +278,7 @@ class DiaryController {
       }
 
       const entry = doc.data();
-      if (entry.userId !== userId) {
+      if (entry && entry.userId !== userId) {
         res.status(403).json({
           success: false,
           error: 'Acceso denegado',
@@ -320,7 +320,7 @@ class DiaryController {
   // Eliminar entrada del diario
   async deleteEntry(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.uid;
+      const userId = req.user?.userId;
       const { entryId } = req.params;
 
       const db = FirebaseService.getFirestore();
@@ -337,7 +337,7 @@ class DiaryController {
       }
 
       const entry = doc.data();
-      if (entry.userId !== userId) {
+      if (entry && entry.userId !== userId) {
         res.status(403).json({
           success: false,
           error: 'Acceso denegado',
