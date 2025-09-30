@@ -597,6 +597,12 @@ const {
     <!-- Scripts simplificados -->
     <script src="/src/js/app.js"></script>
 
+    <!-- Firebase SDK y Configuración -->
+    <script src="/src/js/core/firebase-init.js"></script>
+
+    <!-- Módulo de Autenticación Firebase -->
+    <script src="/src/js/modules/firebase-auth.js"></script>
+
     <!-- Script de Funcionalidades Básicas -->
     <script is:inline>
       // ===== SISTEMA DE MENÚ MÓVIL =====
@@ -811,9 +817,11 @@ const {
       }, 1000);
     </script>
 
-    <!-- Script del Modal de Autenticación -->
+    <!-- Script del Modal de Autenticación - Simplificado -->
     <script is:inline>
-      // Funciones del modal de autenticación
+      // Funciones básicas del modal de autenticación
+      // El módulo Firebase Auth se encarga de la lógica avanzada
+
       function openAuthModal(tab = 'login') {
         const modal = document.getElementById('auth-modal');
         if (modal) {
@@ -828,102 +836,30 @@ const {
         if (modal) {
           modal.classList.remove('active');
           document.body.style.overflow = '';
-          // Limpiar formularios
-          clearAuthForms();
         }
       }
 
       function switchAuthTab(tab) {
-        console.log('Cambiando a tab:', tab);
-        
         // Actualizar tabs
         const tabs = document.querySelectorAll('.auth-tab');
-        tabs.forEach(t => {
-          t.classList.remove('active');
-          console.log('Tab removido:', t.textContent.trim());
-        });
-        
+        tabs.forEach(t => t.classList.remove('active'));
+
         // Encontrar el tab correcto
-        const activeTab = Array.from(tabs).find(t => 
+        const activeTab = Array.from(tabs).find(t =>
           t.textContent.trim().toLowerCase().includes(tab === 'login' ? 'iniciar' : 'registrarse')
         );
-        
+
         if (activeTab) {
           activeTab.classList.add('active');
-          console.log('Tab activado:', activeTab.textContent.trim());
         }
-        
+
         // Actualizar formularios
         const forms = document.querySelectorAll('.auth-form');
-        forms.forEach(f => {
-          f.classList.remove('active');
-          console.log('Formulario removido:', f.id);
-        });
-        
+        forms.forEach(f => f.classList.remove('active'));
+
         const activeForm = document.getElementById(`${tab}-form`);
         if (activeForm) {
           activeForm.classList.add('active');
-          console.log('Formulario activado:', activeForm.id);
-        } else {
-          console.error('No se encontró el formulario:', `${tab}-form`);
-        }
-      }
-
-      function clearAuthForms() {
-        const forms = document.querySelectorAll('.auth-form');
-        forms.forEach(form => {
-          form.reset();
-          // Limpiar mensajes de error
-          const messages = form.querySelectorAll('.auth-form-message');
-          messages.forEach(msg => msg.remove());
-          // Limpiar clases de error
-          const inputs = form.querySelectorAll('.auth-form-input');
-          inputs.forEach(input => input.classList.remove('error'));
-        });
-      }
-
-      function showAuthMessage(form, message, type = 'error') {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `auth-form-message ${type}`;
-        
-        const icon = type === 'error' ? 'exclamation-circle' : 
-                     type === 'success' ? 'check-circle' : 'info-circle';
-        
-        messageDiv.innerHTML = `
-          <i class="fas fa-${icon}"></i>
-          ${message}
-        `;
-        
-        form.insertBefore(messageDiv, form.firstChild);
-        
-        // Remover mensaje después de 5 segundos
-        setTimeout(() => {
-          if (messageDiv.parentNode) {
-            messageDiv.remove();
-          }
-        }, 5000);
-      }
-
-      function showAuthLoading(form, show = true) {
-        const submitBtn = form.querySelector('.auth-submit');
-        if (submitBtn) {
-          if (show) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `
-              <div class="auth-form-loading">
-                <div class="spinner"></div>
-                Procesando...
-              </div>
-            `;
-          } else {
-            submitBtn.disabled = false;
-            // Restaurar texto original según el formulario
-            if (form.id === 'login-form') {
-              submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
-            } else if (form.id === 'register-form') {
-              submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Crear Cuenta';
-            }
-          }
         }
       }
 
@@ -945,57 +881,16 @@ const {
         }
       });
 
-      // Conectar botones de autenticación
+      // Conectar botones básicos de autenticación
       document.addEventListener('DOMContentLoaded', function() {
-        // Botones del header
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        
-        if (loginBtn) {
-          loginBtn.addEventListener('click', function() {
-            openAuthModal('login');
-          });
-        }
-        
-        if (registerBtn) {
-          registerBtn.addEventListener('click', function() {
-            openAuthModal('register');
-          });
-        }
-
-        // Botones del menú móvil
-        const mobileLoginBtn = document.getElementById('mobile-login-btn');
-        const mobileRegisterBtn = document.getElementById('mobile-register-btn');
-        
-        if (mobileLoginBtn) {
-          mobileLoginBtn.addEventListener('click', function() {
-            openAuthModal('login');
-            // Cerrar menú móvil
-            const menuOverlay = document.querySelector('.menu-overlay');
-            if (menuOverlay) {
-              menuOverlay.classList.remove('active');
-            }
-          });
-        }
-        
-        if (mobileRegisterBtn) {
-          mobileRegisterBtn.addEventListener('click', function() {
-            openAuthModal('register');
-            // Cerrar menú móvil
-            const menuOverlay = document.querySelector('.menu-overlay');
-            if (menuOverlay) {
-              menuOverlay.classList.remove('active');
-            }
-          });
-        }
+        // Los botones principales se conectan automáticamente por el módulo Firebase Auth
+        console.log('Modal de autenticación listo para Firebase Auth');
       });
 
-      // Exportar funciones globalmente
+      // Exportar funciones básicas globalmente
       window.openAuthModal = openAuthModal;
       window.closeAuthModal = closeAuthModal;
       window.switchAuthTab = switchAuthTab;
-      window.showAuthMessage = showAuthMessage;
-      window.showAuthLoading = showAuthLoading;
     </script>
 
     <!-- Service Worker Registration -->

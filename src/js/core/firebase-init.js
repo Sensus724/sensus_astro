@@ -1,101 +1,111 @@
 /*
  * Sensus - Inicialización de Firebase
  * Script principal para cargar y configurar Firebase
- * Incluye: SDK de Firebase, configuración y servicios
+ * Usa configuración centralizada desde firebase-config.js
  */
 
-// Configuración de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBKZiEz_291NXNQpAsuGq8qz0MSUQw41Fw",
-    authDomain: "sensus-version-pro.firebaseapp.com",
-    projectId: "sensus-version-pro",
-    storageBucket: "sensus-version-pro.firebasestorage.app",
-    messagingSenderId: "887018721709",
-    appId: "1:887018721709:web:fbf4bfa3dc89517f9b9124",
-    measurementId: "G-L9YHW52ZSK"
-};
+// Importar configuración de Firebase
+import firebaseConfig from '../modules/firebase-config.js';
 
-// Función para cargar Firebase SDK
-function loadFirebaseSDK() {
-    return new Promise((resolve, reject) => {
-        // Verificar si Firebase ya está cargado
-        if (typeof firebase !== 'undefined') {
-            resolve();
-            return;
-        }
-
-        // Cargar Firebase SDK
-        const script = document.createElement('script');
-        script.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        script.onload = () => {
-            // Cargar módulos adicionales
-            loadFirebaseModules().then(resolve).catch(reject);
-        };
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
-}
-
-// Función para cargar módulos adicionales de Firebase
-function loadFirebaseModules() {
-    const modules = [
-        'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js',
-        'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js',
-        'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js',
-        'https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js',
-        'https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js',
-        'https://www.gstatic.com/firebasejs/9.22.0/firebase-functions.js'
-    ];
-
-    return Promise.all(modules.map(module => {
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = module;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-    }));
-}
-
-// Función para inicializar Firebase
-function initializeFirebase() {
+// Función para inicializar Firebase usando la versión instalada vía npm
+async function initializeFirebaseSDK() {
     try {
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        
-        // Configurar Analytics
-        if (firebase.analytics) {
-            firebase.analytics();
+        // Importar Firebase usando ES modules (ya instalado vía npm)
+        const { initializeApp } = await import('firebase/app');
+        const { getAuth } = await import('firebase/auth');
+        const { getFirestore } = await import('firebase/firestore');
+        const { getStorage } = await import('firebase/storage');
+        const { getMessaging, isSupported } = await import('firebase/messaging');
+        const { getAnalytics, isSupported: isAnalyticsSupported } = await import('firebase/analytics');
+        const { getFunctions } = await import('firebase/functions');
+
+        // Inicializar Firebase app
+        const app = initializeApp(firebaseConfig);
+
+        // Inicializar servicios
+        const auth = getAuth(app);
+        const firestore = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Inicializar Messaging si es soportado
+        let messaging = null;
+        if (await isSupported()) {
+            messaging = getMessaging(app);
         }
-        
-        // Configurar Messaging
-        if (firebase.messaging) {
-            const messaging = firebase.messaging();
-            
+
+        // Inicializar Analytics si es soportado
+        let analytics = null;
+        if (await isAnalyticsSupported()) {
+            analytics = getAnalytics(app);
+        }
+
+        const functions = getFunctions(app);
+
+        // Hacer servicios disponibles globalmente
+        window.firebase = {
+            app,
+            auth,
+            firestore,
+            storage,
+            messaging,
+            analytics,
+            functions
+        };
+
+        console.log('✅ Firebase v12 inicializado correctamente');
+        return true;
+    } catch (error) {
+        console.error('❌ Error inicializando Firebase v12:', error);
+        return false;
+    }
+}
+
+// Función para inicializar servicios de Firebase
+async function initializeFirebaseServices() {
+    try {
+        // Configurar Messaging si está disponible
+        if (window.firebase.messaging) {
+            const messaging = window.firebase.messaging;
+
             // Solicitar permisos para notificaciones
-            messaging.requestPermission().then(() => {
-                console.log('✅ Permisos de notificación concedidos');
-                
-                // Obtener token
-                messaging.getToken().then((token) => {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('✅ Permisos de notificación concedidos');
+
+                    // Obtener token
+                    const token = await messaging.getToken({
+                        vapidKey: 'BKZiEz_291NXNQpAsuGq8qz0MSUQw41Fw' // Reemplazar con tu clave VAPID
+                    });
+
                     if (token) {
                         console.log('✅ Token de FCM obtenido:', token);
                         // Guardar token para uso posterior
                         localStorage.setItem('fcm_token', token);
                     }
-                }).catch((error) => {
-                    console.error('❌ Error obteniendo token FCM:', error);
-                });
-            }).catch((error) => {
-                console.error('❌ Error solicitando permisos:', error);
+                } else {
+                    console.log('❌ Permisos de notificación denegados');
+                }
+            } catch (error) {
+                console.error('❌ Error con permisos de notificación:', error);
+            }
+        }
+
+        // Configurar listeners de autenticación
+        if (window.firebase.auth) {
+            window.firebase.auth.onAuthStateChanged((user) => {
+                if (user) {
+                    console.log('✅ Usuario autenticado:', user.uid);
+                } else {
+                    console.log('❌ Usuario no autenticado');
+                }
             });
         }
-        
-        console.log('✅ Firebase inicializado correctamente');
+
+        console.log('✅ Servicios de Firebase inicializados correctamente');
         return true;
     } catch (error) {
-        console.error('❌ Error inicializando Firebase:', error);
+        console.error('❌ Error inicializando servicios de Firebase:', error);
         return false;
     }
 }
@@ -145,33 +155,44 @@ async function migrateDataToFirebase() {
 // Función principal de inicialización
 async function initFirebase() {
     try {
-        console.log('🔄 Inicializando Firebase...');
-        
-        // Cargar SDK
-        await loadFirebaseSDK();
-        
-        // Inicializar Firebase
-        const initialized = initializeFirebase();
-        if (!initialized) {
-            throw new Error('Error inicializando Firebase');
+        console.log('🔄 Inicializando Firebase v12...');
+
+        // Inicializar Firebase SDK
+        const sdkInitialized = await initializeFirebaseSDK();
+        if (!sdkInitialized) {
+            throw new Error('Error inicializando Firebase SDK');
         }
-        
-        // Configurar Service Worker
-        setupFirebaseMessaging();
-        
+
+        // Inicializar servicios
+        const servicesInitialized = await initializeFirebaseServices();
+        if (!servicesInitialized) {
+            throw new Error('Error inicializando servicios de Firebase');
+        }
+
+        // Configurar Service Worker para Messaging
+        if (window.firebase.messaging && 'serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('✅ Service Worker registrado:', registration);
+                window.firebase.messaging.useServiceWorker(registration);
+            } catch (error) {
+                console.error('❌ Error registrando Service Worker:', error);
+            }
+        }
+
         // Esperar un poco para que los servicios se inicialicen
         setTimeout(async () => {
             // Migrar datos si es necesario
             await migrateDataToFirebase();
-            
+
             // Disparar evento de Firebase listo
             window.dispatchEvent(new CustomEvent('firebaseReady'));
         }, 1000);
-        
-        console.log('✅ Firebase completamente inicializado');
+
+        console.log('✅ Firebase v12 completamente inicializado');
     } catch (error) {
         console.error('❌ Error en inicialización de Firebase:', error);
-        
+
         // Disparar evento de error
         window.dispatchEvent(new CustomEvent('firebaseError', { detail: error }));
     }
@@ -186,6 +207,83 @@ if (document.readyState === 'loading') {
 } else {
     initFirebase();
 }
+
+// Funciones de autenticación con proveedores externos
+async function signInWithGoogle() {
+    try {
+        if (!window.firebase.auth) {
+            console.error('Firebase Auth no está inicializado');
+            return;
+        }
+
+        const provider = new window.firebase.auth.GoogleAuthProvider();
+        provider.addScope('email');
+        provider.addScope('profile');
+
+        const result = await window.firebase.auth.signInWithPopup(provider);
+        const user = result.user;
+
+        console.log('Usuario autenticado con Google:', user.email);
+
+        // Cerrar modal de autenticación
+        if (window.closeAuthModal) {
+            window.closeAuthModal();
+        }
+
+        // Mostrar mensaje de éxito
+        if (window.showNotification) {
+            window.showNotification('¡Bienvenido! Has iniciado sesión con Google', 'success');
+        }
+
+        return user;
+    } catch (error) {
+        console.error('Error en autenticación con Google:', error);
+        if (window.showNotification) {
+            window.showNotification('Error al iniciar sesión con Google: ' + error.message, 'error');
+        }
+        throw error;
+    }
+}
+
+async function signInWithApple() {
+    try {
+        if (!window.firebase.auth) {
+            console.error('Firebase Auth no está inicializado');
+            return;
+        }
+
+        const provider = new window.firebase.auth.OAuthProvider('apple.com');
+        provider.addScope('email');
+        provider.addScope('name');
+
+        const result = await window.firebase.auth.signInWithPopup(provider);
+        const user = result.user;
+
+        console.log('Usuario autenticado con Apple:', user.email);
+
+        // Cerrar modal de autenticación
+        if (window.closeAuthModal) {
+            window.closeAuthModal();
+        }
+
+        // Mostrar mensaje de éxito
+        if (window.showNotification) {
+            window.showNotification('¡Bienvenido! Has iniciado sesión con Apple', 'success');
+        }
+
+        return user;
+    } catch (error) {
+        console.error('Error en autenticación con Apple:', error);
+        if (window.showNotification) {
+            window.showNotification('Error al iniciar sesión con Apple: ' + error.message, 'error');
+        }
+        throw error;
+    }
+}
+
+// Exportar funciones globalmente
+window.signInWithGoogle = signInWithGoogle;
+window.signInWithApple = signInWithApple;
 
 // Exportar configuración para uso global
 window.FirebaseConfig = firebaseConfig;
