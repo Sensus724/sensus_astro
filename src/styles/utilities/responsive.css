@@ -5,7 +5,7 @@
 /* 
   xs: 480px   - Móviles pequeños
   sm: 640px   - Móviles grandes
-  md: 768px   - Tablets
+  md: 1250px  - Tablets
   lg: 1024px  - Laptops
   xl: 1280px  - Desktops
   2xl: 1536px - Pantallas grandes
@@ -88,7 +88,7 @@
   .text-sm-xl { font-size: var(--font-size-xl) !important; }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 1250px) and (max-width: 1023px) {
   .text-md-center { text-align: center !important; }
   .text-md-left { text-align: left !important; }
   .text-md-right { text-align: right !important; }
@@ -111,7 +111,7 @@
 }
 
 /* Espaciado */
-@media (max-width: 767px) {
+@media (max-width: 1249px) {
   .m-sm-0 { margin: 0 !important; }
   .m-sm-1 { margin: var(--space-1) !important; }
   .m-sm-2 { margin: var(--space-2) !important; }
@@ -141,7 +141,7 @@
   .mt-sm-8 { margin-top: var(--space-8) !important; }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 1250px) and (max-width: 1023px) {
   .m-md-0 { margin: 0 !important; }
   .m-md-1 { margin: var(--space-1) !important; }
   .m-md-2 { margin: var(--space-2) !important; }
@@ -204,7 +204,7 @@
 /* === COMPONENTES RESPONSIVOS === */
 
 /* Header Responsivo */
-@media (max-width: 768px) {
+@media (max-width: 1250px) {
     .header-container {
     padding: 0 var(--space-4);
     }
@@ -218,12 +218,59 @@
     height: 28px;
   }
   
-  .nav {
+  .main-nav.nav-peace {
     display: none;
   }
   
   .mobile-menu-btn {
     display: flex;
+  }
+
+  /* Asegurar que el menú overlay sea visible cuando esté activo */
+  .menu-overlay.active {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(0) !important;
+  }
+
+  /* Asegurar que los enlaces del menú móvil sean visibles */
+  .menu-overlay .nav-links {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .menu-overlay .nav-links a {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  /* Asegurar que el botón hamburguesa tenga funcionalidad completa */
+  .menu-toggle {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 1001 !important;
+  }
+
+  .menu-toggle.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* Reglas adicionales para asegurar el funcionamiento del menú móvil */
+  .menu-backdrop.active {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* Prevenir conflictos con otras reglas CSS */
+  .nav-peace {
+    position: relative !important;
+    z-index: 100 !important;
   }
 }
 
@@ -243,7 +290,7 @@
 }
 
 /* Botones Responsivos */
-@media (max-width: 768px) {
+@media (max-width: 1250px) {
     .btn {
     padding: var(--space-3) var(--space-5);
     font-size: var(--font-size-sm);
@@ -294,7 +341,7 @@
 }
 
 /* Tarjetas Responsivas */
-@media (max-width: 768px) {
+@media (max-width: 1250px) {
   .card-header,
   .card-body,
   .card-footer {
@@ -491,14 +538,14 @@
 /* === UTILIDADES ESPECÍFICAS === */
 
 /* Ocultar en móvil */
-@media (max-width: 767px) {
+@media (max-width: 1249px) {
   .hide-mobile {
     display: none !important;
   }
 }
 
 /* Ocultar en tablet */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 1250px) and (max-width: 1023px) {
   .hide-tablet {
     display: none !important;
   }
@@ -512,7 +559,7 @@
 }
 
 /* Mostrar solo en móvil */
-@media (min-width: 768px) {
+@media (min-width: 1250px) {
   .show-mobile-only {
     display: none !important;
   }
