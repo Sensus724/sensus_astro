@@ -259,6 +259,11 @@
   transform: scale(0.95);
 }
 
+.btn-cta {
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--font-size-base);
+  }
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .btn {
@@ -274,11 +279,6 @@
   .btn-xl {
     padding: var(--space-4) var(--space-8);
     font-size: var(--font-size-lg);
-  }
-  
-  .btn-cta {
-    padding: var(--space-4) var(--space-6);
-    font-size: var(--font-size-base);
   }
   
   .btn-floating {

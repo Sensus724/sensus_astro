@@ -169,7 +169,7 @@ const {
             </div>
             
                 <!-- Navegación desktop (oculta en móvil) -->
-                <nav class="main-nav nav-peace">
+                <nav class="main-nav nav-peace px-6">
                 <ul class="nav-links">
                     <li><a href="/" class={activeNav === "inicio" ? "active" : ""}>
                         <i class="fas fa-home" aria-hidden="true"></i>
@@ -204,7 +204,7 @@ const {
             
                     <!-- Botones de autenticación y toggle de tema -->
                     <div class="auth-buttons">
-                        <ThemeToggle size="medium" variant="default" />
+                        <!-- <ThemeToggle size="medium" variant="default" /> -->
                         <button class="btn-cta btn-outline" data-auth="login">Iniciar sesión</button>
                         <button class="btn-cta" data-auth="register">Registrarse</button>
                     </div>
@@ -250,10 +250,10 @@ const {
         
                 <!-- Botones de autenticación en el menú móvil -->
                 <div class="menu-auth-buttons">
-                    <div class="mobile-theme-toggle">
+                    <!-- <div class="mobile-theme-toggle">
                         <span class="theme-label">Tema:</span>
                         <ThemeToggle size="small" variant="minimal" />
-                    </div>
+                    </div> -->
                     <button class="btn-cta btn-outline" data-auth="login">
                         <i class="fas fa-sign-in-alt"></i>
                         Iniciar sesión
@@ -621,6 +621,14 @@ const {
             menuOverlay.classList.add('active');
             if (menuBackdrop) menuBackdrop.classList.add('active');
             document.body.style.overflow = 'hidden';
+
+            // Forzar estilos adicionales para asegurar visibilidad en móvil
+            if (window.innerWidth <= 1250) {
+              menuOverlay.style.display = 'block';
+              menuOverlay.style.opacity = '1';
+              menuOverlay.style.visibility = 'visible';
+              menuOverlay.style.transform = 'translateX(0)';
+            }
           }
           
           // Función para cerrar menú
@@ -630,6 +638,14 @@ const {
             menuOverlay.classList.remove('active');
             if (menuBackdrop) menuBackdrop.classList.remove('active');
             document.body.style.overflow = '';
+
+            // Limpiar estilos forzados en móvil
+            if (window.innerWidth <= 1250) {
+              menuOverlay.style.display = '';
+              menuOverlay.style.opacity = '';
+              menuOverlay.style.visibility = '';
+              menuOverlay.style.transform = '';
+            }
           }
           
           // Event listener principal del botón hamburguesa
@@ -637,11 +653,16 @@ const {
             e.preventDefault();
             e.stopPropagation();
             console.log('Botón hamburguesa clickeado');
-            
+
             if (menuOverlay.classList.contains('active')) {
               closeMenu();
             } else {
               openMenu();
+            }
+
+            // Logging adicional para debug en móvil
+            if (window.innerWidth <= 1250) {
+              console.log('Menú móvil activado, ancho de ventana:', window.innerWidth);
             }
           });
           
@@ -685,7 +706,7 @@ const {
           
           // Cerrar menú al redimensionar
           window.addEventListener('resize', function() {
-            if (window.innerWidth > 767) {
+            if (window.innerWidth > 1249) {
               closeMenu();
             }
           });
