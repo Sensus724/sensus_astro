@@ -437,10 +437,10 @@ import BaseLayout from '../layouts/BaseLayout.astro'
                 <h2 id="final-cta-title">¿Experimentas estos síntomas?</h2>
                 <p>Realiza nuestro test GAD-7 gratuito para evaluar tu nivel de ansiedad y obtener recomendaciones personalizadas</p>
                 <div class="cta-actions-enhanced">
-                    <a href="/evaluacion" class="btn-cta-primary" aria-label="Evaluar mi nivel de ansiedad">
-                        <i class="fas fa-clipboard-check" aria-hidden="true"></i>
-                        Evaluar mi Ansiedad
-                    </a>
+                    <button data-test="gad7" class="btn-cta-primary test-button" aria-label="Evaluar mi nivel de ansiedad">
+                        <i class="fas fa-play-circle" aria-hidden="true"></i>
+                        Comenzar Test GAD-7
+                    </button>
                     <a href="/diario" class="btn-cta-secondary" aria-label="Acceder al diario de bienestar">
                         <i class="fas fa-book-open" aria-hidden="true"></i>
                         Mi Diario de Bienestar
@@ -803,4 +803,6 @@ import BaseLayout from '../layouts/BaseLayout.astro'
             font-size: 1.1rem;
         }
     </style>
+    <!-- Scripts específicos de la página -->
+    <script is:inline src="/js/pages/simple-test-launcher.js" type="module"></script>
 </BaseLayout>

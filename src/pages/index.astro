@@ -32,10 +32,10 @@ import BaseLayout from '../layouts/BaseLayout.astro'
                     </div>
                     
                     <div class="hero-actions fade-in-up">
-                        <a href="/evaluacion" class="btn-cta">
-                            <i class="fas fa-heart"></i>
-                            Descubrir mi Ansiedad Gratis
-                        </a>
+                        <button data-test="gad7" class="btn-cta test-button">
+                            <i class="fas fa-play-circle"></i>
+                            Comenzar Test GAD-7
+                        </button>
                         <p class="cta-disclaimer">✓ Sin registro • ✓ Resultados inmediatos • ✓ 100% privado</p>
                     </div>
                 </div>
@@ -366,6 +366,8 @@ import BaseLayout from '../layouts/BaseLayout.astro'
             </div>
         </div>
     </section>
+    <!-- Scripts específicos de la página -->
+    <script is:inline src="/js/pages/simple-test-launcher.js" type="module"></script>
 </BaseLayout>
 
 <script>

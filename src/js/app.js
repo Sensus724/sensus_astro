@@ -82,6 +82,23 @@ class SensusApp {
     
     // Actualizar UI de autenticación
     this.updateAuthUI();
+    
+    // Inicializar el sistema de tests
+    this.initializeTestSystem();
+  }
+  
+  async initializeTestSystem() {
+    try {
+      // Importar dinámicamente el TestLauncher
+      const TestLauncherModule = await import('/public/js/pages/test-launcher.js');
+      const TestLauncher = TestLauncherModule.default;
+      
+      // Inicializar el launcher
+      this.testLauncher = new TestLauncher();
+      console.log('✅ Sistema de tests inicializado');
+    } catch (error) {
+      console.error('❌ Error inicializando sistema de tests:', error);
+    }
   }
 
   checkStoredAuth() {
